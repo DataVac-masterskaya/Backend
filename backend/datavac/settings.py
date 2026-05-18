@@ -35,6 +35,19 @@ SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 APP_ENV = config('APP_ENV', default='development')
 
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': (
+        'datavac.renders.ORJSONRenderer',
+        'rest_framework.renderers.JSONRenderer',
+    ),
+    'DEFAULT_PARSER_CLASSES': (
+        'rest_framework.parsers.JSONParser',
+        'rest_framework.parsers.MultiPartParser',
+        'rest_framework.parsers.FormParser',
+    ),
+}
+
+
 
 ALLOWED_HOSTS = config(
     'ALLOWED_HOSTS',
@@ -61,7 +74,7 @@ INSTALLED_APPS = [
     # Additional
     'rest_framework',
     'corsheaders',
-    # Local
+    'audit.apps.AuditConfig',
     #'app1',
     #'app2',
 ]
