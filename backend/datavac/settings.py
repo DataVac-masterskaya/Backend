@@ -63,7 +63,7 @@ INSTALLED_APPS = [
     'corsheaders',
     # Local
     'API.apps.ApiConfig',
-    'datavac_backend.DatavacBackendConfig',
+    'datavac_backend.apps.DatavacBackendConfig',
 ]
 
 MIDDLEWARE = [
