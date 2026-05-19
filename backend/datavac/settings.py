@@ -62,8 +62,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     # Local
-    #'app1',
-    #'app2',
+    'API.apps.ApiConfig',
+    'datavac_backend.DatavacBackendConfig',
 ]
 
 MIDDLEWARE = [
