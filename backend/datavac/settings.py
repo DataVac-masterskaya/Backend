@@ -62,8 +62,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     # Local
-    #'app1',
-    #'app2',
+    'reference_books.apps.ReferenceBooksConfig',
 ]
 
 MIDDLEWARE = [
