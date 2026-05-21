@@ -61,9 +61,8 @@ INSTALLED_APPS = [
     # Additional
     'rest_framework',
     'corsheaders',
+    'reference_books.apps.ReferenceBooksConfig',
     # Local
-    'API.apps.ApiConfig',
-    'datavac_backend.apps.DatavacBackendConfig',
 ]
 
 MIDDLEWARE = [
