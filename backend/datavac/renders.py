@@ -17,4 +17,4 @@ class ORJSONRenderer(JSONRenderer):
         # orjson.OPT_UTC_ZONINFO formats dates with timezones
         if data is None:
             return b''
-        return orjson.dumps(data, option=orjson.OPT_SERIALIZE_DATACLASS | orjson.OPT_UTC_ZONINFO)
+        return orjson.dumps(data, option=orjson.OPT_SERIALIZE_DATACLASS | orjson.OPT_UTC_Z)

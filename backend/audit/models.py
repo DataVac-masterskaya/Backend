@@ -28,10 +28,11 @@ class AuditLog(models.Model):
     details = models.JSONField(null=True, blank=True)
     ip_address = models.GenericIPAddressField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    objects = models.Manager()
 
     class Meta:
         db_table = 'audit_logs'
-        ordering = ['-created_at']
+        ordering = ('-created_at',)
         verbose_name = 'Запись журнала аудита'
         verbose_name_plural = 'Записи журнала аудита'
 
