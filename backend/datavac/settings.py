@@ -36,10 +36,7 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 APP_ENV = config('APP_ENV', default='development')
 
 REST_FRAMEWORK = {
-    'DEFAULT_RENDERER_CLASSES': (
-        'datavac.renders.ORJSONRenderer',
-        'rest_framework.renderers.JSONRenderer',
-    ),
+    'DEFAULT_RENDERER_CLASSES': ('rest_framework.renderers.JSONRenderer',),
     'DEFAULT_PARSER_CLASSES': (
         'rest_framework.parsers.JSONParser',
         'rest_framework.parsers.MultiPartParser',
@@ -74,6 +71,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'audit.apps.AuditConfig',
+    'api.apps.ApiConfig',
     #'app1',
     #'app2',
 ]
@@ -87,6 +85,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'audit.middleware.AuditContextMiddleware',
 ]
 
 ROOT_URLCONF = 'datavac.urls'

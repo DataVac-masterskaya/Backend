@@ -2,10 +2,9 @@ from rest_framework.routers import SimpleRouter
 
 from .views import AuditLogViewSet
 
-app_name = 'audit'
+app_name = 'admin-api'
 
 router = SimpleRouter()
-
-router.register(r'audit', AuditLogViewSet, basename='audit-log')
+router.register(r'audit-logs', AuditLogViewSet, basename='audit-log')
 
 urlpatterns = router.urls

@@ -8,7 +8,7 @@ class AuditLogAdmin(admin.ModelAdmin):
     list_display = ('action_type', 'user', 'entity_type', 'entity_id', 'created_at')
 
     def get_readonly_fields(self, request, obj=None) -> tuple[str]:
-        return tuple(f.name for f in self.model._meta.fields)
+        return tuple(model_field.name for model_field in self.model._meta.fields)
 
     def has_add_permission(self, request) -> bool:
         return False

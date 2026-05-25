@@ -9,10 +9,11 @@ audit_context_var = ContextVar('audit_context', default=None)
 
 def get_audit_context() -> tuple[User | None, str | None]:
     """
-    Retrieves the current audit context (user and IP address).
+    Достает юзера и IP из контекста.
 
-    Returns:
-        A tuple containing the user and IP address.
+    Вытаскивает из специального хранилища (контекста)
+    текущего юзера и его IP-адрес.
+    Удобно, чтобы не тащить их через всю цепочку вызовов руками.
     """
     data = audit_context_var.get() or {}
     return (data.get('user'), data.get('ip_address'))
@@ -20,19 +21,14 @@ def get_audit_context() -> tuple[User | None, str | None]:
 
 class AuditContextMiddleware:
     """
-    Middleware for collecting user and IP address data.
+    Эта мидлварь ловит юзера и его IP-адрес.
 
-    This middleware sets the user and IP address to the context variable
-    before processing the request.
+    при каждом запросе и сохраняет в контекст.
+    Нужно, чтобы наши сигналы потом знали, кто именно совершил действие.
     """
 
     def __init__(self, get_response: callable) -> None:
-        """
-        Initialize the middleware.
-
-        Args:
-            get_response: The next callable in the middleware chain.
-        """
+        """Конструктор мидлвари, запоминает функцию перехода к следующему шагу."""
         self.get_response = get_response
 
     def __call__(self, request: HttpRequest) -> HttpResponse:
@@ -47,5 +43,4 @@ class AuditContextMiddleware:
                 'ip_address': ip_address,
             }
         )
-        response = self.get_response(request)
-        return response
+        return self.get_response(request)

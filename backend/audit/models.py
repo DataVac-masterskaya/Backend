@@ -4,31 +4,38 @@ from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.db import models
 
+ACTION_CHOICES = {
+    'login': 'Успешный вход',
+    'login_failed': 'Неудачная попытка входа',
+    'user_create': 'Создание нового редактора',
+    'role_change': 'Изменение роли пользователя',
+    'block': 'Блокировка/разблокировка учетной записи',
+    'card_create': 'Создание новой карточки',
+    'card_update': 'Сохранение изменений в черновик',
+    'card_submit': 'Отправка версии на модерацию',
+    'card_hide': 'Скрытие карточки',
+    'card_publish': 'Ручная публикация',
+    'card_delete': 'Архивация карточки',
+    'moderation_approve': 'Одобрение версии администратором',
+    'moderation_reject': 'Отклонение версии с комментарием',
+}
+
 
 class AuditLog(models.Model):
-    ACTION_CHOICES = [
-        ('login', 'Успешный вход'),
-        ('login_failed', 'Неудачная попытка входа'),
-        ('user_create', 'Создание нового редактора'),
-        ('role_change', 'Изменение роли пользователя'),
-        ('block', 'Блокировка/разблокировка учетной записи'),
-        ('card_create', 'Создание новой карточки'),
-        ('card_update', 'Сохранение изменений в черновик'),
-        ('card_submit', 'Отправка версии на модерацию'),
-        ('card_hide', 'Скрытие карточки'),
-        ('card_publish', 'Ручная публикация'),
-        ('card_delete', 'Архивация карточки'),
-        ('moderation_approve', 'Одобрение версии администратором'),
-        ('moderation_reject', 'Отклонение версии с комментарием'),
-    ]
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name='audit_logs')
-    action_type = models.CharField(max_length=50, choices=ACTION_CHOICES)
-    entity_type = models.CharField(max_length=50)
-    entity_id = models.IntegerField(null=True, blank=True)
-    details = models.JSONField(null=True, blank=True)
-    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    id = models.BigAutoField(primary_key=True)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        db_column='user_id',
+        related_name='audit_logs',
+    )
+    entity_type = models.CharField(max_length=100)
+    entity_id = models.BigIntegerField(null=True, blank=True)
+    action_type = models.CharField(max_length=100, choices=ACTION_CHOICES)
+    details = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    objects = models.Manager()
 
     class Meta:
         db_table = 'audit_logs'
@@ -37,7 +44,7 @@ class AuditLog(models.Model):
         verbose_name_plural = 'Записи журнала аудита'
 
     def __str__(self) -> str:
-        return self.action_type
+        return self.action_type[:30]
 
     def save(self, *args: Any, **kwargs: Any) -> None:
         if self.pk is not None:
