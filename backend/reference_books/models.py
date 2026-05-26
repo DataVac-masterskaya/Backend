@@ -2,19 +2,18 @@ from django.db import models
 
 
 class BaseModel(models.Model):
-    name = models.CharField(
-        verbose_name='Название',
-        null=True,
-    )
+    name = models.CharField(verbose_name='Название', unique=True, null=False)
 
     search_select_count = models.PositiveIntegerField(
         verbose_name='Количество поисковых запросов',
         null=False,
+        default=0,
     )
 
     search_weight = models.PositiveIntegerField(
         verbose_name='Поисковой вес',
         null=False,
+        default=0,
     )
 
     class Meta:
@@ -22,15 +21,14 @@ class BaseModel(models.Model):
 
 
 class Category(models.Model):
-    name = models.CharField(
-        verbose_name='Название',
-        null=True,
-    )
+    name = models.SlugField(verbose_name='Название', unique=True, null=False)
 
     class Meta:
-        ordering = ['name']
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
+
+    def __str__(self):
+        return self.name
 
 
 class Infection(BaseModel):
@@ -42,7 +40,6 @@ class Infection(BaseModel):
     )
 
     class Meta:
-        ordering = ['name']
         verbose_name = 'Инфекция'
         verbose_name_plural = 'Инфекции'
 
