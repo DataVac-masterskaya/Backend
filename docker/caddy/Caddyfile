@@ -70,11 +70,9 @@
   }
 
 
-  # Serve Frontend static files
+  # Serve NextJS frontend for all other requests
   handle {
-          root * /var/www/frontend
-          file_server
-          try_files {path} {path}/ /index.html
+          reverse_proxy frontend:3000
   }
 
   handle /dozzle/* {
