@@ -6,6 +6,8 @@ from rest_framework import serializers
 
 
 class InfectionSerializer(serializers.ModelSerializer):
+    """Список инфекций."""
+
     category = serializers.SlugRelatedField(
         read_only=True,
         slug_field='name',
@@ -21,6 +23,8 @@ class InfectionSerializer(serializers.ModelSerializer):
 
 
 class InfectionCartSerializer(InfectionSerializer):
+    """Карточка инфекции."""
+
     vaccines = serializers.SerializerMethodField(read_only=True)
 
     class Meta:

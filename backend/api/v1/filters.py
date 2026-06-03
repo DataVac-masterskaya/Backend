@@ -1,23 +1,25 @@
 from django_filters import rest_framework
-from reference_books.models import Category, Infection
+from reference_books.models import CategoryInfection, Infection
 from rest_framework.filters import OrderingFilter
 
 
 class InfectionFilter(rest_framework.FilterSet):
+    """Фильтрует инфекции по названию категории."""
+
     category = rest_framework.filters.ModelMultipleChoiceFilter(
         field_name='category__name',
         to_field_name='name',
-        queryset=Category.objects.all(),
+        queryset=CategoryInfection.objects.all(),
     )
 
     class Meta:
         model = Infection
-        fields = [
-            'category',
-        ]
+        fields = ('category',)
 
 
 class OrderingFilterSortBy(OrderingFilter):
+    """Сортировка с использованием параметра sort_by."""
+
     ordering_param = 'sort_by'
 
     def filter_queryset(self, request, queryset, view):

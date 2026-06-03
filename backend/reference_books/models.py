@@ -1,15 +1,15 @@
 from django.db import models
 
 
-class BaseModel(models.Model):
-    name = models.CharField(verbose_name='Название', unique=True, null=False)
+class SearchStatsMixin(models.Model):
+    """Название и поисковые характеристики."""
 
+    name = models.CharField(verbose_name='Название', unique=True)
     search_select_count = models.PositiveIntegerField(
         verbose_name='Количество поисковых запросов',
         null=False,
         default=0,
     )
-
     search_weight = models.PositiveIntegerField(
         verbose_name='Поисковой вес',
         null=False,
@@ -20,20 +20,24 @@ class BaseModel(models.Model):
         abstract = True
 
 
-class Category(models.Model):
-    name = models.SlugField(verbose_name='Название', unique=True, null=False)
+class CategoryInfection(models.Model):
+    """Категории инфекций."""
+
+    name = models.SlugField(verbose_name='Название', unique=True)
 
     class Meta:
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
 
     def __str__(self):
-        return self.name
+        return self.name[:30]
 
 
-class Infection(BaseModel):
+class Infection(SearchStatsMixin):
+    """Инфекции."""
+
     category = models.ForeignKey(
-        Category,
+        CategoryInfection,
         on_delete=models.CASCADE,
         verbose_name='Категория',
         null=False,
@@ -44,4 +48,4 @@ class Infection(BaseModel):
         verbose_name_plural = 'Инфекции'
 
     def __str__(self):
-        return self.name
+        return self.name[:30]
