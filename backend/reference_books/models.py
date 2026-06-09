@@ -4,7 +4,7 @@ from django.utils.text import Truncator
 from datavac.constants import (
     LENGTH_TYPE_INGREDIENTS, NUMBER_WORDS_NAME, NUMBER_WORDS_TYPE
     )
-from vaccine_cards.models import VaccineCardVersion
+#  from vaccine_cards.models import VaccineCardVersion
 
 
 class SearchStatsMixin(models.Model):
@@ -87,29 +87,29 @@ class Ingredients(SearchStatsMixin):
         return f'{truncated_name}, ({truncated_type})'
 
 
-class VaccineCardVersionIngredients(models.Model):
-    """Ингредиенты в карточках вакцин."""
+# class VaccineCardVersionIngredients(models.Model):
+#     """Ингредиенты в карточках вакцин."""
 
-    vaccine_card_version = models.ForeignKey(
-        VaccineCardVersion,
-        on_delete=models.CASCADE,
-        related_name='ingredients',
-        verbose_name='Версия вакцины'
-    )
-    ingredient = models.ForeignKey(
-        Ingredients,
-        on_delete=models.PROTECT,
-        related_name='vaccine_versions',
-        verbose_name='Ингредиент'
-    )
+#     vaccine_card_version = models.ForeignKey(
+#         VaccineCardVersion,
+#         on_delete=models.CASCADE,
+#         related_name='ingredients',
+#         verbose_name='Версия вакцины'
+#     )
+#     ingredient = models.ForeignKey(
+#         Ingredients,
+#         on_delete=models.PROTECT,
+#         related_name='vaccine_versions',
+#         verbose_name='Ингредиент'
+#     )
 
-    class Meta:
-        verbose_name = 'Связь версии вакцины с ингредиентом'
-        verbose_name_plural = 'Связи версий вакцин с ингредиентами'
-        unique_together = ('vaccine_card_version', 'ingredient')
+#     class Meta:
+#         verbose_name = 'Связь версии вакцины с ингредиентом'
+#         verbose_name_plural = 'Связи версий вакцин с ингредиентами'
+#         unique_together = ('vaccine_card_version', 'ingredient')
 
-    def __str__(self):
-        return (
-            f'{self.ingredient.name} в версии '
-            f'{self.vaccine_card_version.id}'
-            )
+#     def __str__(self):
+#         return (
+#             f'{self.ingredient.name} в версии '
+#             f'{self.vaccine_card_version.id}'
+#             )

@@ -56,6 +56,6 @@ class IngredientsAdmin(admin.ModelAdmin):
     list_per_page = 20
     ordering = ('name',)
     list_editable = (
-        'description'
+        'description',
     )
     readonly_fields = ('id',)
