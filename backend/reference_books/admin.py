@@ -44,7 +44,11 @@ class IngredientsAdmin(admin.ModelAdmin):
         'search_select_count',
         'search_weight',
     )
-    search_fields = ('name', 'type', 'description',)
+    search_fields = (
+        'name',
+        'type',
+        'description',
+    )
     list_filter = (
         'name',
         'type',

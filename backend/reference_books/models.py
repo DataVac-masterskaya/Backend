@@ -5,7 +5,7 @@ from datavac.constants import (
     LENGTH_TYPE_INGREDIENTS,
     NUMBER_WORDS_NAME,
     NUMBER_WORDS_TYPE,
-)
+    )
 
 
 class SearchStatsMixin(models.Model):
