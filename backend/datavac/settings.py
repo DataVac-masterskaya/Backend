@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     'corsheaders',
     # Local
     'contraindications',
+    'instructions',
 ]
 
 MIDDLEWARE = [
