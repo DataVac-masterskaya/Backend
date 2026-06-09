@@ -1,12 +1,12 @@
 from django.db.models import F
 from django_filters.rest_framework import DjangoFilterBackend
-from reference_books.models import Infection, Ingredients
 from rest_framework import filters, viewsets
 from rest_framework.response import Response
 
+from reference_books.models import Infection, Ingredients
 from .filters import InfectionFilter, OrderingFilterSortBy
 from .serializers import (
-    InfectionCartSerializer, InfectionSerializer, IngredientsSerializer)
+    InfectionCartSerializer, InfectionSerializer, IngredientsSerializer,)
 
 
 class InfectionViewSet(viewsets.ReadOnlyModelViewSet):
