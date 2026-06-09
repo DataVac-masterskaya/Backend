@@ -8,4 +8,5 @@ router.register('infections', InfectionViewSet, basename='infections')
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('', include('contraindications.urls')),
 ]
