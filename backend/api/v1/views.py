@@ -1,14 +1,12 @@
 from django.db.models import F
 from django_filters.rest_framework import DjangoFilterBackend
-from reference_books.models import Infection,  Ingredients
-from rest_framework import viewsets, filters
+from reference_books.models import Infection, Ingredients
+from rest_framework import filters, viewsets
 from rest_framework.response import Response
 
 from .filters import InfectionFilter, OrderingFilterSortBy
-from .serializers import (InfectionCartSerializer,
-                          InfectionSerializer,
-                          IngredientsSerializer
-                          )
+from .serializers import (
+    InfectionCartSerializer, InfectionSerializer, IngredientsSerializer)
 
 
 class InfectionViewSet(viewsets.ReadOnlyModelViewSet):
@@ -40,10 +38,7 @@ class IngredientsViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredients.objects.all()
     serializer_class = IngredientsSerializer
     filter_backends = [
-        DjangoFilterBackend,
-        filters.OrderingFilter,
-        filters.SearchFilter
-    ]
+        DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
     filterset_fields = {
         'type': ['exact'],
     }
