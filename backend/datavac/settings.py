@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     # Local
     'api.apps.ApiConfig',
     'reference_books.apps.ReferenceBooksConfig',
+    'contraindications',
 ]
 
 MIDDLEWARE = [
