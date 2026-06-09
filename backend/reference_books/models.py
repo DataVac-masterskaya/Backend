@@ -88,6 +88,8 @@ class Ingredients(SearchStatsMixin):
 
 
 class VaccineCardVersionIngredients(models.Model):
+    """Ингредиенты в карточках вакцин."""
+
     vaccine_card_version = models.ForeignKey(
         VaccineCardVersion,
         on_delete=models.CASCADE,
