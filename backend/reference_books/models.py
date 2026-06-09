@@ -1,11 +1,10 @@
-from django.db import models
-from django.utils.text import Truncator
-
 from datavac.constants import (
     LENGTH_TYPE_INGREDIENTS,
     NUMBER_WORDS_NAME,
     NUMBER_WORDS_TYPE,
-    )
+)
+from django.db import models
+from django.utils.text import Truncator
 
 
 class SearchStatsMixin(models.Model):
