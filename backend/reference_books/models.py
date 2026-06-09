@@ -2,8 +2,8 @@ from django.db import models
 from django.utils.text import Truncator
 
 from datavac.constants import (
-    LENGTH_TYPE_INGREDIENTS, NUMBER_WORDS_NAME, NUMBER_WORDS_TYPE
-    )
+    LENGTH_TYPE_INGREDIENTS, NUMBER_WORDS_NAME, NUMBER_WORDS_TYPE)
+
 #  from vaccine_cards.models import VaccineCardVersion
 
 
