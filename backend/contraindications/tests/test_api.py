@@ -18,7 +18,7 @@ def test_list_categories(api_client: APIClient):
     ContraindicationCategory.objects.create(name='Иммунодефициты')
     ContraindicationCategory.objects.create(name='Аллергии')
 
-    response = api_client.get('/api/contra/categories/')
+    response = api_client.get('/api/v1/contraindications/categories/')
 
     assert response.status_code == status.HTTP_200_OK
     assert [item['name'] for item in response.data] == [
@@ -31,7 +31,7 @@ def test_list_contraindications(api_client: APIClient):
     """Проверяет получение списка противопоказаний."""
     Contraindication.objects.create(name='Аллергия на компонент вакцины')
 
-    response = api_client.get('/api/contra/')
+    response = api_client.get('/api/v1/contraindications/')
 
     assert response.status_code == status.HTTP_200_OK
     assert len(response.data) == 1
@@ -47,7 +47,9 @@ def test_filter_contraindications_by_category(api_client: APIClient):
     first.categories.add(allergies)
     second.categories.add(immune)
 
-    response = api_client.get(f'/api/contra/?categoryId={allergies.id}')
+    response = api_client.get(
+        f'/api/v1/contraindications/?categoryId={allergies.id}',
+    )
 
     assert response.status_code == status.HTTP_200_OK
     assert len(response.data) == 1
@@ -58,7 +60,7 @@ def test_filter_contraindications_rejects_invalid_category_id(
     api_client: APIClient,
 ):
     """Проверяет ошибку при некорректном идентификаторе категории."""
-    response = api_client.get('/api/contra/?categoryId=abc')
+    response = api_client.get('/api/v1/contraindications/?categoryId=abc')
 
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
@@ -68,7 +70,7 @@ def test_search_contraindications_by_name(api_client: APIClient):
     Contraindication.objects.create(name='Аллергия')
     Contraindication.objects.create(name='Иммунодефицит')
 
-    response = api_client.get('/api/contra/?search=аллер')
+    response = api_client.get('/api/v1/contraindications/?search=аллер')
 
     assert response.status_code == status.HTTP_200_OK
     assert len(response.data) == 1
@@ -81,7 +83,9 @@ def test_detail_contraindication(api_client: APIClient):
     contraindication = Contraindication.objects.create(name='Аллергия')
     contraindication.categories.add(category)
 
-    response = api_client.get(f'/api/contra/{contraindication.id}/')
+    response = api_client.get(
+        f'/api/v1/contraindications/{contraindication.id}/',
+    )
 
     assert response.status_code == status.HTTP_200_OK
     assert response.data['name'] == 'Аллергия'
@@ -90,7 +94,7 @@ def test_detail_contraindication(api_client: APIClient):
 
 def test_detail_contraindication_returns_404(api_client: APIClient):
     """Проверяет ответ 404 для отсутствующего противопоказания."""
-    response = api_client.get('/api/contra/999/')
+    response = api_client.get('/api/v1/contraindications/999/')
 
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
@@ -100,7 +104,7 @@ def test_vaccines_endpoint_returns_stub(api_client: APIClient):
     contraindication = Contraindication.objects.create(name='Аллергия')
 
     response = api_client.get(
-        f'/api/contra/{contraindication.id}/vaccines/',
+        f'/api/v1/contraindications/{contraindication.id}/vaccines/',
     )
 
     assert response.status_code == status.HTTP_200_OK
@@ -112,7 +116,7 @@ def test_search_endpoint(api_client: APIClient):
     """Проверяет отдельный endpoint поисковых подсказок."""
     Contraindication.objects.create(name='Аллергия')
 
-    response = api_client.get('/api/contra/search/?q=аллер')
+    response = api_client.get('/api/v1/contraindications/search/?q=аллер')
 
     assert response.status_code == status.HTTP_200_OK
     assert response.data[0]['name'] == 'Аллергия'
@@ -123,7 +127,7 @@ def test_select_endpoint_increments_select_count(api_client: APIClient):
     contraindication = Contraindication.objects.create(name='Аллергия')
 
     response = api_client.post(
-        f'/api/contra/{contraindication.id}/select/',
+        f'/api/v1/contraindications/{contraindication.id}/select/',
     )
 
     assert response.status_code == status.HTTP_200_OK

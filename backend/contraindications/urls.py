@@ -9,32 +9,36 @@ from contraindications.views import (
     select_contraindication,
 )
 
-# `contra` - короткий публичный API-префикс справочника противопоказаний.
+# `contraindications` - публичный API-префикс справочника противопоказаний.
 urlpatterns = [
     path(
-        'contra/categories/',
+        'contraindications/categories/',
         ContraindicationCategoryListView.as_view(),
-        name='contra-category-list',
+        name='contraindication-category-list',
     ),
-    path('contra/', ContraindicationListView.as_view(), name='contra-list'),
     path(
-        'contra/search/',
+        'contraindications/',
+        ContraindicationListView.as_view(),
+        name='contraindication-list',
+    ),
+    path(
+        'contraindications/search/',
         ContraindicationSearchView.as_view(),
-        name='contra-search',
+        name='contraindication-search',
     ),
     path(
-        'contra/<int:pk>/',
+        'contraindications/<int:pk>/',
         ContraindicationDetailView.as_view(),
-        name='contra-detail',
+        name='contraindication-detail',
     ),
     path(
-        'contra/<int:pk>/vaccines/',
+        'contraindications/<int:pk>/vaccines/',
         ContraindicationVaccinesView.as_view(),
-        name='contra-vaccines',
+        name='contraindication-vaccines',
     ),
     path(
-        'contra/<int:pk>/select/',
+        'contraindications/<int:pk>/select/',
         select_contraindication,
-        name='contra-select',
+        name='contraindication-select',
     ),
 ]
