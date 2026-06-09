@@ -1,5 +1,6 @@
 from reference_books.models import (
     Infection,
+    Ingredients,
     # Vaccines,
 )
 from rest_framework import serializers
@@ -40,3 +41,16 @@ class InfectionCartSerializer(InfectionSerializer):
         # Заглушка
         # vaccines = Vaccines.objects.filter(infection=obj,)
         return ['vaccine1', 'vaccine2']
+
+
+class IngredientsSerializer(serializers.ModelSerializer):
+    """Ингредиенты."""
+
+    class Meta:
+        model = Ingredients
+        fields = (
+            'id',
+            'name',
+            'type',
+            'description',
+        )
