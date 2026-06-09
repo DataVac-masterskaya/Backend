@@ -60,8 +60,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # Additional
     'rest_framework',
+    'django_filters',
     'corsheaders',
     # Local
+    'api.apps.ApiConfig',
+    'reference_books.apps.ReferenceBooksConfig',
     'contraindications',
     'instructions',
 ]
