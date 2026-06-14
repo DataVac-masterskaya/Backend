@@ -45,5 +45,16 @@ class IngredientsViewSet(viewsets.ReadOnlyModelViewSet):
         'type': ['exact'],
     }
     search_fields = ('name',)
-    ordering_fields = ('name',)
-    ordering = ('name',)
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        sort_by = self.request.query_params.get('sort_by')
+        direction = self.request.query_params.get('direction', 'asc')
+
+        if sort_by:
+            if sort_by in ['name', 'id', 'type']:
+                order = sort_by if direction == 'asc' else f'-{sort_by}'
+                queryset = queryset.order_by(order)
+
+        return queryset
