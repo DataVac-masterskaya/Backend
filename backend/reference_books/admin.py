@@ -36,6 +36,8 @@ class InfectionAdmin(admin.ModelAdmin):
 
 @admin.register(Ingredients)
 class IngredientsAdmin(admin.ModelAdmin):
+    """Ингредиенты."""
+
     list_display = (
         'id',
         'name',
