@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from reference_books.models import CategoryInfection, Infection
+from reference_books.models import CategoryInfection, Infection, Ingredients
 
 
 @admin.register(CategoryInfection)
@@ -32,3 +32,30 @@ class InfectionAdmin(admin.ModelAdmin):
         'search_weight',
     )
     ordering = ('name',)
+
+
+@admin.register(Ingredients)
+class IngredientsAdmin(admin.ModelAdmin):
+    """Ингредиенты."""
+
+    list_display = (
+        'id',
+        'name',
+        'type',
+        'description',
+        'search_select_count',
+        'search_weight',
+    )
+    search_fields = (
+        'name',
+        'type',
+        'description',
+    )
+    list_filter = (
+        'name',
+        'type',
+    )
+    list_per_page = 20
+    ordering = ('name',)
+    list_editable = ('description',)
+    readonly_fields = ('id',)
