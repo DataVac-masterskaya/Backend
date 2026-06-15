@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     'api.apps.ApiConfig',
     'reference_books.apps.ReferenceBooksConfig',
     'contraindications',
+    'instructions',
 ]
 
 MIDDLEWARE = [
