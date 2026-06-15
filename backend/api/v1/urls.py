@@ -9,5 +9,6 @@ router.register('ingredients', IngredientsViewSet, basename='ingredients')
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('', include('contraindications.urls')),
     path('', include('instructions.urls')),
 ]
