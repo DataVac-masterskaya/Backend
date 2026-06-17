@@ -1,6 +1,7 @@
 from reference_books.models import (
     Infection,
     Ingredients,
+    MethodsOfAdministration,
     # Vaccines,
 )
 from rest_framework import serializers
@@ -38,8 +39,11 @@ class InfectionCartSerializer(InfectionSerializer):
         )
 
     def get_vaccines(self, obj):
-        # Заглушка
-        # vaccines = Vaccines.objects.filter(infection=obj,)
+        """
+        Возвращает вакцины, связанные с инфекцией.
+
+        TODO: vaccines = Vaccines.objects.filter(infection=obj,)
+        """
         return ['vaccine1', 'vaccine2']
 
 
@@ -53,4 +57,30 @@ class IngredientsSerializer(serializers.ModelSerializer):
             'name',
             'type',
             'description',
+        )
+
+
+class MethodsOfAdministrationSerializer(serializers.ModelSerializer):
+    """Список способов введения."""
+
+    class Meta:
+        model = (MethodsOfAdministration,)
+        fields = (
+            'id',
+            'name',
+            'description',
+            'list_icon_url',
+        )
+
+
+class MethodsOfAdministrationCartSerializer(serializers.ModelSerializer):
+    """Карточка способа введения."""
+
+    class Meta:
+        model = (MethodsOfAdministration,)
+        fields = (
+            'id',
+            'name',
+            'description',
+            'detail_image_url',
         )

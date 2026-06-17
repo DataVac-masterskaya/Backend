@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from reference_books.models import CategoryInfection, Infection, Ingredients
+from reference_books.models import CategoryInfection, Infection, Ingredients, MethodsOfAdministration
 
 
 @admin.register(CategoryInfection)
@@ -59,3 +59,23 @@ class IngredientsAdmin(admin.ModelAdmin):
     ordering = ('name',)
     list_editable = ('description',)
     readonly_fields = ('id',)
+
+
+@admin.register(MethodsOfAdministration)
+class MethodsOfAdministrationAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'name',
+        'description',
+        'list_icon_url',
+        'detail_image_url',
+    )
+    search_fields = ('name',)
+    list_per_page = 20
+    list_editable = (
+        'name',
+        'description',
+        'list_icon_url',
+        'detail_image_url',
+    )
+    ordering = ('name',)
