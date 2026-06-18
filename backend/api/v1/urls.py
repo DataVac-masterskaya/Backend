@@ -6,7 +6,7 @@ from .views import InfectionViewSet, IngredientsViewSet, MethodsOfAdministration
 router = routers.DefaultRouter()
 router.register('infections', InfectionViewSet, basename='infections')
 router.register('ingredients', IngredientsViewSet, basename='ingredients')
-router.register('methods', MethodsOfAdministrationViewSet, basename='methods')
+router.register('admin-methods', MethodsOfAdministrationViewSet, basename='admin-methods')
 
 
 urlpatterns = [
