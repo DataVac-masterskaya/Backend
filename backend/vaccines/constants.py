@@ -1,0 +1,1 @@
+CHAR_MAX_LEN = 128
