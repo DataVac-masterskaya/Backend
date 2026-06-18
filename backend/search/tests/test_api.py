@@ -83,8 +83,7 @@ def test_search_suggestions_orders_by_score_then_name(api_client: APIClient):
     ]
 
 
-def test_search_select_increments_contraindication_count(
-        api_client: APIClient):
+def test_search_select_increments_contraindication_count(api_client: APIClient):
     """Проверяет увеличение счетчика выбранного противопоказания."""
     contraindication = Contraindication.objects.create(name='Аллергия')
 
@@ -108,10 +107,7 @@ def test_search_select_increments_infection_count(
     infection_category: CategoryInfection,
 ):
     """Проверяет увеличение счетчика выбранной инфекции."""
-    infection = Infection.objects.create(
-        name='Корь',
-        category=infection_category
-    )
+    infection = Infection.objects.create(name='Корь', category=infection_category)
 
     response = api_client.post(
         '/api/search/select/',

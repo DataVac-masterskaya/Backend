@@ -14,10 +14,7 @@ class SearchSuggestionsView(APIView):
         query = request.query_params.get('q', '')
         suggestions = get_search_suggestions(query)
         return Response(
-            {
-                group: SearchSuggestionSerializer(items, many=True).data
-                for group, items in suggestions.items()
-            },
+            {group: SearchSuggestionSerializer(items, many=True).data for group, items in suggestions.items()},
         )
 
 
