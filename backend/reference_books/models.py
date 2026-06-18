@@ -97,8 +97,10 @@ class MethodsOfAdministration(models.Model):
         null=True,
         help_text='Описание способа введения',
     )
-    list_icon_url = models.URLField(verbose_name='Иконка в списке')
-    detail_image_url = models.URLField(verbose_name='Детальная картинка')
+    list_icon_url = models.ImageField(verbose_name='Иконка в списке', upload_to='methods/list_icons/', null=False)
+    detail_image_url = models.ImageField(
+        verbose_name='Детальная картинка', upload_to='methods/detail_images/', null=False
+    )
 
     class Meta:
         verbose_name = 'Cпособ введения'

@@ -1,3 +1,4 @@
+# from drf_extra_fields.fields import Base64ImageField
 from reference_books.models import (
     Infection,
     Ingredients,
@@ -63,6 +64,8 @@ class IngredientsSerializer(serializers.ModelSerializer):
 class MethodsOfAdministrationSerializer(serializers.ModelSerializer):
     """Список способов введения."""
 
+    # list_icon_url = Base64ImageField(required=True, allow_null=False)
+
     class Meta:
         model = (MethodsOfAdministration,)
         fields = (
@@ -75,6 +78,8 @@ class MethodsOfAdministrationSerializer(serializers.ModelSerializer):
 
 class MethodsOfAdministrationCartSerializer(serializers.ModelSerializer):
     """Карточка способа введения."""
+
+    # detail_image_url = Base64ImageField(required=True, allow_null=False)
 
     class Meta:
         model = (MethodsOfAdministration,)
