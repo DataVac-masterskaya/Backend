@@ -1,12 +1,11 @@
 from decimal import Decimal
 
 import pytest
-from rest_framework import status
-from rest_framework.test import APIClient
-
 from contraindications.models import Contraindication
 from instructions.models import OfficialInstruction
 from reference_books.models import CategoryInfection, Infection, Ingredients
+from rest_framework import status
+from rest_framework.test import APIClient
 
 pytestmark = pytest.mark.django_db
 

@@ -1,15 +1,8 @@
+from contraindications.services import increment_contraindication_select_count, search_contraindications
 from django.db.models import DecimalField, ExpressionWrapper, F, QuerySet
 from django.db.models.functions import Lower
 from django.shortcuts import get_object_or_404
-
-from contraindications.services import (
-    increment_contraindication_select_count,
-    search_contraindications,
-)
-from instructions.services import (
-    increment_official_instruction_select_count,
-    search_official_instructions,
-)
+from instructions.services import increment_official_instruction_select_count, search_official_instructions
 from reference_books.models import Infection, Ingredients
 
 SUGGESTIONS_LIMIT = 6
