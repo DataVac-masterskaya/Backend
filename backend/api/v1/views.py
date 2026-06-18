@@ -1,14 +1,22 @@
 from django.db.models import F
 from django_filters.rest_framework import DjangoFilterBackend
+from contraindications.services import increment_contraindication_select_count
+from instructions.services import increment_official_instruction_select_count
 from reference_books.models import Infection, Ingredients
-from rest_framework import filters, viewsets
+from reference_books.services import (
+    increment_infection_select_count,
+    increment_ingredients_select_count,
+)
+from rest_framework import filters, status, viewsets
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .filters import InfectionFilter, OrderingFilterSortBy
 from .serializers import (
     InfectionCartSerializer,
     InfectionSerializer,
     IngredientsSerializer,
+    SearchSelectSerializer,
 )
 
 
@@ -58,3 +66,33 @@ class IngredientsViewSet(viewsets.ReadOnlyModelViewSet):
                 queryset = queryset.order_by(order)
 
         return queryset
+
+
+class SearchSelectView(APIView):
+    """Фиксирует выбор сущности в поисковой подсказке."""
+
+    SERVICE_MAP = {
+        'infection': increment_infection_select_count,
+        'ingredient': increment_ingredients_select_count,
+        'contraindication': increment_contraindication_select_count,
+        'instruction': increment_official_instruction_select_count,
+    }
+
+    def post(self, request):
+        """Увеличивает счётчик выбранной сущности по entityType и entityId."""
+        serializer = SearchSelectSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        entity_type = serializer.validated_data['entityType']
+        entity_id = serializer.validated_data['entityId']
+
+        service = self.SERVICE_MAP.get(entity_type)
+        if not service:
+            return Response(
+                {'error': f'Unknown entityType: {entity_type}'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        service(entity_id)
+        return Response({'success': True}, status=status.HTTP_200_OK)
