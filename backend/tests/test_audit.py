@@ -1,39 +1,17 @@
 from http import HTTPStatus
 import pytest
 
-from rest_framework.test import APIClient
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
 
 # pyrefly: ignore [missing-import]
 from audit.models import AuditLog
 
-User = get_user_model()
-AUDIT_LOGS_URL = '/api/v1/admin/audit-logs/'
+from typing import cast
+from django.contrib.auth.models import AbstractUser
 
-@pytest.fixture
-def normal_user(db) -> User:
-    return User.objects.create_user(username='test_user_normal', password='password')
-
-@pytest.fixture
-def admin_user(db) -> User:
-    return User.objects.create_superuser(username='test_admin', password='password')
-
-@pytest.fixture
-def anonymous_client() -> APIClient:
-    return APIClient()
-
-@pytest.fixture
-def normal_client(normal_user) -> APIClient:
-    client = APIClient()
-    client.force_authenticate(user=normal_user)
-    return client
-
-@pytest.fixture
-def admin_client(admin_user) -> APIClient:
-    client = APIClient()
-    client.force_authenticate(user=admin_user)
-    return client
+User = cast(type[AbstractUser], get_user_model())
+AUDIT_LOGS_URL = '/api/v1/audit/audit-logs/'
 
 @pytest.mark.django_db
 class TestAuditLog:
@@ -57,16 +35,17 @@ class TestAuditLog:
         assert response.status_code == HTTPStatus.FORBIDDEN
 
     def test_admin_user_access_allowed(self, admin_client):
+        AuditLog.objects.create(action_type='test_action', entity_type='test', entity_id=1, user=None)
         response = admin_client.get(AUDIT_LOGS_URL)
         assert response.status_code == HTTPStatus.OK
         data = response.json()
         assert isinstance(data, list)
-        if len(data) > 0:
-            first_record = data[0]
-            assert 'id' in first_record
-            assert 'user' in first_record
-            assert 'entity_type' in first_record
-            assert 'entity_id' in first_record
-            assert 'action_type' in first_record
-            assert 'details' in first_record
-            assert 'created_at' in first_record
+        assert len(data) >= 1
+        first_record = data[0]
+        assert 'id' in first_record
+        assert 'user' in first_record
+        assert 'entity_type' in first_record
+        assert 'entity_id' in first_record
+        assert 'action_type' in first_record
+        assert 'details' in first_record
+        assert 'created_at' in first_record

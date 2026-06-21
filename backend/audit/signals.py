@@ -1,3 +1,5 @@
+import json
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.signals import user_logged_in, user_login_failed
 from django.db.models.signals import post_save, pre_save
@@ -94,7 +96,7 @@ def log_user_changes(sender, instance, created, **kwargs) -> None:
         if getattr(instance, '_is_active_changed', False):
             action = 'block'
             details = {'is_active': instance.is_active, 'status': 'blocked' if not instance.is_active else 'active'}
-            AuditLogger.log_action(action, 'user', instance.id, details)
+            AuditLogger.log_action(action, 'user', instance.id, json.dumps(details, ensure_ascii=False))
         # Жду остальных что бы дополнить эту часть кода
 
 

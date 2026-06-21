@@ -123,3 +123,4 @@ htmlcov/
 .copilot
 .dotnet
 .gitconfig
+pyrefly.toml

@@ -22,24 +22,25 @@ ACTION_CHOICES = {
 
 
 class AuditLog(models.Model):
-    id = models.BigAutoField(primary_key=True)
+    objects = models.Manager()
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
         null=True,
         blank=True,
         db_column='user_id',
-        related_name='audit_logs',
+        verbose_name='Пользователь',
     )
-    entity_type = models.CharField(max_length=100)
-    entity_id = models.BigIntegerField(null=True, blank=True)
-    action_type = models.CharField(max_length=100, choices=ACTION_CHOICES)
-    details = models.TextField(null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    entity_type = models.CharField(max_length=100, verbose_name='Тип сущности')
+    entity_id = models.BigIntegerField(null=True, blank=True, verbose_name='ID сущности')
+    action_type = models.CharField(max_length=100, choices=ACTION_CHOICES, verbose_name='Тип действия')
+    details = models.TextField(null=True, blank=True, verbose_name='Детали')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
 
     class Meta:
         db_table = 'audit_logs'
         ordering = ('-created_at',)
+        default_related_name = 'audit_logs'
         verbose_name = 'Запись журнала аудита'
         verbose_name_plural = 'Записи журнала аудита'
 

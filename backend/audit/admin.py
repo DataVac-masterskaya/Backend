@@ -5,7 +5,19 @@ from .models import AuditLog
 
 @admin.register(AuditLog)
 class AuditLogAdmin(admin.ModelAdmin):
-    list_display = ('action_type', 'user', 'entity_type', 'entity_id', 'created_at')
+    # pyrefly: ignore [bad-override-mutable-attribute]
+    list_display = (
+        'id',
+        'action_type',
+        'user',
+        'entity_type',
+        'entity_id',
+        'created_at',
+    )
+    empty_value_display = '-пусто-'
+    ordering = ('-created_at',)
+    list_per_page = 50
+    search_fields = ('user__username', 'entity_type')
 
     def get_readonly_fields(self, request, obj=None) -> tuple[str]:
         return tuple(model_field.name for model_field in self.model._meta.fields)
