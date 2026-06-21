@@ -67,7 +67,7 @@ class MethodsOfAdministrationSerializer(serializers.ModelSerializer):
     # list_icon_url = Base64ImageField(required=True, allow_null=False)
 
     class Meta:
-        model = (MethodsOfAdministration,)
+        model = MethodsOfAdministration
         fields = (
             'id',
             'name',
@@ -82,7 +82,7 @@ class MethodsOfAdministrationCartSerializer(serializers.ModelSerializer):
     # detail_image_url = Base64ImageField(required=True, allow_null=False)
 
     class Meta:
-        model = (MethodsOfAdministration,)
+        model = MethodsOfAdministration
         fields = (
             'id',
             'name',
