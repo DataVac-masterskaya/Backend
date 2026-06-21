@@ -69,11 +69,20 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # Additional
     'rest_framework',
+    'django_filters',
     'corsheaders',
+<<<<<<< HEAD
     'audit.apps.AuditConfig',
     'api.apps.ApiConfig',
     #'app1',
     #'app2',
+=======
+    # Local
+    'api.apps.ApiConfig',
+    'reference_books.apps.ReferenceBooksConfig',
+    'contraindications',
+    'instructions',
+>>>>>>> develop
 ]
 
 MIDDLEWARE = [
