@@ -87,6 +87,29 @@ class Ingredients(SearchStatsMixin):
         return f'{truncated_name}, ({truncated_type})'
 
 
+class MethodsOfAdministration(models.Model):
+    """Cпособы введения."""
+
+    name = models.CharField(verbose_name='Название', unique=True)
+    description = models.TextField(
+        verbose_name='Описание',
+        blank=True,
+        null=True,
+        help_text='Описание способа введения',
+    )
+    list_icon_url = models.ImageField(verbose_name='Иконка в списке', upload_to='admin-methods/list_icons/', null=False)
+    detail_image_url = models.ImageField(
+        verbose_name='Детальная картинка', upload_to='admin-methods/detail_images/', null=False
+    )
+
+    class Meta:
+        verbose_name = 'Cпособ введения'
+        verbose_name_plural = 'Cпособы введения'
+
+    def __str__(self):
+        return self.name[:30]
+
+
 # class VaccineCardVersionIngredients(models.Model):
 #     """Ингредиенты в карточках вакцин."""
 
