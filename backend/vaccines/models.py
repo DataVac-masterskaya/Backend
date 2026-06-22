@@ -18,6 +18,26 @@ from vaccines.constants import (
 User = get_user_model()
 
 
+class PregnancyUsageStatus(models.TextChoices):
+    FORBIDDEN = 'forbidden', 'Запрещено'
+    CAUTION = 'caution', 'С осторожностью'
+    SAFE = 'safe', 'Без опасений'
+
+
+class VersionStatus(models.TextChoices):
+    DRAFT = 'draft', 'Черновик'
+    PENDING_MODERATION = 'pending_moderation', 'На модерации'
+    APPROVED = 'approved', 'Одобрено'
+    REJECTED = 'rejected', 'Отклонено'
+    SUPERSEDED = 'superseded', 'Заменена'
+
+
+class VaccineCardStatus(models.TextChoices):
+    ACTIVE = 'active', 'Активна'
+    ARCHIVED = 'archived', 'Архивирована'
+    DELETED = 'deleted', 'Удалена'
+
+
 class VaccineCard(models.Model):
     """Карточка вакцины."""
 
@@ -35,7 +55,14 @@ class VaccineCard(models.Model):
         related_name='cards_as_published',
         verbose_name='Опубликованная версия',
     )
-    status = models.CharField(max_length=STATUS_MAX_LEN, blank=True, null=True, verbose_name='Общий статус карточки')
+    status = models.CharField(
+        max_length=STATUS_MAX_LEN,
+        blank=True,
+        null=True,
+        verbose_name='Общий статус карточки',
+        choices=VaccineCardStatus.choices,
+        default=VaccineCardStatus.ACTIVE,
+    )
     is_visible = models.BooleanField(default=False, verbose_name='Видимость в поиске')
     search_select_count = models.PositiveBigIntegerField(default=0, verbose_name='Счетчик запросов')
     search_weight = models.DecimalField(
@@ -89,6 +116,8 @@ class VaccineCardVersion(models.Model):
         blank=True,
         null=True,
         verbose_name='Статус версии',
+        choices=VersionStatus.choices,
+        default=VersionStatus.DRAFT,
     )
     parent_version = models.ForeignKey(
         'self',
@@ -137,6 +166,7 @@ class VaccineCardVersion(models.Model):
         blank=True,
         null=True,
         verbose_name='Применение при беременности',
+        choices=PregnancyUsageStatus.choices,
     )
     storage_conditions = models.TextField(
         blank=True,
