@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'contraindications',
     'instructions',
     'vaccines.apps.VaccinesConfig',
+    'search',
 ]
 
 MIDDLEWARE = [

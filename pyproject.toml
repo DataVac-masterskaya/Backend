@@ -27,13 +27,15 @@ dependencies = [
     "sqlparse==0.5.5",
     "typing-extensions==4.15.0",
     "django-filter==25.2",
+    "drf-extra-fields>=3.7.0",
+    "pillow>=12.2.0",
 ]
 
 [tool.pytest.ini_options]
 addopts = "-v --tb=short"
 DJANGO_SETTINGS_MODULE = "datavac.settings"
 pythonpath = ["backend"]
-testpaths = ["backend/contraindications/tests", "backend/instructions/tests"]
+testpaths = ["backend/contraindications/tests", "backend/instructions/tests", "backend/search/tests"]
 
 [tool.ruff]
 line-length = 120
