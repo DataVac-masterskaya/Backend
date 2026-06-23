@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('contraindications', '0001_initial'),
         ('vaccines', '0003_alter_vaccinecard_status_and_more'),
@@ -16,15 +15,43 @@ class Migration(migrations.Migration):
             name='VaccineCardVersionContraindication',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('contraindication_type', models.CharField(choices=[('absolute', 'Абсолютное'), ('temporary', 'Временное')], default='absolute', max_length=20, verbose_name='Тип противопоказания')),
-                ('contraindication', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='version_contraindications', to='contraindications.contraindication', verbose_name='Противопоказание')),
-                ('vaccine_card_version', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='version_contraindications', to='vaccines.vaccinecardversion', verbose_name='Версия карточки')),
+                (
+                    'contraindication_type',
+                    models.CharField(
+                        choices=[('absolute', 'Абсолютное'), ('temporary', 'Временное')],
+                        default='absolute',
+                        max_length=20,
+                        verbose_name='Тип противопоказания',
+                    ),
+                ),
+                (
+                    'contraindication',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name='version_contraindications',
+                        to='contraindications.contraindication',
+                        verbose_name='Противопоказание',
+                    ),
+                ),
+                (
+                    'vaccine_card_version',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='version_contraindications',
+                        to='vaccines.vaccinecardversion',
+                        verbose_name='Версия карточки',
+                    ),
+                ),
             ],
             options={
                 'verbose_name': 'Связь версии с противопоказанием',
                 'verbose_name_plural': 'Связи версий с противопоказаниями',
                 'db_table': 'vaccine_card_version_contraindications',
-                'constraints': [models.UniqueConstraint(fields=('vaccine_card_version', 'contraindication'), name='unique_version_contraindication')],
+                'constraints': [
+                    models.UniqueConstraint(
+                        fields=('vaccine_card_version', 'contraindication'), name='unique_version_contraindication'
+                    )
+                ],
             },
         ),
     ]

@@ -1,3 +1,4 @@
+from contraindications.models import Contraindication
 from django.contrib.auth import get_user_model
 from django.db import models
 
@@ -15,7 +16,6 @@ from vaccines.constants import (
     URL_MAX_LEN,
     VERSION_STATUS_MAX_LEN,
 )
-from contraindications.models import Contraindication
 
 User = get_user_model()
 
@@ -246,7 +246,7 @@ class VaccineCardVersion(models.Model):
 
     def __str__(self):
         return self.name
-    
+
 
 class ContraindicationType(models.TextChoices):
     ABSOLUTE = 'absolute', 'Абсолютное'
@@ -255,6 +255,7 @@ class ContraindicationType(models.TextChoices):
 
 class VaccineCardVersionContraindication(models.Model):
     """Связь версии карточки с противопоказанием."""
+
     vaccine_card_version = models.ForeignKey(
         VaccineCardVersion,
         on_delete=models.CASCADE,
@@ -276,7 +277,11 @@ class VaccineCardVersionContraindication(models.Model):
 
     class Meta:
         db_table = 'vaccine_card_version_contraindications'
-        constraints = [models.UniqueConstraint(fields=['vaccine_card_version', 'contraindication'], name='unique_version_contraindication')]
+        constraints = [
+            models.UniqueConstraint(
+                fields=['vaccine_card_version', 'contraindication'], name='unique_version_contraindication'
+            )
+        ]
         verbose_name = 'Связь версии с противопоказанием'
         verbose_name_plural = 'Связи версий с противопоказаниями'
 
