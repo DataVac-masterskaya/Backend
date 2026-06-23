@@ -1,10 +1,13 @@
-from contraindications.models import Contraindication
 from django.contrib.auth import get_user_model
 from django.db import models
 
+from contraindications.models import Contraindication
+from reference_books.models import Infection, Ingredients, MethodsOfAdministration
 from vaccines.constants import (
+    AGE_GROUP_MAX_LEN,
     CONTRAINDICATION_TYPE_MAX_LEN,
     DECIMAL_PLACES,
+    INGREDIENT_ROLE_MAX_LEN,
     IS_AVAILABLE_IN_RF_MAX_LEN,
     MAX_AGE_MAX_LEN,
     MAX_DIGITS_SEARCH_WEIGHT,
@@ -248,20 +251,79 @@ class VaccineCardVersion(models.Model):
         return self.name
 
 
+# ======================================================================================
+
+
 class ContraindicationType(models.TextChoices):
     ABSOLUTE = 'absolute', 'Абсолютное'
     TEMPORARY = 'temporary', 'Временное'
 
 
-class VaccineCardVersionContraindication(models.Model):
-    """Связь версии карточки с противопоказанием."""
+class IngredientRoleType(models.TextChoices):
+    ACTIVE = 'active', 'Действующее'
+    EXCIPIENT = 'excipient', 'Вспомогательное'
+
+
+class VaccineCardVersionRelationMixin(models.Model):
+    """Базовый миксин для связей с версией карточки."""
 
     vaccine_card_version = models.ForeignKey(
-        VaccineCardVersion,
-        on_delete=models.CASCADE,
-        related_name='version_contraindications',
-        verbose_name='Версия карточки',
+        VaccineCardVersion, on_delete=models.CASCADE, related_name='%(class)ss', verbose_name='Версия карточки'
     )
+
+    class Meta:
+        abstract = True
+
+
+class VaccineCardVersionInfection(VaccineCardVersionRelationMixin):
+    """Связь версии карточки с инфекцией."""
+
+    infection = models.ForeignKey(
+        Infection, on_delete=models.PROTECT, related_name='version_infections', verbose_name='Инфекция'
+    )
+
+    class Meta:
+        db_table = 'vaccine_card_version_infections'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['vaccine_card_version', 'infection'], name='unique_vaccinecard_version_infection'
+            )
+        ]
+        verbose_name = 'Связь версии с инфекцией'
+        verbose_name_plural = 'Связи версий с инфекциями'
+
+    def __str__(self):
+        return f'{self.vaccine_card_version} - {self.infection.name}'
+
+
+class VaccineCardVersionIngredient(VaccineCardVersionRelationMixin):
+    """Связь версии карточки с ингредиентом."""
+
+    ingredient = models.ForeignKey(
+        Ingredients, on_delete=models.PROTECT, related_name='version_ingredients', verbose_name='Ингредиент'
+    )
+    role = models.CharField(
+        max_length=INGREDIENT_ROLE_MAX_LEN,
+        choices=IngredientRoleType.choices,
+        default=IngredientRoleType.EXCIPIENT,
+        verbose_name='Роль ингредиента',
+    )
+
+    def __str__(self):
+        return f'{self.vaccine_card_version} - {self.ingredient.name}'
+
+    class Meta:
+        db_table = 'vaccine_card_version_ingredients'
+        constraints = [
+            models.UniqueConstraint(fields=['vaccine_card_version', 'ingredient'], name='unique_version_ingredient')
+        ]
+        verbose_name = 'Связь версии с ингредиентом'
+        verbose_name_plural = 'Связи версий с ингредиентами'
+
+
+class VaccineCardVersionContraindication(VaccineCardVersionRelationMixin):
+    """Связь версии карточки с противопоказанием."""
+
     contraindication = models.ForeignKey(
         Contraindication,
         on_delete=models.PROTECT,
@@ -286,4 +348,30 @@ class VaccineCardVersionContraindication(models.Model):
         verbose_name_plural = 'Связи версий с противопоказаниями'
 
     def __str__(self):
-        return self.contraindication.name
+        return f'{self.vaccine_card_version} - {self.contraindication.name}'
+
+
+class VaccineCardVersionAdministrationMethod(VaccineCardVersionRelationMixin):
+    """Связь версии карточки со способами введения."""
+
+    administration_method = models.ForeignKey(
+        MethodsOfAdministration,
+        on_delete=models.PROTECT,
+        related_name='version_administration_methods',
+        verbose_name='Способ введения',
+    )
+    age_group = models.CharField(max_length=AGE_GROUP_MAX_LEN, blank=True, null=True, verbose_name='Возрастная группа')
+    note = models.TextField(blank=True, null=True, verbose_name='Примечание')
+
+    class Meta:
+        db_table = 'vaccine_card_version_administration_methods'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['vaccine_card_version', 'administration_method'], name='unique_version_administration_method'
+            )
+        ]
+        verbose_name = 'Связь версии со способом введения'
+        verbose_name_plural = 'Связи версий со способами введения'
+
+    def __str__(self):
+        return f'{self.vaccine_card_version} - {self.administration_method.name}'

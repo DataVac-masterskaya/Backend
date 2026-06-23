@@ -108,3 +108,5 @@ exclude_lines = [
     "class .*\bProtocol\\):",
     "@(abc\\.)?abstractmethod",
 ]
+[tool.ruff.lint.isort]
+known-first-party = ["api", "reference_books", "contraindications", "vaccines",]
