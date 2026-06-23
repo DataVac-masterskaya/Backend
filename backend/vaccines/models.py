@@ -5,8 +5,10 @@ from contraindications.models import Contraindication
 from reference_books.models import Infection, Ingredients, MethodsOfAdministration
 from vaccines.constants import (
     AGE_GROUP_MAX_LEN,
+    COMMENT_MAX_LEN,
     CONTRAINDICATION_TYPE_MAX_LEN,
     DECIMAL_PLACES,
+    DEFAULT_VERSION,
     INGREDIENT_ROLE_MAX_LEN,
     IS_AVAILABLE_IN_RF_MAX_LEN,
     MAX_AGE_MAX_LEN,
@@ -41,6 +43,20 @@ class VaccineCardStatus(models.TextChoices):
     ACTIVE = 'active', 'Активна'
     ARCHIVED = 'archived', 'Архивирована'
     DELETED = 'deleted', 'Удалена'
+
+
+class VaccineCardVersionRelationMixin(models.Model):
+    """Базовый миксин для связей с версией карточки."""
+
+    vaccine_card_version = models.ForeignKey(
+        'VaccineCardVersion',
+        on_delete=models.CASCADE,
+        related_name='%(class)ss',
+        verbose_name='Версия карточки',
+    )
+
+    class Meta:
+        abstract = True
 
 
 class VaccineCard(models.Model):
@@ -112,8 +128,7 @@ class VaccineCardVersion(models.Model):
         VaccineCard, related_name='versions', on_delete=models.CASCADE, verbose_name='Ссылка на контейнер карточки'
     )
     version_number = models.IntegerField(
-        blank=True,
-        null=True,
+        default=DEFAULT_VERSION,
         verbose_name='Порядковый номер версии',
     )
     version_status = models.CharField(
@@ -193,6 +208,12 @@ class VaccineCardVersion(models.Model):
         null=True,
         verbose_name='Комментарий АНО',
     )
+    comment_source = models.CharField(
+        max_length=COMMENT_MAX_LEN,
+        blank=True,
+        null=True,
+        verbose_name='Источник комментария АНО',
+    )
     ohlp_url = models.URLField(
         max_length=URL_MAX_LEN,
         blank=True,
@@ -262,17 +283,6 @@ class ContraindicationType(models.TextChoices):
 class IngredientRoleType(models.TextChoices):
     ACTIVE = 'active', 'Действующее'
     EXCIPIENT = 'excipient', 'Вспомогательное'
-
-
-class VaccineCardVersionRelationMixin(models.Model):
-    """Базовый миксин для связей с версией карточки."""
-
-    vaccine_card_version = models.ForeignKey(
-        VaccineCardVersion, on_delete=models.CASCADE, related_name='%(class)ss', verbose_name='Версия карточки'
-    )
-
-    class Meta:
-        abstract = True
 
 
 class VaccineCardVersionInfection(VaccineCardVersionRelationMixin):
