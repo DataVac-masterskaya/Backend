@@ -272,7 +272,7 @@ class VaccineCardVersion(models.Model):
         return self.name
 
 
-# ======================================================================================
+# =====================================================================================
 
 
 class ContraindicationType(models.TextChoices):
