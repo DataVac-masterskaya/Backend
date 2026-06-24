@@ -1,10 +1,12 @@
 from django.db.models import F
 from django_filters.rest_framework import DjangoFilterBackend
-from reference_books.models import Infection, Ingredients, MethodsOfAdministration
 from rest_framework import filters, viewsets
-from rest_framework.response import Response
+# from rest_framework.response import Response
 
 from .filters import InfectionFilter, OrderingFilterSortBy
+from reference_books.models import (
+    Infection, Ingredients, MethodsOfAdministration
+)
 from .serializers import (
     InfectionCartSerializer,
     InfectionSerializer,
@@ -28,13 +30,13 @@ class InfectionViewSet(viewsets.ReadOnlyModelViewSet):
             return InfectionCartSerializer
         return InfectionSerializer
 
-    def retrieve(self, request, *args, **kwargs):
+    '''def retrieve(self, request, *args, **kwargs):
         """Показывает карточку инфекции."""
         instance = self.get_object()
         # Обновляем счётчик показов.
         Infection.objects.filter(id=instance.id).update(search_select_count=F('search_select_count') + 1)
         serializer = self.get_serializer(instance)
-        return Response(serializer.data)
+        return Response(serializer.data)'''
 
 
 class IngredientsViewSet(viewsets.ReadOnlyModelViewSet):
@@ -42,7 +44,9 @@ class IngredientsViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = Ingredients.objects.all()
     serializer_class = IngredientsSerializer
-    filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
+    filter_backends = [
+        DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter
+    ]
     filterset_fields = {
         'type': ['exact'],
     }
