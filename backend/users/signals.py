@@ -11,6 +11,5 @@ def create_profile(sender, instance, created, **kwargs):
     
     При создании пользователя автоматически создается Profile для него.
     """
-
     if created:
         Profile.objects.create(user=instance)
