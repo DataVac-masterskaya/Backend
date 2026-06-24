@@ -10,5 +10,6 @@ def create_profile(sender, instance, created, **kwargs):
     """Сигнал для создания соответствующего Profile при создании нового
     пользователя.
     """
+
     if created:
         Profile.objects.create(user=instance)
