@@ -60,12 +60,15 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # Additional
     'rest_framework',
-    'django_filters',
     'corsheaders',
+    # 'djoser',
     # Local
-    'api.apps.ApiConfig',
+    #'app1',
+    #'app2',
+    'contraindications.apps.ContraindicationsConfig',   
+    'users.apps.UsersConfig',
     'reference_books.apps.ReferenceBooksConfig',
-    'contraindications',
+    
 ]
 
 MIDDLEWARE = [
