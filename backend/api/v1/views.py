@@ -1,14 +1,17 @@
 from django.db.models import F
 from django_filters.rest_framework import DjangoFilterBackend
-from reference_books.models import Infection, Ingredients
 from rest_framework import filters, viewsets
 from rest_framework.response import Response
+
+from reference_books.models import Infection, Ingredients, MethodsOfAdministration
 
 from .filters import InfectionFilter, OrderingFilterSortBy
 from .serializers import (
     InfectionCartSerializer,
     InfectionSerializer,
     IngredientsSerializer,
+    MethodsOfAdministrationCartSerializer,
+    MethodsOfAdministrationSerializer,
 )
 
 
@@ -58,3 +61,15 @@ class IngredientsViewSet(viewsets.ReadOnlyModelViewSet):
                 queryset = queryset.order_by(order)
 
         return queryset
+
+
+class MethodsOfAdministrationViewSet(viewsets.ReadOnlyModelViewSet):
+    """Cпособы введения."""
+
+    queryset = MethodsOfAdministration.objects.all()
+
+    def get_serializer_class(self):
+        """Выбирает сериализатор."""
+        if self.action == 'retrieve':
+            return MethodsOfAdministrationCartSerializer
+        return MethodsOfAdministrationSerializer

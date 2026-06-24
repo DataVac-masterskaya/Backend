@@ -1,6 +1,7 @@
 from django_filters import rest_framework
-from reference_books.models import CategoryInfection, Infection
 from rest_framework.filters import OrderingFilter
+
+from reference_books.models import CategoryInfection, Infection
 
 
 class InfectionFilter(rest_framework.FilterSet):
