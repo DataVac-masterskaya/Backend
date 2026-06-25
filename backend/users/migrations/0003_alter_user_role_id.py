@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('users', '0002_alter_user_created_at_alter_user_created_by'),
     ]
@@ -14,6 +13,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='user',
             name='role_id',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='users.role', verbose_name='ID роли'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to='users.role',
+                verbose_name='ID роли',
+            ),
         ),
     ]

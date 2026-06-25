@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('users', '0004_alter_role_options_profile_delete_user'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
@@ -16,11 +15,20 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='profile',
             name='created_by',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='created_users', to=settings.AUTH_USER_MODEL, verbose_name='Создан пользователем'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name='created_users',
+                to=settings.AUTH_USER_MODEL,
+                verbose_name='Создан пользователем',
+            ),
         ),
         migrations.AlterField(
             model_name='profile',
             name='user',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL, verbose_name='Пользователь'),
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL, verbose_name='Пользователь'
+            ),
         ),
     ]

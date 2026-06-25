@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('users', '0003_alter_user_role_id'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
@@ -22,11 +21,45 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('full_name', models.CharField(max_length=255, verbose_name='ФИО')),
-                ('status', models.CharField(choices=[('active', 'Активен'), ('blocked', 'Заблокирован'), ('deleted', 'Удалён')], default='active', max_length=50, verbose_name='Статус')),
+                (
+                    'status',
+                    models.CharField(
+                        choices=[('active', 'Активен'), ('blocked', 'Заблокирован'), ('deleted', 'Удалён')],
+                        default='active',
+                        max_length=50,
+                        verbose_name='Статус',
+                    ),
+                ),
                 ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='Дата и время создания')),
-                ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='created_users', to='users.profile', verbose_name='Создан пользователем')),
-                ('role_id', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='users.role', verbose_name='ID роли')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL, verbose_name='Пользователь')),
+                (
+                    'created_by',
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name='created_users',
+                        to='users.profile',
+                        verbose_name='Создан пользователем',
+                    ),
+                ),
+                (
+                    'role_id',
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to='users.role',
+                        verbose_name='ID роли',
+                    ),
+                ),
+                (
+                    'user',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name='Пользователь',
+                    ),
+                ),
             ],
             options={
                 'verbose_name': 'дополнительные данные пользователя',
