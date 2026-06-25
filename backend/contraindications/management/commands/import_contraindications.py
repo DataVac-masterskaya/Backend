@@ -18,9 +18,10 @@ class Command(BaseCommand):
             self.stderr.write(f'Ошибка при чтении файла: {e}')
             return
 
-        self.stdout.write(f'Файл {file_path} успешно прочитан. Строк: {len(df)}')
+        self.stdout.write(
+            f'Файл {file_path} успешно прочитан. Строк: {len(df)}')
 
-        for index, row in df.iterrows():
+        for _, row in df.iterrows():
             contraindication_id = row['contraindication_id']
             contraindication_name = row['contraindication_name']
             # contraindication_long_name = row['contraindication_long_name']
