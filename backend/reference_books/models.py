@@ -110,7 +110,6 @@ class MethodsOfAdministration(models.Model):
         return self.name[:30]
 
 
-
 # class VaccineCardVersionIngredients(models.Model):
 #     """Ингредиенты в карточках вакцин."""
 
