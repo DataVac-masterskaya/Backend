@@ -17,7 +17,7 @@ class SearchSelectSerializer(serializers.Serializer):
     def validate_entityType(self, value):
         """Проверяет что entityType входит в список допустимых типов."""
         if value not in self.ALLOWED_TYPES:
-            raise serializers.ValidationError(f"Allowed types: {', '.join(self.ALLOWED_TYPES)}")
+            raise serializers.ValidationError(f'Allowed types: {", ".join(self.ALLOWED_TYPES)}')
         return value
 
 

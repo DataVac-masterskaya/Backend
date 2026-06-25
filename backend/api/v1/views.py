@@ -1,12 +1,10 @@
-from django.db.models import F
+from functools import partial
+
+from contraindications.models import Contraindication
+from datavac.utils import increment_select_count
 from django_filters.rest_framework import DjangoFilterBackend
-from contraindications.services import increment_contraindication_select_count
-from instructions.services import increment_official_instruction_select_count
+from instructions.models import OfficialInstruction
 from reference_books.models import Infection, Ingredients
-from reference_books.services import (
-    increment_infection_select_count,
-    increment_ingredients_select_count,
-)
 from rest_framework import filters, status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -37,8 +35,6 @@ class InfectionViewSet(viewsets.ReadOnlyModelViewSet):
     def retrieve(self, request, *args, **kwargs):
         """Показывает карточку инфекции."""
         instance = self.get_object()
-        # Обновляем счётчик показов.
-        Infection.objects.filter(id=instance.id).update(search_select_count=F('search_select_count') + 1)
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
@@ -72,10 +68,10 @@ class SearchSelectView(APIView):
     """Фиксирует выбор сущности в поисковой подсказке."""
 
     SERVICE_MAP = {
-        'infection': increment_infection_select_count,
-        'ingredient': increment_ingredients_select_count,
-        'contraindication': increment_contraindication_select_count,
-        'instruction': increment_official_instruction_select_count,
+        'infection': partial(increment_select_count, Infection),
+        'ingredient': partial(increment_select_count, Ingredients),
+        'contraindication': partial(increment_select_count, Contraindication),
+        'instruction': partial(increment_select_count, OfficialInstruction),
     }
 
     def post(self, request):
