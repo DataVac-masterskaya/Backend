@@ -9,10 +9,7 @@ class UserStatus(models.TextChoices):
 
 
 class Role(models.Model):
-    name=models.CharField(
-        verbose_name='Название роли',
-        max_length=32
-    )
+    name = models.CharField(verbose_name='Название роли', max_length=32)
 
     def __str__(self):
         return f'{self.id} - {self.name}'
@@ -43,10 +40,7 @@ class Profile(models.Model):
     )
 
     status = models.CharField(
-        max_length=50,
-        verbose_name='Статус',
-        choices=UserStatus.choices,
-        default=UserStatus.ACTIVE
+        max_length=50, verbose_name='Статус', choices=UserStatus.choices, default=UserStatus.ACTIVE
     )
 
     created_at = models.DateTimeField(
@@ -60,7 +54,7 @@ class Profile(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name='created_users'
+        related_name='created_users',
     )
 
     class Meta:
@@ -68,4 +62,4 @@ class Profile(models.Model):
         verbose_name_plural = 'дополнительные данные пользователей'
 
     def __str__(self):
-            return f'{self.user.username}'
+        return f'{self.user.username}'

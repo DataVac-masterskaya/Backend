@@ -17,13 +17,11 @@ class ProfileInline(admin.StackedInline):
     verbose_name_plural = 'Дополнительные данные пользователя'
 
 
-@admin.register(Profile)    
+@admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'role_id', 'full_name', 'status',
-                    'created_at', 'created_by')
+    list_display = ('user', 'role_id', 'full_name', 'status', 'created_at', 'created_by')
     list_editable = ('role_id', 'full_name', 'status', 'created_by')
-    search_fields = ('user__username', 'user__email',
-                     'full_name', 'role_id__name')
+    search_fields = ('user__username', 'user__email', 'full_name', 'role_id__name')
     list_filter = ('status', 'role_id')
 
 

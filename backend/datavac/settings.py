@@ -65,7 +65,7 @@ INSTALLED_APPS = [
     # Local
     #'app1',
     #'app2',
-    'contraindications.apps.ContraindicationsConfig',   
+    'contraindications.apps.ContraindicationsConfig',
     'users.apps.UsersConfig',
     'reference_books.apps.ReferenceBooksConfig',
     'contraindications',
