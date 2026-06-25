@@ -1,13 +1,14 @@
 from functools import partial
 
-from contraindications.models import Contraindication
 from datavac.utils import increment_select_count
 from django_filters.rest_framework import DjangoFilterBackend
 from instructions.models import OfficialInstruction
-from reference_books.models import Infection, Ingredients, MethodsOfAdministration
 from rest_framework import filters, status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from contraindications.models import Contraindication
+from reference_books.models import Infection, Ingredients, MethodsOfAdministration
 
 from .filters import InfectionFilter, OrderingFilterSortBy
 from .serializers import (
