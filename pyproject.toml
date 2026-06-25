@@ -28,13 +28,19 @@ dependencies = [
     "typing-extensions==4.15.0",
     "django-filter==25.2",
     "requests>=2.34.2",
+    "drf-extra-fields>=3.7.0",
+    "pillow>=12.2.0",
 ]
 
 [tool.pytest.ini_options]
 addopts = "-v --tb=short"
 DJANGO_SETTINGS_MODULE = "datavac.settings"
 pythonpath = ["backend"]
+<<<<<<< HEAD
 testpaths = ["backend/contraindications/tests", "backend/instructions/tests", "backend/api/v1/tests"]
+=======
+testpaths = ["backend/contraindications/tests", "backend/instructions/tests", "backend/search/tests"]
+>>>>>>> origin/develop
 
 [tool.ruff]
 line-length = 120
@@ -107,3 +113,5 @@ exclude_lines = [
     "class .*\bProtocol\\):",
     "@(abc\\.)?abstractmethod",
 ]
+[tool.ruff.lint.isort]
+known-first-party = ["api", "reference_books", "contraindications", "vaccines",]

@@ -4,7 +4,7 @@ from contraindications.models import Contraindication
 from datavac.utils import increment_select_count
 from django_filters.rest_framework import DjangoFilterBackend
 from instructions.models import OfficialInstruction
-from reference_books.models import Infection, Ingredients
+from reference_books.models import Infection, Ingredients, MethodsOfAdministration
 from rest_framework import filters, status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -14,6 +14,8 @@ from .serializers import (
     InfectionCartSerializer,
     InfectionSerializer,
     IngredientsSerializer,
+    MethodsOfAdministrationCartSerializer,
+    MethodsOfAdministrationSerializer,
     SearchSelectSerializer,
 )
 
@@ -62,6 +64,18 @@ class IngredientsViewSet(viewsets.ReadOnlyModelViewSet):
                 queryset = queryset.order_by(order)
 
         return queryset
+
+
+class MethodsOfAdministrationViewSet(viewsets.ReadOnlyModelViewSet):
+    """Cпособы введения."""
+
+    queryset = MethodsOfAdministration.objects.all()
+
+    def get_serializer_class(self):
+        """Выбирает сериализатор."""
+        if self.action == 'retrieve':
+            return MethodsOfAdministrationCartSerializer
+        return MethodsOfAdministrationSerializer
 
 
 class SearchSelectView(APIView):
