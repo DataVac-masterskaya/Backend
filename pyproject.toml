@@ -32,10 +32,10 @@ dependencies = [
 ]
 
 [tool.pytest.ini_options]
-pythonpath = 'backend'
-DJANGO_SETTINGS_MODULE = 'datavac.settings'
-addopts = '-v --tb=short'
-testpaths = ['backend/tests']
+addopts = "-v --tb=short"
+DJANGO_SETTINGS_MODULE = "datavac.settings"
+pythonpath = ["backend"]
+testpaths = ["backend/contraindications/tests", "backend/instructions/tests", "backend/search/tests"]
 
 [tool.ruff]
 line-length = 120
@@ -109,3 +109,5 @@ exclude_lines = [
     'class .*\bProtocol\\):',
     '@(abc\\.)?abstractmethod',
 ]
+[tool.ruff.lint.isort]
+known-first-party = ["api", "reference_books", "contraindications", "vaccines",]
