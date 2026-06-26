@@ -1,8 +1,14 @@
 import pytest
+from django.contrib.auth import get_user_model
 from rest_framework import status
 from rest_framework.test import APIClient
 
 from contraindications.models import Contraindication, ContraindicationCategory
+from vaccines.models import (
+    VaccineCard,
+    VaccineCardVersion,
+    VaccineCardVersionContraindication,
+)
 
 pytestmark = pytest.mark.django_db
 
@@ -11,6 +17,33 @@ pytestmark = pytest.mark.django_db
 def api_client() -> APIClient:
     """Создает API-клиент для pytest-тестов."""
     return APIClient()
+
+
+@pytest.fixture
+def user():
+    """Создает пользователя для обязательных связей версий вакцин."""
+    return get_user_model().objects.create_user(username='author')
+
+
+def create_vaccine_for_contraindication(
+    user,
+    contraindication: Contraindication,
+) -> VaccineCard:
+    """Создает видимую вакцину, связанную с противопоказанием."""
+    vaccine_card = VaccineCard.objects.create(is_visible=True)
+    version = VaccineCardVersion.objects.create(
+        vaccine_card=vaccine_card,
+        name='Вакцина АДС-М',
+        official_name='Анатоксин дифтерийно-столбнячный',
+        created_by=user,
+    )
+    vaccine_card.published_version = version
+    vaccine_card.save(update_fields=('published_version',))
+    VaccineCardVersionContraindication.objects.create(
+        vaccine_card_version=version,
+        contraindication=contraindication,
+    )
+    return vaccine_card
 
 
 def test_list_categories(api_client: APIClient):
@@ -99,9 +132,13 @@ def test_detail_contraindication_returns_404(api_client: APIClient):
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
-def test_vaccines_endpoint_returns_stub(api_client: APIClient):
-    """Проверяет заглушку списка вакцин по противопоказанию."""
+def test_vaccines_endpoint_returns_related_vaccines(
+    api_client: APIClient,
+    user,
+):
+    """Проверяет список вакцин по противопоказанию."""
     contraindication = Contraindication.objects.create(name='Аллергия')
+    vaccine_card = create_vaccine_for_contraindication(user, contraindication)
 
     response = api_client.get(
         f'/api/v1/contraindications/{contraindication.id}/vaccines/',
@@ -109,7 +146,9 @@ def test_vaccines_endpoint_returns_stub(api_client: APIClient):
 
     assert response.status_code == status.HTTP_200_OK
     assert response.data['contraindicationId'] == contraindication.id
-    assert response.data['vaccines'] == []
+    assert response.data['vaccines'][0]['id'] == vaccine_card.id
+    assert response.data['vaccines'][0]['name'] == 'Вакцина АДС-М'
+    assert response.data['vaccines'][0]['contraindications'][0]['name'] == 'Аллергия'
 
 
 def test_search_endpoint(api_client: APIClient):

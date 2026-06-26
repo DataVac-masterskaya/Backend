@@ -1,12 +1,14 @@
 from decimal import Decimal
 
 import pytest
+from django.contrib.auth import get_user_model
 from instructions.models import OfficialInstruction
 from rest_framework import status
 from rest_framework.test import APIClient
 
 from contraindications.models import Contraindication
 from reference_books.models import CategoryInfection, Infection, Ingredients
+from vaccines.models import VaccineCard, VaccineCardVersion
 
 pytestmark = pytest.mark.django_db
 
@@ -23,9 +25,35 @@ def infection_category() -> CategoryInfection:
     return CategoryInfection.objects.create(name='viral')
 
 
+@pytest.fixture
+def user():
+    """Создает пользователя для обязательных связей версий вакцин."""
+    return get_user_model().objects.create_user(username='author')
+
+
+def create_vaccine_card(
+    user,
+    name: str = 'Вакцина АДС-М',
+    official_name: str = 'Анатоксин дифтерийно-столбнячный',
+    is_visible: bool = True,
+) -> VaccineCard:
+    """Создает опубликованную карточку вакцины для тестов поиска."""
+    vaccine_card = VaccineCard.objects.create(is_visible=is_visible)
+    version = VaccineCardVersion.objects.create(
+        vaccine_card=vaccine_card,
+        name=name,
+        official_name=official_name,
+        created_by=user,
+    )
+    vaccine_card.published_version = version
+    vaccine_card.save(update_fields=('published_version',))
+    return vaccine_card
+
+
 def test_search_suggestions_returns_groups(
     api_client: APIClient,
     infection_category: CategoryInfection,
+    user,
 ):
     """Проверяет, что глобальный поиск возвращает подсказки по группам."""
     Contraindication.objects.create(name='Аллергия')
@@ -35,6 +63,7 @@ def test_search_suggestions_returns_groups(
         title='Инструкция АДС-М',
         url='https://example.com/instructions/ads-m',
     )
+    create_vaccine_card(user)
 
     response = api_client.get('/api/search/suggestions/?q=а')
 
@@ -43,6 +72,7 @@ def test_search_suggestions_returns_groups(
     assert response.data['infections'][0]['name'] == 'Аденовирус'
     assert response.data['ingredients'][0]['name'] == 'Алюминия гидроксид'
     assert response.data['instructions'][0]['name'] == 'Инструкция АДС-М'
+    assert response.data['vaccines'][0]['name'] == 'Вакцина АДС-М'
 
 
 def test_search_suggestions_limits_each_group_to_six(api_client: APIClient):
@@ -81,6 +111,32 @@ def test_search_suggestions_orders_by_score_then_name(api_client: APIClient):
         'Гамма',
         'Альфа',
         'Бета',
+    ]
+
+
+def test_search_suggestions_returns_only_visible_published_vaccines(
+    api_client: APIClient,
+    user,
+):
+    """Проверяет, что поиск вакцин не отдает скрытые и неопубликованные карточки."""
+    visible_vaccine = create_vaccine_card(user, name='Вакцина АДС-М')
+    create_vaccine_card(user, name='Скрытая вакцина АДС-М', is_visible=False)
+    unpublished_vaccine = VaccineCard.objects.create(is_visible=True)
+    VaccineCardVersion.objects.create(
+        vaccine_card=unpublished_vaccine,
+        name='Черновик АДС-М',
+        created_by=user,
+    )
+
+    response = api_client.get('/api/search/suggestions/?q=адс')
+
+    assert response.status_code == status.HTTP_200_OK
+    assert response.data['vaccines'] == [
+        {
+            'id': visible_vaccine.id,
+            'name': 'Вакцина АДС-М',
+            'score': '0.00',
+        },
     ]
 
 
@@ -164,6 +220,28 @@ def test_search_select_increments_instruction_count(api_client: APIClient):
     assert response.status_code == status.HTTP_200_OK
     assert response.data['searchSelectCount'] == 1
     assert instruction.search_select_count == 1
+
+
+def test_search_select_increments_vaccine_card_count(
+    api_client: APIClient,
+    user,
+):
+    """Проверяет увеличение счетчика выбранной карточки вакцины."""
+    vaccine_card = create_vaccine_card(user)
+
+    response = api_client.post(
+        '/api/search/select/',
+        {
+            'entityType': 'vaccineCard',
+            'entityId': vaccine_card.id,
+        },
+        format='json',
+    )
+
+    vaccine_card.refresh_from_db()
+    assert response.status_code == status.HTTP_200_OK
+    assert response.data['searchSelectCount'] == 1
+    assert vaccine_card.search_select_count == 1
 
 
 def test_search_select_rejects_unknown_entity_type(api_client: APIClient):
