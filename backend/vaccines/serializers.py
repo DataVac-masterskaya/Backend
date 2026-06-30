@@ -1,10 +1,9 @@
-from zipfile import DEFAULT_VERSION
-
 from django.db import transaction
 from rest_framework import serializers
 
 from contraindications.models import Contraindication
 from reference_books.models import Infection, Ingredients, MethodsOfAdministration
+from vaccines.constants import DEFAULT_VERSION
 from vaccines.models import (
     ContraindicationType,
     IngredientRoleType,
