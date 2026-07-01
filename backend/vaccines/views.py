@@ -1,13 +1,15 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 
 from vaccines.serializers import AdminVaccinesCreatedSerializers
 
 
 class AdminVaccineCreateAPIView(APIView):
     """Эндпоинт для создания карточки вакцины."""
-
+    permission_classes = [IsAuthenticated]
+    
     def post(self, request):
         serializer = AdminVaccinesCreatedSerializers(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)

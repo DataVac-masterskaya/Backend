@@ -15,5 +15,5 @@ def bulk_create_relations(version, model, items_data, defaults=None):
 
     defaults = defaults or {}
 
-    objects = [model(vaccine_card_version=version, **{**item, **defaults}) for item in items_data]
+    objects = [model(vaccine_card_version=version, **{**defaults, **item,}) for item in items_data]
     return model.objects.bulk_create(objects)
