@@ -18,6 +18,7 @@ class SearchSelectSerializer(serializers.Serializer):
             ('infection', 'infection'),
             ('ingredient', 'ingredient'),
             ('instruction', 'instruction'),
+            ('vaccineCard', 'vaccineCard'),
         ),
     )
     entityId = serializers.IntegerField(min_value=1)
