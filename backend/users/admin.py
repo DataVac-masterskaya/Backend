@@ -25,9 +25,9 @@ class ProfileAdmin(admin.ModelAdmin):
     list_filter = ('status', 'role_id')
 
 
-class CustomUserAdmin(UserAdmin):
+class ExtendedUserAdmin(UserAdmin):
     inlines = (ProfileInline,)
 
 
 admin.site.unregister(User)
-admin.site.register(User, CustomUserAdmin)
+admin.site.register(User, ExtendedUserAdmin)
