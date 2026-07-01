@@ -15,7 +15,7 @@ class SearchSelectSerializer(serializers.Serializer):
     ALLOWED_TYPES = ('infection', 'ingredient', 'contraindication', 'instruction', 'vaccineCard')
 
     entityType = serializers.CharField()
-    entityId = serializers.IntegerField()
+    entityId = serializers.IntegerField(min_value=1)
 
     def validate_entityType(self, value):
         """Проверяет что entityType входит в список допустимых типов."""

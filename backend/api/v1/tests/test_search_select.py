@@ -130,3 +130,25 @@ def test_select_missing_fields_returns_400(api_client):
     )
 
     assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+def test_select_zero_entity_id_returns_400(api_client):
+    """Проверяет ошибку 400 при entityId равном 0."""
+    response = api_client.post(
+        '/api/v1/search/select',
+        {'entityType': 'infection', 'entityId': 0},
+        format='json',
+    )
+
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+def test_select_negative_entity_id_returns_400(api_client):
+    """Проверяет ошибку 400 при отрицательном entityId."""
+    response = api_client.post(
+        '/api/v1/search/select',
+        {'entityType': 'infection', 'entityId': -1},
+        format='json',
+    )
+
+    assert response.status_code == status.HTTP_400_BAD_REQUEST

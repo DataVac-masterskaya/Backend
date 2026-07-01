@@ -9,6 +9,7 @@ from rest_framework.views import APIView
 
 from contraindications.models import Contraindication
 from reference_books.models import Infection, Ingredients, MethodsOfAdministration
+from vaccines.models import VaccineCard
 
 from .filters import InfectionFilter, OrderingFilterSortBy
 from .serializers import (
@@ -87,6 +88,7 @@ class SearchSelectView(APIView):
         'ingredient': partial(increment_select_count, Ingredients),
         'contraindication': partial(increment_select_count, Contraindication),
         'instruction': partial(increment_select_count, OfficialInstruction),
+        'vaccineCard': partial(increment_select_count, VaccineCard),
     }
 
     def post(self, request):
