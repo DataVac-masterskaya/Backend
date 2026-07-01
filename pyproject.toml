@@ -29,6 +29,7 @@ dependencies = [
     "django-filter==25.2",
     "drf-extra-fields>=3.7.0",
     "pillow>=12.2.0",
+    "openpyxl>=3.1.5",
 ]
 
 [tool.pytest.ini_options]
