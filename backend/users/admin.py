@@ -24,10 +24,10 @@ class ProfileAdmin(admin.ModelAdmin):
     search_fields = ('user__username', 'user__email', 'full_name', 'role_id__name')
     list_filter = ('status', 'role_id')
 
+admin.site.unregister(User)
 
+
+@admin.register(User)
 class ExtendedUserAdmin(UserAdmin):
     inlines = (ProfileInline,)
 
-
-admin.site.unregister(User)
-admin.site.register(User, ExtendedUserAdmin)
