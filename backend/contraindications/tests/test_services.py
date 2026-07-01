@@ -1,7 +1,6 @@
 from decimal import Decimal
 
 import pytest
-from django.contrib.auth import get_user_model
 
 from contraindications.models import Contraindication
 from contraindications.services import (
@@ -11,8 +10,6 @@ from contraindications.services import (
 )
 from reference_books.models import MethodsOfAdministration
 from vaccines.models import (
-    VaccineCard,
-    VaccineCardVersion,
     VaccineCardVersionAdministrationMethod,
     VaccineCardVersionContraindication,
 )
@@ -20,33 +17,10 @@ from vaccines.models import (
 pytestmark = pytest.mark.django_db
 
 
-@pytest.fixture
-def user():
-    """Создает пользователя для обязательных связей версий вакцин."""
-    return get_user_model().objects.create_user(username='author')
-
-
-def create_published_vaccine(user, name: str = 'Вакцина АДС-М') -> VaccineCard:
-    """Создает опубликованную видимую карточку вакцины."""
-    vaccine_card = VaccineCard.objects.create(is_visible=True)
-    version = VaccineCardVersion.objects.create(
-        vaccine_card=vaccine_card,
-        name=name,
-        official_name='Анатоксин дифтерийно-столбнячный',
-        min_age='6 лет',
-        max_age='без ограничений',
-        pregnancy_usage_status='caution',
-        created_by=user,
-    )
-    vaccine_card.published_version = version
-    vaccine_card.save(update_fields=('published_version',))
-    return vaccine_card
-
-
-def test_get_vaccines_by_contraindication_returns_related_vaccines(user):
+def test_get_vaccines_by_contraindication_returns_related_vaccines(published_vaccine_factory):
     """Проверяет получение видимых опубликованных вакцин по противопоказанию."""
     contraindication = Contraindication.objects.create(name='Аллергия')
-    vaccine_card = create_published_vaccine(user)
+    vaccine_card = published_vaccine_factory()
     method = MethodsOfAdministration.objects.create(
         name='Внутримышечно',
         list_icon_url='list.png',
@@ -70,8 +44,8 @@ def test_get_vaccines_by_contraindication_returns_related_vaccines(user):
             'id': vaccine_card.id,
             'name': 'Вакцина АДС-М',
             'officialName': 'Анатоксин дифтерийно-столбнячный',
-            'minAge': '6 лет',
-            'maxAge': 'без ограничений',
+            'minAge': 6,
+            'maxAge': 18,
             'pregnancyUsageStatus': 'caution',
             'contraindications': [
                 {
@@ -92,10 +66,10 @@ def test_get_vaccines_by_contraindication_returns_related_vaccines(user):
     ]
 
 
-def test_get_vaccines_by_contraindication_excludes_hidden_vaccines(user):
+def test_get_vaccines_by_contraindication_excludes_hidden_vaccines(published_vaccine_factory):
     """Проверяет, что скрытые вакцины не попадают в список по противопоказанию."""
     contraindication = Contraindication.objects.create(name='Аллергия')
-    vaccine_card = create_published_vaccine(user)
+    vaccine_card = published_vaccine_factory()
     vaccine_card.is_visible = False
     vaccine_card.save(update_fields=('is_visible',))
     VaccineCardVersionContraindication.objects.create(
