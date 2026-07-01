@@ -1,4 +1,3 @@
-# services/queue_service.py
 from celery import Celery
 from config.settings import CELERY_BROKER_URL
 
@@ -10,7 +9,11 @@ class QueueService:
             result_backend=CELERY_BROKER_URL,
             task_serializer='json',
             result_serializer='json',
-            accept_content=['json']
+            accept_content=['json'],
+            task_ignore_result=True,
+            task_time_limit=300,
+            task_retry_backoff=True,
+            task_max_retries=5
         )
 
     def enqueue(self, task_name, data):
