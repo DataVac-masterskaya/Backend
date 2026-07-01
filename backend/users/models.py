@@ -40,7 +40,10 @@ class Profile(models.Model):
     )
 
     status = models.CharField(
-        max_length=50, verbose_name='Статус', choices=UserStatus.choices, default=UserStatus.ACTIVE
+        max_length=50,
+        verbose_name='Статус',
+        choices=UserStatus.choices,
+        default=UserStatus.ACTIVE
     )
 
     created_at = models.DateTimeField(
