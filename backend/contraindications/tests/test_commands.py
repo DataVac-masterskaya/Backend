@@ -9,6 +9,7 @@ from contraindications.models import Contraindication
 
 
 def make_excel_file(sheets: dict):
+    """Создает Excel-файл."""
     wb = Workbook()
     wb.remove(wb.active)
 
@@ -20,6 +21,7 @@ def make_excel_file(sheets: dict):
 
 @pytest.fixture
 def contraindication_simple_excel_file():
+    """Создает упрощенный Excel-файл, с одним листом."""
     wb = make_excel_file({
         'contraindications_list': [
         ['contraindication_ID', 'contraindication_name'],
@@ -39,6 +41,7 @@ def contraindication_simple_excel_file():
 
 @pytest.fixture
 def contraindication_incorrect_excel_file():
+    """Создает некорректный файл."""
     wb = make_excel_file({
         'contraindications_list': [
         ['contraindication_ID', 'contraindication_name'],
@@ -58,6 +61,7 @@ def contraindication_incorrect_excel_file():
 
 @pytest.fixture
 def contraindication_full_excel_file():
+    """Создает близкий к реальности сложный файл."""
     wb = make_excel_file({
         'contraindications_list': [
             ['contraindication_ID', 'contraindication_name'],
@@ -86,7 +90,6 @@ def contraindication_full_excel_file():
     yield path
 
     os.remove(path)
-
 
 @pytest.mark.django_db
 def test_import_contraindications(contraindication_simple_excel_file):
