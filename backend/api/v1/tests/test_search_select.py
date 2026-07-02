@@ -52,7 +52,7 @@ def test_select_infection_increments_counter(api_client, infection):
     )
 
     assert response.status_code == status.HTTP_200_OK
-    assert response.data == {'success': True}
+    assert response.data == {'searchSelectCount': 1}
     infection.refresh_from_db()
     assert infection.search_select_count == 1
 
@@ -66,7 +66,7 @@ def test_select_ingredient_increments_counter(api_client, ingredient):
     )
 
     assert response.status_code == status.HTTP_200_OK
-    assert response.data == {'success': True}
+    assert response.data == {'searchSelectCount': 1}
     ingredient.refresh_from_db()
     assert ingredient.search_select_count == 1
 
@@ -80,7 +80,7 @@ def test_select_contraindication_increments_counter(api_client, contraindication
     )
 
     assert response.status_code == status.HTTP_200_OK
-    assert response.data == {'success': True}
+    assert response.data == {'searchSelectCount': 1}
     contraindication.refresh_from_db()
     assert contraindication.search_select_count == 1
 
@@ -94,7 +94,7 @@ def test_select_instruction_increments_counter(api_client, instruction):
     )
 
     assert response.status_code == status.HTTP_200_OK
-    assert response.data == {'success': True}
+    assert response.data == {'searchSelectCount': 1}
     instruction.refresh_from_db()
     assert instruction.search_select_count == 1
 

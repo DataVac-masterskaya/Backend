@@ -107,5 +107,5 @@ class SearchSelectView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        service(entity_id)
-        return Response({'success': True}, status=status.HTTP_200_OK)
+        entity = service(entity_id)
+        return Response({'searchSelectCount': entity.search_select_count}, status=status.HTTP_200_OK)
