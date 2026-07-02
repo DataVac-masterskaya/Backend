@@ -5,6 +5,7 @@ from users.models import Profile
 
 User = get_user_model()
 
+
 @pytest.fixture
 def test_user():
     """Фикстура для создания тестового пользователя."""
