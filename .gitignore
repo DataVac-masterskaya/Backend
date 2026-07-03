@@ -123,6 +123,7 @@ htmlcov/
 .copilot
 .dotnet
 .gitconfig
+pyrefly.toml
 
 # Python history
 .python_history
