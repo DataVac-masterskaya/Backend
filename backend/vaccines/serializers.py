@@ -163,3 +163,11 @@ class AdminVaccinesCreatedSerializers(serializers.ModelSerializer):
         vaccine_card.current_version = version
         vaccine_card.save(update_fields=['current_version', 'updated_at'])
         return version
+
+
+class AdminVaccineCreateResponseSerializer(serializers.Serializer):
+    """Описывает ответ создания карточки вакцины."""
+
+    id = serializers.IntegerField()
+    current_version_id = serializers.IntegerField()
+    status = serializers.CharField()
