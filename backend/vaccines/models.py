@@ -11,9 +11,7 @@ from vaccines.constants import (
     DEFAULT_VERSION,
     INGREDIENT_ROLE_MAX_LEN,
     IS_AVAILABLE_IN_RF_MAX_LEN,
-    MAX_AGE_MAX_LEN,
     MAX_DIGITS_SEARCH_WEIGHT,
-    MIN_AGE_MAX_LEN,
     NAME_MAX_LEN,
     OFFICIAL_NAME_MAX_LEN,
     PREGNANCY_USAGE_STATUS,
@@ -43,6 +41,7 @@ class VaccineCardStatus(models.TextChoices):
     ACTIVE = 'active', 'Активна'
     ARCHIVED = 'archived', 'Архивирована'
     DELETED = 'deleted', 'Удалена'
+    DRAFT = 'draft', 'Черновик'
 
 
 class VaccineCardVersionRelationMixin(models.Model):
@@ -163,20 +162,25 @@ class VaccineCardVersion(models.Model):
         null=True,
         verbose_name='Официальное название',
     )
+    description = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name='Описание вакцины',
+    )
+    manufacturer = models.CharField(
+        max_length=NAME_MAX_LEN,
+        blank=True,
+        null=True,
+        verbose_name='Производитель',
+    )
     is_available_in_rf = models.CharField(
         max_length=IS_AVAILABLE_IN_RF_MAX_LEN,
         blank=True,
         null=True,
         verbose_name='Доступность в РФ',
     )
-    revision_date = models.DateField(
-        blank=True,
-        null=True,
-        verbose_name='Дата ревизии',
-    )
-    min_age = models.CharField(max_length=MIN_AGE_MAX_LEN, blank=True, null=True, verbose_name='Минимальный возраст')
-    max_age = models.CharField(
-        max_length=MAX_AGE_MAX_LEN,
+    min_age = models.PositiveIntegerField(blank=True, null=True, verbose_name='Минимальный возраст')
+    max_age = models.PositiveIntegerField(
         blank=True,
         null=True,
         verbose_name='Максимальный возраст',
@@ -203,16 +207,30 @@ class VaccineCardVersion(models.Model):
         null=True,
         verbose_name='Информация о совместимости с другими вакцинами',
     )
-    comment_ANO = models.TextField(
+    schedule_info = models.TextField(
         blank=True,
         null=True,
-        verbose_name='Комментарий АНО',
+        verbose_name='Информация о схеме вакцинации',
     )
-    comment_source = models.CharField(
-        max_length=COMMENT_MAX_LEN,
+    side_effects = models.TextField(
         blank=True,
         null=True,
-        verbose_name='Источник комментария АНО',
+        verbose_name='Побочные эффекты',
+    )
+    indications = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name='Показания к применению',
+    )
+    registration_date = models.DateField(
+        blank=True,
+        null=True,
+        verbose_name='Дата регистрации',
+    )
+    revision_date = models.DateField(
+        blank=True,
+        null=True,
+        verbose_name='Дата ревизии',
     )
     ohlp_url = models.URLField(
         max_length=URL_MAX_LEN,
@@ -226,17 +244,40 @@ class VaccineCardVersion(models.Model):
         null=True,
         verbose_name='Ссылка на вкладыш',
     )
+    instruction_url = models.URLField(
+        max_length=URL_MAX_LEN,
+        blank=True,
+        null=True,
+        verbose_name='Ссылка на инструкцию',
+    )
     pdf_url = models.URLField(
         max_length=URL_MAX_LEN,
         blank=True,
         null=True,
         verbose_name='Ссылка на PDF',
     )
-    instruction_url = models.URLField(
-        max_length=URL_MAX_LEN,
+    infections = models.ManyToManyField(
+        Infection, through='VaccineCardVersionInfection', related_name='vaccine_versions'
+    )
+    ingredients = models.ManyToManyField(
+        Ingredients, through='VaccineCardVersionIngredient', related_name='vaccine_versions'
+    )
+    contraindications = models.ManyToManyField(
+        Contraindication, through='VaccineCardVersionContraindication', related_name='vaccine_versions'
+    )
+    administration_methods = models.ManyToManyField(
+        MethodsOfAdministration, through='VaccineCardVersionAdministrationMethod', related_name='vaccine_versions'
+    )
+    comment_source = models.CharField(
+        max_length=COMMENT_MAX_LEN,
         blank=True,
         null=True,
-        verbose_name='Ссылка на инструкцию',
+        verbose_name='Источник комментария АНО',
+    )
+    comment_ANO = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name='Комментарий АНО',
     )
     created_by = models.ForeignKey(
         User,
