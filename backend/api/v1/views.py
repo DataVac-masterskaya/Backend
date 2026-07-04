@@ -1,9 +1,11 @@
 from functools import partial
 
 from datavac.utils import increment_select_count
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from instructions.models import OfficialInstruction
 from rest_framework import filters, status, viewsets
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -19,6 +21,7 @@ from .serializers import (
     MethodsOfAdministrationCartSerializer,
     MethodsOfAdministrationSerializer,
     SearchSelectSerializer,
+    # VaccineCardInstructionPatientSerializer
 )
 
 
@@ -109,3 +112,16 @@ class SearchSelectView(APIView):
 
         entity = service(entity_id)
         return Response({'searchSelectCount': entity.search_select_count}, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def instruction_patient(request, id):
+    """Инструкции для неспециалистов."""
+    vaccine = get_object_or_404(
+        VaccineCard.objects.select_related('published_version'),
+        id=id,
+    )
+    url = None
+    if vaccine.published_version:
+        url = vaccine.published_version.nonspec_url
+    return Response({'url': url}, status=status.HTTP_200_OK)

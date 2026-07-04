@@ -1,7 +1,13 @@
 from django.urls import include, path
 from rest_framework import routers
 
-from .views import InfectionViewSet, IngredientsViewSet, MethodsOfAdministrationViewSet, SearchSelectView
+from .views import (
+    InfectionViewSet,
+    IngredientsViewSet,
+    MethodsOfAdministrationViewSet,
+    SearchSelectView,
+    instruction_patient,
+)
 
 router = routers.DefaultRouter()
 router.register('infections', InfectionViewSet, basename='infections')
@@ -13,4 +19,5 @@ urlpatterns = [
     path('', include('contraindications.urls')),
     path('', include('instructions.urls')),
     path('search/select', SearchSelectView.as_view(), name='search-select'),
+    path('vaccines/{id}/instruction-patient', instruction_patient),
 ]

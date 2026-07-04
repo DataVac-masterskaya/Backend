@@ -105,3 +105,19 @@ class MethodsOfAdministrationCartSerializer(serializers.ModelSerializer):
             'description',
             'detail_image_url',
         )
+
+
+'''class VaccineCardInstructionPatientSerializer(serializers.ModelSerializer):
+    """Инструкция для неспециалистов"""
+
+    # instruction_patient = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = VaccineCardVersion
+        fields = (
+            'nonspec_url',
+        )
+
+    # def get_instruction_patient(self, obj):
+    #     """Возвращает инструкцию для неспециалистов."""
+    #     return obj.published_version.nonspec_url'''
