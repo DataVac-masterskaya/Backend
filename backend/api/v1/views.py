@@ -3,6 +3,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, viewsets
 # from rest_framework.response import Response
 
+from reference_books.models import Infection, Ingredients, MethodsOfAdministration
+
 from .filters import InfectionFilter, OrderingFilterSortBy
 from reference_books.models import (
     Infection, Ingredients, MethodsOfAdministration

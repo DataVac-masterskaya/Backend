@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     'reference_books.apps.ReferenceBooksConfig',
     'contraindications',
     'instructions',
+    'vaccines.apps.VaccinesConfig',
     'search',
 ]
 

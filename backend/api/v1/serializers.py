@@ -1,11 +1,12 @@
 # from drf_extra_fields.fields import Base64ImageField
+from rest_framework import serializers
+
 from reference_books.models import (
     Infection,
     Ingredients,
     MethodsOfAdministration,
-    # Vaccines,
 )
-from rest_framework import serializers
+from vaccines.models import VaccineCardVersion, VaccineCardVersionInfection
 
 
 class InfectionSerializer(serializers.ModelSerializer):
@@ -42,10 +43,12 @@ class InfectionCartSerializer(InfectionSerializer):
     def get_vaccines(self, obj):
         """
         Возвращает вакцины, связанные с инфекцией.
-
-        TODO: vaccines = Vaccines.objects.filter(infection=obj,)
         """
-        return ['vaccine1', 'vaccine2']
+        return VaccineCardVersion.objects.filter(
+            id__in=VaccineCardVersionInfection.objects
+            .filter(infection=obj)
+            .values('vaccine_card_version__id')
+        ).values_list('name', flat=True)
 
 
 class IngredientsSerializer(serializers.ModelSerializer):
