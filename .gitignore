@@ -123,3 +123,9 @@ htmlcov/
 .copilot
 .dotnet
 .gitconfig
+pyrefly.toml
+
+# Python history
+.python_history
+.bash_history
+.zsh_history

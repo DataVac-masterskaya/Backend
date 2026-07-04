@@ -1,20 +1,24 @@
-from django.db.models import F
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, viewsets
-# from rest_framework.response import Response
+from functools import partial
 
+from datavac.utils import increment_select_count
+from django_filters.rest_framework import DjangoFilterBackend
+from instructions.models import OfficialInstruction
+from rest_framework import filters, status, viewsets
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from contraindications.models import Contraindication
 from reference_books.models import Infection, Ingredients, MethodsOfAdministration
+from vaccines.models import VaccineCard
 
 from .filters import InfectionFilter, OrderingFilterSortBy
-from reference_books.models import (
-    Infection, Ingredients, MethodsOfAdministration
-)
 from .serializers import (
     InfectionCartSerializer,
     InfectionSerializer,
     IngredientsSerializer,
     MethodsOfAdministrationCartSerializer,
     MethodsOfAdministrationSerializer,
+    SearchSelectSerializer,
 )
 
 
@@ -32,23 +36,13 @@ class InfectionViewSet(viewsets.ReadOnlyModelViewSet):
             return InfectionCartSerializer
         return InfectionSerializer
 
-    '''def retrieve(self, request, *args, **kwargs):
-        """Показывает карточку инфекции."""
-        instance = self.get_object()
-        # Обновляем счётчик показов.
-        Infection.objects.filter(id=instance.id).update(search_select_count=F('search_select_count') + 1)
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)'''
-
 
 class IngredientsViewSet(viewsets.ReadOnlyModelViewSet):
     """Ингредиенты."""
 
     queryset = Ingredients.objects.all()
     serializer_class = IngredientsSerializer
-    filter_backends = [
-        DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter
-    ]
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
     filterset_fields = {
         'type': ['exact'],
     }
@@ -78,3 +72,34 @@ class MethodsOfAdministrationViewSet(viewsets.ReadOnlyModelViewSet):
         if self.action == 'retrieve':
             return MethodsOfAdministrationCartSerializer
         return MethodsOfAdministrationSerializer
+
+
+class SearchSelectView(APIView):
+    """Фиксирует выбор сущности в поисковой подсказке."""
+
+    SERVICE_MAP = {
+        'infection': partial(increment_select_count, Infection),
+        'ingredient': partial(increment_select_count, Ingredients),
+        'contraindication': partial(increment_select_count, Contraindication),
+        'instruction': partial(increment_select_count, OfficialInstruction),
+        'vaccineCard': partial(increment_select_count, VaccineCard),
+    }
+
+    def post(self, request):
+        """Увеличивает счётчик выбранной сущности по entityType и entityId."""
+        serializer = SearchSelectSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        entity_type = serializer.validated_data['entityType']
+        entity_id = serializer.validated_data['entityId']
+
+        service = self.SERVICE_MAP.get(entity_type)
+        if not service:
+            return Response(
+                {'error': f'Unknown entityType: {entity_type}'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        entity = service(entity_id)
+        return Response({'searchSelectCount': entity.search_select_count}, status=status.HTTP_200_OK)

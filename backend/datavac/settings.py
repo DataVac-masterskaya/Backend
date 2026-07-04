@@ -35,6 +35,15 @@ SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 APP_ENV = config('APP_ENV', default='development')
 
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': ('rest_framework.renderers.JSONRenderer',),
+    'DEFAULT_PARSER_CLASSES': (
+        'rest_framework.parsers.JSONParser',
+        'rest_framework.parsers.MultiPartParser',
+        'rest_framework.parsers.FormParser',
+    ),
+}
+
 
 ALLOWED_HOSTS = config(
     'ALLOWED_HOSTS',
@@ -63,6 +72,7 @@ INSTALLED_APPS = [
     'django_filters',
     'corsheaders',
     # Local
+    'audit.apps.AuditConfig',
     'api.apps.ApiConfig',
     'reference_books.apps.ReferenceBooksConfig',
     'contraindications',
@@ -80,6 +90,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'audit.middleware.AuditContextMiddleware',
 ]
 
 ROOT_URLCONF = 'datavac.urls'

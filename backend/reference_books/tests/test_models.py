@@ -1,10 +1,6 @@
-from decimal import Decimal
-
 import pytest
 
-from reference_books.models import (
-    CategoryInfection, Infection, MethodsOfAdministration
-)
+from reference_books.models import CategoryInfection, Infection, MethodsOfAdministration
 
 pytestmark = pytest.mark.django_db
 
@@ -32,8 +28,7 @@ def test_create_infection():
 def test_create_methods_of_administration():
     """Проверяет создание способа введения."""
     methods_of_administration = MethodsOfAdministration.objects.create(
-        name='способа введения',
-        description='Описание способа введения'
+        name='способа введения', description='Описание способа введения'
     )
 
     assert str(methods_of_administration) == 'способа введения'
