@@ -1,9 +1,11 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from vaccines.serializers import AdminVaccinesCreatedSerializers
+from vaccines.models import VaccineCard
+from vaccines.serializers import AdminVaccinesCreatedSerializers, AdminVaccinesDetailSerializers
 
 
 class AdminVaccineCreateAPIView(APIView):
@@ -19,3 +21,10 @@ class AdminVaccineCreateAPIView(APIView):
             {'id': version.vaccine_card.id, 'current_version_id': version.id, 'status': version.vaccine_card.status},
             status=status.HTTP_201_CREATED,
         )
+
+
+class AdminVaccineDetailAPIView(APIView):
+    def get(self, request, id):
+        vaccine_card = get_object_or_404(VaccineCard.objects.select_related('current_version'), id=id)
+        serializer = AdminVaccinesDetailSerializers(vaccine_card)
+        return Response(data=serializer.data)

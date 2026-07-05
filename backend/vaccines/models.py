@@ -64,6 +64,7 @@ class VaccineCard(models.Model):
     current_version = models.ForeignKey(
         'VaccineCardVersion',
         null=True,
+        blank=True,
         on_delete=models.SET_NULL,
         related_name='cards_as_current',
         verbose_name='Текущая версия в работе',
@@ -71,6 +72,7 @@ class VaccineCard(models.Model):
     published_version = models.ForeignKey(
         'VaccineCardVersion',
         null=True,
+        blank=True,
         on_delete=models.SET_NULL,
         related_name='cards_as_published',
         verbose_name='Опубликованная версия',

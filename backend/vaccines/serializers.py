@@ -163,3 +163,27 @@ class AdminVaccinesCreatedSerializers(serializers.ModelSerializer):
         vaccine_card.current_version = version
         vaccine_card.save(update_fields=['current_version', 'updated_at'])
         return version
+
+
+class VaccinesShortSerializers(serializers.ModelSerializer):
+    """Сериализатор для получения короткой инфы о версии вакцины."""
+
+    class Meta:
+        model = VaccineCardVersion
+        fields = (
+            'id',
+            'version_number',
+            'version_status',
+            'name',
+            'official_name',
+        )
+
+
+class AdminVaccinesDetailSerializers(serializers.ModelSerializer):
+    """Сериализатор для получения детальной информации о карточки вакцины."""
+
+    version = VaccinesShortSerializers(source='current_version', read_only=True)
+
+    class Meta:
+        model = VaccineCard
+        fields = ('id', 'current_version', 'published_version', 'status', 'is_visible', 'version')
