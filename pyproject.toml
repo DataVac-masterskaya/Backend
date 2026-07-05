@@ -30,6 +30,9 @@ dependencies = [
     "requests>=2.34.2",
     "drf-extra-fields>=3.7.0",
     "pillow>=12.2.0",
+    "celery>=5.6.3",
+    "redis>=8.0.1",
+    "django-celery-beat>=2.9.0",
 ]
 
 [tool.pytest.ini_options]
