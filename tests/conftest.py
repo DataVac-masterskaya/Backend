@@ -1,32 +1,24 @@
 import pytest
-from rest_framework.test import APIClient
 from django.contrib.auth import get_user_model
-from reference_books.models import (
-    Infection,
-    CategoryInfection,
-    Ingredients
-)
-from contraindications.models import (
-    Contraindication,
-    ContraindicationCategory
-)
+from rest_framework.test import APIClient
 
+from contraindications.models import Contraindication, ContraindicationCategory
+from reference_books.models import CategoryInfection, Infection, Ingredients
 
 User = get_user_model()
 
 
 @pytest.fixture
 def api_client():
+    """Создает API-клиент для pytest-тестов."""
     return APIClient()
 
 
-# tests/conftest.py
 @pytest.fixture
 def sample_infections(db):
-    category1 = CategoryInfection.objects.create(
-        name='virusnye')
-    category2 = CategoryInfection.objects.create(
-        name='bakterialnye')
+    """Создает инфекции и их категории для pytest-тестов."""
+    category1 = CategoryInfection.objects.create(name='virusnye')
+    category2 = CategoryInfection.objects.create(name='bakterialnye')
 
     infections = [
         Infection.objects.create(name='Гепатит B', category=category1),
@@ -39,7 +31,7 @@ def sample_infections(db):
 
 @pytest.fixture
 def sample_categories(db):
-    """Создает категории противопоказаний"""
+    """Создает категории противопоказаний для pytest-тестов."""
     category1 = ContraindicationCategory.objects.create(name='Абсолютные')
     category2 = ContraindicationCategory.objects.create(name='Относительные')
     return [category1, category2]
@@ -47,17 +39,13 @@ def sample_categories(db):
 
 @pytest.fixture
 def sample_contraindications(db, sample_categories):
-    """Создает противопоказания с привязкой к категориям"""
+    """Создает противопоказания с привязкой к категориям для pytest-тестов."""
     category1, category2 = sample_categories
 
-    contraindication1 = Contraindication.objects.create(
-        name='Аллергия на компоненты'
-    )
+    contraindication1 = Contraindication.objects.create(name='Аллергия на компоненты')
     contraindication1.categories.add(category1)
 
-    contraindication2 = Contraindication.objects.create(
-        name='Беременность'
-    )
+    contraindication2 = Contraindication.objects.create(name='Беременность')
     contraindication2.categories.add(category2)
 
     return [contraindication1, contraindication2]
@@ -65,18 +53,10 @@ def sample_contraindications(db, sample_categories):
 
 @pytest.fixture
 def sample_ingredients(db):
+    """Создает ингредиенты для pytest-тестов."""
     ingredients = [
-        Ingredients.objects.create(
-            name='Алюминия гидроксид',
-            type='Вспомогательное вещество'
-        ),
-        Ingredients.objects.create(
-            name='Анатоксин дифтерийный',
-            type='Действующее вещество'
-        ),
-        Ingredients.objects.create(
-            name='Анатоксин столбнячный',
-            type='Действующее вещество'
-        ),
+        Ingredients.objects.create(name='Алюминия гидроксид', type='Вспомогательное вещество'),
+        Ingredients.objects.create(name='Анатоксин дифтерийный', type='Действующее вещество'),
+        Ingredients.objects.create(name='Анатоксин столбнячный', type='Действующее вещество'),
     ]
     return ingredients
