@@ -4,11 +4,7 @@ from django.db import models
 class ContraindicationCategory(models.Model):
     """Хранит категорию противопоказаний к вакцинации."""
 
-    name = models.CharField(
-        max_length=255,
-        unique=True,
-        verbose_name='Название категории'
-    )
+    name = models.CharField(max_length=255, unique=True, verbose_name='Название категории')
 
     class Meta:
         """Задает таблицу, сортировку и названия модели категории."""
@@ -26,11 +22,7 @@ class ContraindicationCategory(models.Model):
 class Contraindication(models.Model):
     """Хранит противопоказание и его поисковые служебные поля."""
 
-    name = models.CharField(
-        max_length=255,
-        unique=True,
-        verbose_name='Название противопоказания'
-    )
+    name = models.CharField(max_length=255, unique=True, verbose_name='Название противопоказания')
     old_id = models.IntegerField(
         verbose_name='Старый ID',
         help_text='ID из старой базы',
@@ -43,18 +35,10 @@ class Contraindication(models.Model):
         related_name='contraindications',
         db_table='contraindication_categories_contraindications',
         blank=True,
-        verbose_name='Категории'
+        verbose_name='Категории',
     )
-    search_select_count = models.PositiveBigIntegerField(
-        default=0,
-        verbose_name='Количество поисковых запросов'
-    )
-    search_weight = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        default=0,
-        verbose_name='Поисковой вес'
-    )
+    search_select_count = models.PositiveBigIntegerField(default=0, verbose_name='Количество поисковых запросов')
+    search_weight = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name='Поисковой вес')
 
     class Meta:
         """Задает таблицу, сортировку и названия модели противопоказания."""
