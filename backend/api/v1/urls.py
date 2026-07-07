@@ -2,6 +2,7 @@ from django.urls import include, path
 from rest_framework import routers
 
 from .views import (
+    ExternalFeedbackView,
     InfectionViewSet,
     IngredientsViewSet,
     MethodsOfAdministrationViewSet,
@@ -20,4 +21,5 @@ urlpatterns = [
     path('', include('instructions.urls')),
     path('search/select', SearchSelectView.as_view(), name='search-select'),
     path('vaccines/{id}/instruction-patient', instruction_patient),
+    path('external/feedback', ExternalFeedbackView.as_view(), name='external-feedback'),
 ]

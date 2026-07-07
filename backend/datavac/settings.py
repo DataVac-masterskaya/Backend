@@ -69,13 +69,16 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # Additional
     'rest_framework',
-    'django_filters',
     'corsheaders',
+    # 'djoser',
     # Local
+    #'app1',
+    #'app2',
+    'contraindications.apps.ContraindicationsConfig',
+    'users.apps.UsersConfig',
     'audit.apps.AuditConfig',
     'api.apps.ApiConfig',
     'reference_books.apps.ReferenceBooksConfig',
-    'contraindications',
     'instructions',
     'vaccines.apps.VaccinesConfig',
     'search',

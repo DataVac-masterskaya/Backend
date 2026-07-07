@@ -36,7 +36,7 @@ dependencies = [
 addopts = "-v --tb=short"
 DJANGO_SETTINGS_MODULE = "datavac.settings"
 pythonpath = ["backend"]
-testpaths = ["backend/contraindications/tests", "backend/instructions/tests", "backend/api/v1/tests", "backend/search/tests", "backend/tests"]
+testpaths = [ "backend/tests", "backend/contraindications/tests", "backend/instructions/tests", "backend/search/tests", "backend/users/tests", "backend/api/v1/tests"]
 
 [tool.ruff]
 line-length = 120
