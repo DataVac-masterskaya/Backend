@@ -72,3 +72,50 @@ class ContraindicationSearchSerializer(serializers.ModelSerializer):
 
         model = Contraindication
         fields = ('id', 'name', 'score')
+
+
+class VaccineContraindicationSerializer(serializers.Serializer):
+    """Описывает противопоказание в краткой карточке вакцины."""
+
+    id = serializers.IntegerField()
+    name = serializers.CharField()
+    type = serializers.CharField()
+
+
+class VaccineAdministrationMethodSerializer(serializers.Serializer):
+    """Описывает способ введения в краткой карточке вакцины."""
+
+    id = serializers.IntegerField()
+    name = serializers.CharField()
+    ageGroup = serializers.CharField(allow_blank=True, allow_null=True)
+    note = serializers.CharField(allow_blank=True, allow_null=True)
+
+
+class ContraindicationVaccineSerializer(serializers.Serializer):
+    """Описывает вакцину в ответе списка вакцин по противопоказанию."""
+
+    id = serializers.IntegerField()
+    name = serializers.CharField(allow_blank=True, allow_null=True)
+    officialName = serializers.CharField(allow_blank=True, allow_null=True)
+    minAge = serializers.IntegerField(allow_null=True)
+    maxAge = serializers.IntegerField(allow_null=True)
+    pregnancyUsageStatus = serializers.CharField(allow_blank=True, allow_null=True)
+    contraindications = VaccineContraindicationSerializer(many=True)
+    administrationMethods = VaccineAdministrationMethodSerializer(many=True)
+
+
+class ContraindicationVaccinesResponseSerializer(serializers.Serializer):
+    """Описывает ответ списка вакцин по противопоказанию."""
+
+    contraindicationId = serializers.IntegerField()
+    vaccines = ContraindicationVaccineSerializer(many=True)
+
+
+class SelectCounterResponseSerializer(serializers.Serializer):
+    """Описывает ответ обновления счетчика выбора."""
+
+    id = serializers.IntegerField()
+    searchSelectCount = serializers.IntegerField()
+
+    class Meta:
+        ref_name = 'ContraindicationSelectCounterResponse'

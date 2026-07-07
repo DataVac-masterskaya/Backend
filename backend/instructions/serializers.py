@@ -63,3 +63,20 @@ class OfficialInstructionSearchSerializer(serializers.ModelSerializer):
 
         model = OfficialInstruction
         fields = ('id', 'title', 'url', 'source', 'score')
+
+
+class OfficialInstructionVaccinesResponseSerializer(serializers.Serializer):
+    """Описывает ответ списка вакцин по официальной инструкции."""
+
+    instructionId = serializers.IntegerField()
+    vaccines = serializers.ListField(child=serializers.DictField())
+
+
+class SelectCounterResponseSerializer(serializers.Serializer):
+    """Описывает ответ обновления счетчика выбора."""
+
+    id = serializers.IntegerField()
+    searchSelectCount = serializers.IntegerField()
+
+    class Meta:
+        ref_name = 'OfficialInstructionSelectCounterResponse'

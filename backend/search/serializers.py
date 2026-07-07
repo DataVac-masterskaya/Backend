@@ -22,3 +22,27 @@ class SearchSelectSerializer(serializers.Serializer):
         ),
     )
     entityId = serializers.IntegerField(min_value=1)
+
+    class Meta:
+        ref_name = 'GlobalSearchSelect'
+
+
+class SearchSuggestionsResponseSerializer(serializers.Serializer):
+    """Описывает сгруппированный ответ глобального поиска."""
+
+    contraindications = SearchSuggestionSerializer(many=True)
+    infections = SearchSuggestionSerializer(many=True)
+    ingredients = SearchSuggestionSerializer(many=True)
+    instructions = SearchSuggestionSerializer(many=True)
+    vaccines = SearchSuggestionSerializer(many=True)
+
+
+class SearchSelectResponseSerializer(serializers.Serializer):
+    """Описывает ответ фиксации выбора поисковой подсказки."""
+
+    entityType = serializers.CharField()
+    entityId = serializers.IntegerField()
+    searchSelectCount = serializers.IntegerField()
+
+    class Meta:
+        ref_name = 'GlobalSearchSelectResponse'

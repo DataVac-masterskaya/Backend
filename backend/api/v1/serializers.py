@@ -23,6 +23,18 @@ class SearchSelectSerializer(serializers.Serializer):
             raise serializers.ValidationError(f'Allowed types: {", ".join(self.ALLOWED_TYPES)}')
         return value
 
+    class Meta:
+        ref_name = 'ApiV1SearchSelect'
+
+
+class SearchSelectResponseSerializer(serializers.Serializer):
+    """Описывает ответ фиксации выбора сущности в поиске."""
+
+    searchSelectCount = serializers.IntegerField()
+
+    class Meta:
+        ref_name = 'ApiV1SearchSelectResponse'
+
 
 class InfectionSerializer(serializers.ModelSerializer):
     """Список инфекций."""
@@ -55,7 +67,7 @@ class InfectionCartSerializer(InfectionSerializer):
             'vaccines',
         )
 
-    def get_vaccines(self, obj):
+    def get_vaccines(self, obj) -> list[str]:
         """
         Возвращает вакцины, связанные с инфекцией.
 
