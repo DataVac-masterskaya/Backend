@@ -258,7 +258,7 @@ def test_import_contraindications_wrong_sheet_name(contraindication_no_sheet):
 
 @pytest.mark.django_db
 def test_import_contraindications_wrong_column_name(contraindication_wrong_column):
-    """Проверяет, что при загрузке файла с неправильным названием колонки выпадает ошибка."""    
+    """Проверяет, что при загрузке файла с неправильным названием колонки выпадает ошибка."""
     with pytest.raises(CommandError):
         call_command('import_contraindications', contraindication_wrong_column)
 

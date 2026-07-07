@@ -17,6 +17,7 @@ def test_profile_created_when_user_created(test_user):
     """Проверяет, что Profile создается при создании пользователя."""
     assert Profile.objects.filter(user=test_user).exists()
 
+
 @pytest.mark.django_db
 def test_one_profile_per_user(test_user):
     """Проверяет, что создается только один Profile для пользователя."""
