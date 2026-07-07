@@ -9,6 +9,33 @@ from reference_books.models import (
 )
 
 
+class SearchSelectSerializer(serializers.Serializer):
+    """Сериализатор для фиксации выбора сущности в поиске."""
+
+    ALLOWED_TYPES = ('infection', 'ingredient', 'contraindication', 'instruction', 'vaccineCard')
+
+    entityType = serializers.CharField()
+    entityId = serializers.IntegerField(min_value=1)
+
+    def validate_entityType(self, value):
+        """Проверяет что entityType входит в список допустимых типов."""
+        if value not in self.ALLOWED_TYPES:
+            raise serializers.ValidationError(f'Allowed types: {", ".join(self.ALLOWED_TYPES)}')
+        return value
+
+    class Meta:
+        ref_name = 'ApiV1SearchSelect'
+
+
+class SearchSelectResponseSerializer(serializers.Serializer):
+    """Описывает ответ фиксации выбора сущности в поиске."""
+
+    searchSelectCount = serializers.IntegerField()
+
+    class Meta:
+        ref_name = 'ApiV1SearchSelectResponse'
+
+
 class InfectionSerializer(serializers.ModelSerializer):
     """Список инфекций."""
 
@@ -40,7 +67,7 @@ class InfectionCartSerializer(InfectionSerializer):
             'vaccines',
         )
 
-    def get_vaccines(self, obj):
+    def get_vaccines(self, obj) -> list[str]:
         """
         Возвращает вакцины, связанные с инфекцией.
 

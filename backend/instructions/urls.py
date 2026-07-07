@@ -5,7 +5,7 @@ from instructions.views import (
     OfficialInstructionListView,
     OfficialInstructionSearchView,
     OfficialInstructionVaccinesView,
-    select_official_instruction,
+    SelectOfficialInstructionView,
 )
 
 urlpatterns = [
@@ -31,7 +31,7 @@ urlpatterns = [
     ),
     path(
         'instructions/official/<int:pk>/select/',
-        select_official_instruction,
+        SelectOfficialInstructionView.as_view(),
         name='official-instruction-select',
     ),
 ]

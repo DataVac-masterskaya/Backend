@@ -1,19 +1,12 @@
 import pytest
 from rest_framework import status
-from rest_framework.test import APIClient
 
 from contraindications.models import Contraindication, ContraindicationCategory
 
 pytestmark = pytest.mark.django_db
 
 
-@pytest.fixture
-def api_client() -> APIClient:
-    """Создает API-клиент для pytest-тестов."""
-    return APIClient()
-
-
-def test_list_categories(api_client: APIClient):
+def test_list_categories(api_client):
     """Проверяет получение категорий в алфавитном порядке."""
     ContraindicationCategory.objects.create(name='Иммунодефициты')
     ContraindicationCategory.objects.create(name='Аллергии')
@@ -27,7 +20,7 @@ def test_list_categories(api_client: APIClient):
     ]
 
 
-def test_list_contraindications(api_client: APIClient):
+def test_list_contraindications(api_client):
     """Проверяет получение списка противопоказаний."""
     Contraindication.objects.create(name='Аллергия на компонент вакцины')
 
@@ -38,7 +31,7 @@ def test_list_contraindications(api_client: APIClient):
     assert response.data[0]['name'] == 'Аллергия на компонент вакцины'
 
 
-def test_filter_contraindications_by_category(api_client: APIClient):
+def test_filter_contraindications_by_category(api_client):
     """Проверяет фильтрацию противопоказаний по категории."""
     allergies = ContraindicationCategory.objects.create(name='Аллергии')
     immune = ContraindicationCategory.objects.create(name='Иммунодефициты')
@@ -57,7 +50,7 @@ def test_filter_contraindications_by_category(api_client: APIClient):
 
 
 def test_filter_contraindications_rejects_invalid_category_id(
-    api_client: APIClient,
+    api_client,
 ):
     """Проверяет ошибку при некорректном идентификаторе категории."""
     response = api_client.get('/api/v1/contraindications/?categoryId=abc')
@@ -65,7 +58,7 @@ def test_filter_contraindications_rejects_invalid_category_id(
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
-def test_search_contraindications_by_name(api_client: APIClient):
+def test_search_contraindications_by_name(api_client):
     """Проверяет поиск противопоказаний по названию."""
     Contraindication.objects.create(name='Аллергия')
     Contraindication.objects.create(name='Иммунодефицит')
@@ -77,7 +70,7 @@ def test_search_contraindications_by_name(api_client: APIClient):
     assert response.data[0]['name'] == 'Аллергия'
 
 
-def test_detail_contraindication(api_client: APIClient):
+def test_detail_contraindication(api_client):
     """Проверяет получение детальной информации о противопоказании."""
     category = ContraindicationCategory.objects.create(name='Аллергии')
     contraindication = Contraindication.objects.create(name='Аллергия')
@@ -92,27 +85,34 @@ def test_detail_contraindication(api_client: APIClient):
     assert response.data['vaccines'] == []
 
 
-def test_detail_contraindication_returns_404(api_client: APIClient):
+def test_detail_contraindication_returns_404(api_client):
     """Проверяет ответ 404 для отсутствующего противопоказания."""
     response = api_client.get('/api/v1/contraindications/999/')
 
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
-def test_vaccines_endpoint_returns_stub(api_client: APIClient):
-    """Проверяет заглушку списка вакцин по противопоказанию."""
-    contraindication = Contraindication.objects.create(name='Аллергия')
+def test_vaccines_endpoint_returns_related_vaccines(
+    api_client,
+    vaccine_with_contraindication,
+    contraindication_vaccines_url,
+):
+    """Проверяет список вакцин по противопоказанию."""
+    contraindication = vaccine_with_contraindication['contraindication']
+    vaccine_card = vaccine_with_contraindication['vaccine_card']
 
     response = api_client.get(
-        f'/api/v1/contraindications/{contraindication.id}/vaccines/',
+        contraindication_vaccines_url(contraindication.id),
     )
 
     assert response.status_code == status.HTTP_200_OK
     assert response.data['contraindicationId'] == contraindication.id
-    assert response.data['vaccines'] == []
+    assert response.data['vaccines'][0]['id'] == vaccine_card.id
+    assert response.data['vaccines'][0]['name'] == 'Вакцина АДС-М'
+    assert response.data['vaccines'][0]['contraindications'][0]['name'] == 'Аллергия'
 
 
-def test_search_endpoint(api_client: APIClient):
+def test_search_endpoint(api_client):
     """Проверяет отдельный endpoint поисковых подсказок."""
     Contraindication.objects.create(name='Аллергия')
 
@@ -122,7 +122,7 @@ def test_search_endpoint(api_client: APIClient):
     assert response.data[0]['name'] == 'Аллергия'
 
 
-def test_select_endpoint_increments_select_count(api_client: APIClient):
+def test_select_endpoint_increments_select_count(api_client):
     """Проверяет увеличение счетчика выбора подсказки."""
     contraindication = Contraindication.objects.create(name='Аллергия')
 

@@ -24,6 +24,32 @@ docker compose exec -it web python backend/manage.py createsuperuser
 ### Доступ к приложению
 * Откройте http://localhost:8000/ в браузере
 
+## Работа с API
+
+После запуска проекта документация API доступна по адресам:
+
+* Swagger UI: http://localhost:8000/api/docs/
+* OpenAPI schema JSON: http://localhost:8000/api/schema/
+
+Swagger UI поддерживает выполнение запросов через `Try it out`. Для авторизованных
+эндпоинтов нажмите `Authorize` и передайте токен в формате:
+
+```text
+Bearer <token>
+```
+
+Окно `Authorize` не выполняет вход пользователя и не проверяет токен при вводе.
+Swagger UI только сохраняет это значение и добавляет его в заголовок
+`Authorization` при запросах через `Try it out`. Проверка токена выполняется на
+стороне API для защищённых эндпоинтов.
+
+Скачать OpenAPI-схему можно из браузера по адресу
+http://localhost:8000/api/schema/ или командой:
+
+```bash
+curl -o openapi-schema.json http://localhost:8000/api/schema/
+```
+
 ## Установка новых зависимостей
 ### Запускаем uv внутри временного контейнера с правами root 
 ```bash

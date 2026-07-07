@@ -1,10 +1,17 @@
-from django.db.models import DecimalField, ExpressionWrapper, F, QuerySet
+from django.db.models import DecimalField, ExpressionWrapper, F, Q, QuerySet
 from django.db.models.functions import Lower
 from django.shortcuts import get_object_or_404
-from instructions.services import increment_official_instruction_select_count, search_official_instructions
+from instructions.services import (
+    increment_official_instruction_select_count,
+    search_official_instructions,
+)
 
-from contraindications.services import increment_contraindication_select_count, search_contraindications
+from contraindications.services import (
+    increment_contraindication_select_count,
+    search_contraindications,
+)
 from reference_books.models import Infection, Ingredients
+from vaccines.models import VaccineCard
 
 SUGGESTIONS_LIMIT = 6
 
@@ -41,6 +48,31 @@ def search_ingredients(query: str, limit: int = SUGGESTIONS_LIMIT) -> QuerySet:
     return _search_by_name(Ingredients.objects.all(), query, limit)
 
 
+def search_vaccine_cards(query: str, limit: int = SUGGESTIONS_LIMIT) -> QuerySet:
+    """Ищет видимые опубликованные карточки вакцин для глобального поиска."""
+    queryset = VaccineCard.objects.filter(
+        is_visible=True,
+        published_version__isnull=False,
+    ).select_related('published_version')
+    normalized_query = query.strip()
+
+    if normalized_query:
+        queryset = queryset.filter(
+            Q(published_version__name__icontains=normalized_query)
+            | Q(published_version__official_name__icontains=normalized_query),
+        )
+
+    search_score = ExpressionWrapper(
+        F('search_weight') + F('search_select_count'),
+        output_field=DecimalField(max_digits=20, decimal_places=2),
+    )
+
+    return queryset.annotate(
+        search_score=search_score,
+        lower_name=Lower('published_version__name'),
+    ).order_by('-search_score', 'lower_name')[:limit]
+
+
 def _serialize_name_suggestions(items: QuerySet) -> list[dict]:
     """Приводит сущности с полем name к единому формату поисковой подсказки."""
     return [
@@ -65,16 +97,23 @@ def _serialize_instruction_suggestions(items: QuerySet) -> list[dict]:
     ]
 
 
+def _serialize_vaccine_suggestions(items: QuerySet) -> list[dict]:
+    """Приводит карточки вакцин к единому формату поисковой подсказки."""
+    return [
+        {
+            'id': item.id,
+            'name': item.published_version.name or item.published_version.official_name or '',
+            'score': item.search_score,
+        }
+        for item in items
+    ]
+
+
 def get_search_suggestions(
     query: str,
     limit: int = SUGGESTIONS_LIMIT,
 ) -> dict[str, list[dict]]:
-    """
-    Возвращает поисковые подсказки, сгруппированные по сущностям DataVac.
-
-    TODO: Подключить группу vaccines после реализации публичных моделей
-    и правил видимости опубликованных версий.
-    """
+    """Возвращает поисковые подсказки, сгруппированные по сущностям DataVac."""
     return {
         'contraindications': _serialize_name_suggestions(
             search_contraindications(query, limit),
@@ -87,6 +126,9 @@ def get_search_suggestions(
         ),
         'instructions': _serialize_instruction_suggestions(
             search_official_instructions(query, limit),
+        ),
+        'vaccines': _serialize_vaccine_suggestions(
+            search_vaccine_cards(query, limit),
         ),
     }
 
@@ -107,6 +149,14 @@ def increment_ingredient_select_count(ingredient_id: int) -> Ingredients:
     return get_object_or_404(Ingredients, id=ingredient_id)
 
 
+def increment_vaccine_card_select_count(vaccine_card_id: int) -> VaccineCard:
+    """Увеличивает счетчик выбора поисковой подсказки для карточки вакцины."""
+    VaccineCard.objects.filter(id=vaccine_card_id).update(
+        search_select_count=F('search_select_count') + 1,
+    )
+    return get_object_or_404(VaccineCard, id=vaccine_card_id)
+
+
 def select_search_suggestion(entity_type: str, entity_id: int):
     """Фиксирует выбор поисковой подсказки и возвращает обновленную сущность."""
     handlers = {
@@ -114,5 +164,6 @@ def select_search_suggestion(entity_type: str, entity_id: int):
         'infection': increment_infection_select_count,
         'ingredient': increment_ingredient_select_count,
         'instruction': increment_official_instruction_select_count,
+        'vaccineCard': increment_vaccine_card_select_count,
     }
     return handlers[entity_type](entity_id)

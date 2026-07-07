@@ -35,6 +35,15 @@ SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 APP_ENV = config('APP_ENV', default='development')
 
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': ('rest_framework.renderers.JSONRenderer',),
+    'DEFAULT_PARSER_CLASSES': (
+        'rest_framework.parsers.JSONParser',
+        'rest_framework.parsers.MultiPartParser',
+        'rest_framework.parsers.FormParser',
+    ),
+}
+
 
 ALLOWED_HOSTS = config(
     'ALLOWED_HOSTS',
@@ -61,17 +70,50 @@ INSTALLED_APPS = [
     # Additional
     'rest_framework',
     'corsheaders',
+    'drf_spectacular',
     # 'djoser',
     # Local
     #'app1',
     #'app2',
     'contraindications.apps.ContraindicationsConfig',
     'users.apps.UsersConfig',
+    'audit.apps.AuditConfig',
+    'api.apps.ApiConfig',
     'reference_books.apps.ReferenceBooksConfig',
     'instructions',
     'vaccines.apps.VaccinesConfig',
     'search',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'DataVac API',
+    'DESCRIPTION': 'API для справочников, поиска и карточек вакцин DataVac.',
+    'VERSION': '0.1.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'SWAGGER_UI_SETTINGS': {
+        'deepLinking': True,
+        'persistAuthorization': True,
+    },
+    'AUTHENTICATION_WHITELIST': [],
+    'APPEND_COMPONENTS': {
+        'securitySchemes': {
+            'BearerAuth': {
+                'type': 'http',
+                'scheme': 'bearer',
+                'bearerFormat': 'JWT',
+            },
+        },
+    },
+    'SECURITY': [
+        {
+            'BearerAuth': [],
+        },
+    ],
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -82,6 +124,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'audit.middleware.AuditContextMiddleware',
 ]
 
 ROOT_URLCONF = 'datavac.urls'
