@@ -6,23 +6,26 @@ from users.models import Profile
 User = get_user_model()
 
 
+@pytest.fixture
+def test_user():
+    """Фикстура для создания тестового пользователя."""
+    return User.objects.create_user(username='test', password='12345')
+
+
 @pytest.mark.django_db
-def test_profile_created_when_user_created():
+def test_profile_created_when_user_created(test_user):
     """Проверяет, что Profile создается при создании пользователя."""
-    user = User.objects.create_user(username='test', password='12345')
-    assert Profile.objects.filter(user=user).exists()
+    assert Profile.objects.filter(user=test_user).exists()
 
 
 @pytest.mark.django_db
-def test_one_profile_per_user():
+def test_one_profile_per_user(test_user):
     """Проверяет, что создается только один Profile для пользователя."""
-    user = User.objects.create_user(username='test', password='12345')
-    assert Profile.objects.filter(user=user).count() == 1
+    assert Profile.objects.filter(user=test_user).count() == 1
 
 
 @pytest.mark.django_db
-def test_profile_user_relation():
+def test_profile_user_relation(test_user):
     """Проверяет, что Profile создается для конкретного пользователя."""
-    user = User.objects.create_user(username='test', password='12345')
-    profile = Profile.objects.get(user=user)
-    assert profile.user == user
+    profile = Profile.objects.get(user=test_user)
+    assert profile.user == test_user
