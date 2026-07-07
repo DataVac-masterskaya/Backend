@@ -31,6 +31,7 @@ dependencies = [
     "drf-extra-fields>=3.7.0",
     "pillow>=12.2.0",
     "drf-spectacular>=0.29.0",
+    "openpyxl>=3.1.5",
 ]
 
 [tool.pytest.ini_options]

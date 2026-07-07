@@ -95,3 +95,21 @@ docker compose down -v
 docker compose build web
 docker compose up -d
 ```
+
+
+## Импорт противопоказаний
+
+Для импорта противопоказаний из Excel-файла используется команда:
+
+```bash
+python manage.py import_contraindications path/to/file.xlsx
+```
+
+Файл должен содержать лист contraindications_list с колонками:
+``` bash
+contraindication_ID
+
+contraindication_name
+```
+
+При повторном импорте существующие записи обновляются по contraindication_ID.
