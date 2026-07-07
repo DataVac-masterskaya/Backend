@@ -121,7 +121,5 @@ def instruction_patient(request, id):
         VaccineCard.objects.select_related('published_version'),
         id=id,
     )
-    url = None
-    if vaccine.published_version:
-        url = vaccine.published_version.nonspec_url
+    url = getattr(vaccine.published_version, 'nonspec_url', None)
     return Response({'url': url}, status=status.HTTP_200_OK)
