@@ -1,6 +1,7 @@
 from functools import partial
 
 from datavac.utils import increment_select_count
+from django.shortcuts import redirect
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import OpenApiParameter, OpenApiTypes, extend_schema
 from instructions.models import OfficialInstruction
@@ -95,6 +96,16 @@ class MethodsOfAdministrationViewSet(viewsets.ReadOnlyModelViewSet):
         if self.action == 'retrieve':
             return MethodsOfAdministrationCartSerializer
         return MethodsOfAdministrationSerializer
+
+
+class ExternalFeedbackView(APIView):
+    """Редирект на страницу обратной связи внешнего сайта."""
+
+    FEEDBACK_URL = 'https://vaccina.info/questions'
+
+    def get(self, request):
+        """Перенаправляет на страницу обратной связи."""
+        return redirect(self.FEEDBACK_URL)
 
 
 class SearchSelectView(APIView):
