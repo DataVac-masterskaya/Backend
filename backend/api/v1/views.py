@@ -3,7 +3,7 @@ from functools import partial
 from datavac.utils import increment_select_count
 from django.shortcuts import redirect
 from django_filters.rest_framework import DjangoFilterBackend
-from drf_spectacular.utils import OpenApiParameter, OpenApiTypes, extend_schema
+from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, OpenApiTypes, extend_schema
 from instructions.models import OfficialInstruction
 from rest_framework import filters, status, viewsets
 from rest_framework.response import Response
@@ -103,6 +103,12 @@ class ExternalFeedbackView(APIView):
 
     FEEDBACK_URL = 'https://vaccina.info/questions'
 
+    @extend_schema(
+        request=None,
+        responses={
+            status.HTTP_302_FOUND: OpenApiResponse(description='Редирект на внешнюю страницу обратной связи.'),
+        },
+    )
     def get(self, request):
         """Перенаправляет на страницу обратной связи."""
         return redirect(self.FEEDBACK_URL)

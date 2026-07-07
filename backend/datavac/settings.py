@@ -98,6 +98,7 @@ SPECTACULAR_SETTINGS = {
         'deepLinking': True,
         'persistAuthorization': True,
     },
+    'AUTHENTICATION_WHITELIST': [],
     'APPEND_COMPONENTS': {
         'securitySchemes': {
             'BearerAuth': {
