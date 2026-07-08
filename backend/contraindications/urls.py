@@ -6,7 +6,7 @@ from contraindications.views import (
     ContraindicationListView,
     ContraindicationSearchView,
     ContraindicationVaccinesView,
-    select_contraindication,
+    SelectContraindicationView,
 )
 
 # `contraindications` - публичный API-префикс справочника противопоказаний.
@@ -38,7 +38,7 @@ urlpatterns = [
     ),
     path(
         'contraindications/<int:pk>/select/',
-        select_contraindication,
+        SelectContraindicationView.as_view(),
         name='contraindication-select',
     ),
 ]
