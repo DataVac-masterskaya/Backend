@@ -56,12 +56,6 @@ class InfectionViewSet(viewsets.ReadOnlyModelViewSet):
             return InfectionCartSerializer
         return InfectionSerializer
 
-    def retrieve(self, request, *args, **kwargs):
-        """Показывает карточку инфекции."""
-        instance = self.get_object()
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
-
 
 class IngredientsViewSet(viewsets.ReadOnlyModelViewSet):
     """Ингредиенты."""

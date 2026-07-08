@@ -5,8 +5,8 @@ from reference_books.models import (
     Infection,
     Ingredients,
     MethodsOfAdministration,
-    # Vaccines,
 )
+from vaccines.models import VaccineCardVersion, VaccineCardVersionInfection
 
 
 class SearchSelectSerializer(serializers.Serializer):
@@ -67,13 +67,11 @@ class InfectionCartSerializer(InfectionSerializer):
             'vaccines',
         )
 
-    def get_vaccines(self, obj) -> list[str]:
-        """
-        Возвращает вакцины, связанные с инфекцией.
-
-        TODO: vaccines = Vaccines.objects.filter(infection=obj,)
-        """
-        return ['vaccine1', 'vaccine2']
+    def get_vaccines(self, obj):
+        """Возвращает вакцины, связанные с инфекцией."""
+        return VaccineCardVersion.objects.filter(
+            id__in=VaccineCardVersionInfection.objects.filter(infection=obj).values('vaccine_card_version__id')
+        ).values_list('name', flat=True)
 
 
 class IngredientsSerializer(serializers.ModelSerializer):
