@@ -44,7 +44,7 @@ services:
 #      - web
 #      - redis
 #      - rabbitmq
-#    command: python -m celery -A server.celery_app:app worker --loglevel=info
+#    command: python -m celery -A backend.datavac.celery:app worker --loglevel=info
 #
 #  celery_beat:
 #    <<: *web
@@ -54,7 +54,7 @@ services:
 #      - rabbitmq
 #      - celery_worker
 #    command: >
-#      python -m celery -A server.celery_app:app beat
+#      python -m celery -A backend.datavac.celery:app beat
 #      --loglevel=info
 #      --scheduler django_celery_beat.schedulers:DatabaseScheduler
 #
