@@ -166,7 +166,7 @@ class AdminVaccinesCreatedSerializers(serializers.ModelSerializer):
 
 
 class VaccinesShortSerializers(serializers.ModelSerializer):
-    """Сериализатор для получения короткой инфы о версии вакцины."""
+    """Сериализатор для получения короткой информации о версии вакцины."""
 
     class Meta:
         model = VaccineCardVersion
@@ -187,3 +187,13 @@ class AdminVaccinesDetailSerializers(serializers.ModelSerializer):
     class Meta:
         model = VaccineCard
         fields = ('id', 'current_version', 'published_version', 'status', 'is_visible', 'version')
+
+
+class AdminVaccineCreateResponseSerializer(serializers.ModelSerializer):
+    """Сериализатор для ответа создания карточки вакцины."""
+
+    current_version_id = serializers.IntegerField(source='current_version.id')
+
+    class Meta:
+        model = VaccineCard
+        fields = ('id', 'current_version_id', 'status')

@@ -35,6 +35,15 @@ SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 APP_ENV = config('APP_ENV', default='development')
 
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': ('rest_framework.renderers.JSONRenderer',),
+    'DEFAULT_PARSER_CLASSES': (
+        'rest_framework.parsers.JSONParser',
+        'rest_framework.parsers.MultiPartParser',
+        'rest_framework.parsers.FormParser',
+    ),
+}
+
 
 ALLOWED_HOSTS = config(
     'ALLOWED_HOSTS',
@@ -60,16 +69,52 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # Additional
     'rest_framework',
-    'django_filters',
     'corsheaders',
+    'drf_spectacular',
+    # 'djoser',
     # Local
+    #'app1',
+    #'app2',
+    'contraindications.apps.ContraindicationsConfig',
+    'users.apps.UsersConfig',
+    'audit.apps.AuditConfig',
     'api.apps.ApiConfig',
     'reference_books.apps.ReferenceBooksConfig',
-    'contraindications',
     'instructions',
     'vaccines.apps.VaccinesConfig',
     'search',
+    'notifications.apps.NotificationsConfig',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'DataVac API',
+    'DESCRIPTION': 'API для справочников, поиска и карточек вакцин DataVac.',
+    'VERSION': '0.1.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'SWAGGER_UI_SETTINGS': {
+        'deepLinking': True,
+        'persistAuthorization': True,
+    },
+    'AUTHENTICATION_WHITELIST': [],
+    'APPEND_COMPONENTS': {
+        'securitySchemes': {
+            'BearerAuth': {
+                'type': 'http',
+                'scheme': 'bearer',
+                'bearerFormat': 'JWT',
+            },
+        },
+    },
+    'SECURITY': [
+        {
+            'BearerAuth': [],
+        },
+    ],
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -80,6 +125,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'audit.middleware.AuditContextMiddleware',
 ]
 
 ROOT_URLCONF = 'datavac.urls'
@@ -227,3 +273,19 @@ LOGGING = {
         },
     },
 }
+
+
+# Настройки Celery
+CELERY_BROKER_URL = 'redis://redis:6379/0'
+CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
+
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_ACCEPT_CONTENT = ['json']
+
+CELERY_TIMEZONE = 'UTC'
+CELERY_ENABLE_UTC = True
+
+# Настройки воркеров
+CELERY_WORKER_CONCURRENCY = 4
+CELERY_WORKER_MAX_TASKS_PER_CHILD = 1000

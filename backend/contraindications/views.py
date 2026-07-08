@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
+from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import status
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -10,6 +10,8 @@ from contraindications.serializers import (
     ContraindicationDetailSerializer,
     ContraindicationListSerializer,
     ContraindicationSearchSerializer,
+    ContraindicationVaccinesResponseSerializer,
+    SelectCounterResponseSerializer,
 )
 from contraindications.services import (
     get_vaccines_by_contraindication,
@@ -21,6 +23,7 @@ from contraindications.services import (
 class ContraindicationCategoryListView(APIView):
     """Отдает список категорий противопоказаний."""
 
+    @extend_schema(responses=ContraindicationCategorySerializer(many=True))
     def get(self, request):
         """Возвращает категории противопоказаний в алфавитном порядке."""
         categories = ContraindicationCategory.objects.order_by('name')
@@ -31,6 +34,23 @@ class ContraindicationCategoryListView(APIView):
 class ContraindicationListView(APIView):
     """Отдает список противопоказаний с фильтрацией и поиском."""
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name='categoryId',
+                description='ID категории противопоказаний.',
+                required=False,
+                type=int,
+            ),
+            OpenApiParameter(
+                name='search',
+                description='Поиск по названию противопоказания.',
+                required=False,
+                type=str,
+            ),
+        ],
+        responses=ContraindicationListSerializer(many=True),
+    )
     def get(self, request):
         """Возвращает список противопоказаний по query-параметрам."""
         contraindications = Contraindication.objects.prefetch_related(
@@ -64,6 +84,7 @@ class ContraindicationListView(APIView):
 class ContraindicationDetailView(APIView):
     """Отдает детальную информацию о противопоказании."""
 
+    @extend_schema(responses=ContraindicationDetailSerializer)
     def get(self, request, pk: int):
         """Возвращает противопоказание, категории и связанные вакцины."""
         contraindication = get_object_or_404(
@@ -77,6 +98,7 @@ class ContraindicationDetailView(APIView):
 class ContraindicationVaccinesView(APIView):
     """Отдает список вакцин по выбранному противопоказанию."""
 
+    @extend_schema(responses=ContraindicationVaccinesResponseSerializer)
     def get(self, request, pk: int):
         """Возвращает вакцины, связанные с противопоказанием."""
         contraindication = get_object_or_404(Contraindication, id=pk)
@@ -93,6 +115,17 @@ class ContraindicationVaccinesView(APIView):
 class ContraindicationSearchView(APIView):
     """Отдает поисковые подсказки по противопоказаниям."""
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name='q',
+                description='Поисковая строка.',
+                required=False,
+                type=str,
+            ),
+        ],
+        responses=ContraindicationSearchSerializer(many=True),
+    )
     def get(self, request):
         """Возвращает до шести подсказок по поисковой строке."""
         query = request.query_params.get('q', '')
@@ -103,13 +136,16 @@ class ContraindicationSearchView(APIView):
         return Response(serializer.data)
 
 
-@api_view(['POST'])
-def select_contraindication(request, pk: int):
+class SelectContraindicationView(APIView):
     """Фиксирует выбор противопоказания в поисковой подсказке."""
-    contraindication = increment_contraindication_select_count(pk)
-    return Response(
-        {
-            'id': contraindication.id,
-            'searchSelectCount': contraindication.search_select_count,
-        },
-    )
+
+    @extend_schema(request=None, responses=SelectCounterResponseSerializer)
+    def post(self, request, pk: int):
+        """Увеличивает счетчик выбора противопоказания."""
+        contraindication = increment_contraindication_select_count(pk)
+        return Response(
+            {
+                'id': contraindication.id,
+                'searchSelectCount': contraindication.search_select_count,
+            },
+        )
