@@ -186,6 +186,8 @@ def minimal_vaccine_payload_update():
 @pytest.fixture
 def vaccine_detail_url():
     """Возвращает URL для детального просмотра/обновления карточки."""
+
     def get_url(vaccine_id):
         return reverse('admin-vaccine-detail', args=[vaccine_id])
+
     return get_url
