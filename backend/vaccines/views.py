@@ -63,7 +63,7 @@ class AdminVaccineCreateAPIView(APIView):
 
 
 class AdminVaccineDetailAPIView(APIView):
-    """Эндпоинт для детального просмотра карточки вакцины."""
+    """Эндпоинт для детального просмотра карточки вакцины, и редактирования по ID."""
 
     permission_classes = [IsAuthenticated]
 
@@ -105,3 +105,34 @@ class AdminVaccineDetailAPIView(APIView):
         vaccine_card = get_object_or_404(VaccineCard.objects.select_related('current_version'), id=id)
         serializer = AdminVaccinesDetailSerializers(vaccine_card)
         return Response(data=serializer.data)
+
+    @extend_schema(
+        tags=[VACCINE_TAG],
+        summary='Обновить карточку вакцины',
+        description=(
+            'Обновляет карточку вакцины по ID.\n\n'
+            'Создает новую версию карточки со статусом DRAFT.\n\n'
+            'Доступ: только для администраторов.'
+        ),
+        request=AdminVaccinesCreatedSerializers,
+        responses={
+            status.HTTP_200_OK: AdminVaccineCreateResponseSerializer,
+        },
+        examples=[
+            OpenApiExample(
+                'Пример успешного ответа',
+                value={'id': 1, 'current_version_id': 2, 'status': 'draft'},
+                response_only=True,
+                status_codes=[status.HTTP_200_OK],
+            ),
+        ],
+    )
+    def put(self, request, id):
+        vaccine_card = get_object_or_404(VaccineCard, id=id)
+        serializer = AdminVaccinesCreatedSerializers(
+            instance=vaccine_card, data=request.data, context={'request': request}
+        )
+        serializer.is_valid(raise_exception=True)
+        new_version = serializer.save()
+        response_serializer = AdminVaccineCreateResponseSerializer(new_version.vaccine_card)
+        return Response(response_serializer.data, status=status.HTTP_200_OK)
