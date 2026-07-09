@@ -1,4 +1,5 @@
 import pytest
+from accounts.models import RoleChoices
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from rest_framework.test import APIClient
@@ -24,10 +25,7 @@ def api_client() -> APIClient:
 def test_user(db):
     """Создает тестового пользователя."""
     user = User.objects.create_user(
-        username='test_user',
-        password='test123',
-        is_staff=True,
-        is_superuser=True,
+        username='test_user', password='test123', is_staff=True, is_superuser=True, role=RoleChoices.MODERATOR
     )
     return user
 
@@ -191,3 +189,27 @@ def vaccine_detail_url():
         return reverse('admin-vaccine-detail', args=[vaccine_id])
 
     return get_url
+
+
+@pytest.fixture
+def login_url():
+    """URL получения JWT-токена."""
+    return reverse('token_obtain')
+
+
+@pytest.fixture
+def refresh_url():
+    """URL обновления JWT-токена."""
+    return reverse('token_refresh')
+
+
+@pytest.fixture
+def data_for_success_auth(test_user):
+    """Корректные данные для аутентификации."""
+    return {'username': test_user.username, 'password': 'test123'}
+
+
+@pytest.fixture
+def data_wrong_password(test_user):
+    """Данные для аутентификации с неверным паролем."""
+    return {'username': test_user.username, 'password': 'wrong_password123'}
