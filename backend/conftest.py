@@ -165,3 +165,29 @@ def minimal_vaccine_payload():
         'administration_methods': [],
         'comment': {},
     }
+
+
+@pytest.fixture
+def minimal_vaccine_payload_update():
+    """Создает минимальный payload для редактирования карточки вакцины."""
+    return {
+        'name': 'Измененная вакцина',
+        'official_name': 'Измененная вакцина',
+        'is_available_in_rf': 'false',
+        'infection_ids': [],
+        'ingredients': [],
+        'contraindications': [],
+        'administration_methods': [],
+        'comment': {},
+        'status': 'active',
+    }
+
+
+@pytest.fixture
+def vaccine_detail_url():
+    """Возвращает URL для детального просмотра/обновления карточки."""
+
+    def get_url(vaccine_id):
+        return reverse('admin-vaccine-detail', args=[vaccine_id])
+
+    return get_url
