@@ -135,12 +135,12 @@ class AdminVaccinesCreatedSerializers(serializers.ModelSerializer):
         contraindications_data = validated_data.pop('contraindications', [])
         administration_methods_data = validated_data.pop('administration_methods', [])
         comment_data = validated_data.pop('comment', None)
-        if comment_data:
-            validated_data['comment_source'] = comment_data.get('source', '')
-            validated_data['comment_ANO'] = comment_data.get('text', '')
         vaccine_card = VaccineCard.objects.create(
             status=VaccineCardStatus.DRAFT, is_visible=False, created_by=user, updated_by=user
         )
+        if comment_data:
+            validated_data['comment_source'] = comment_data.get('source', '')
+            validated_data['comment_ANO'] = comment_data.get('text', '')
         version = VaccineCardVersion.objects.create(
             vaccine_card=vaccine_card,
             version_number=DEFAULT_VERSION,
@@ -172,10 +172,85 @@ class AdminVaccinesCreatedSerializers(serializers.ModelSerializer):
         vaccine_card.save(update_fields=['current_version', 'updated_at'])
         return version
 
+    @transaction.atomic
+    def update(self, instance, validated_data):
+        """Обновляет карточку вакцины."""
+        user = self.context['request'].user
+        infection_ids = validated_data.pop('infection_ids', [])
+        ingredients_data = validated_data.pop('ingredients', [])
+        contraindications_data = validated_data.pop('contraindications', [])
+        administration_methods_data = validated_data.pop('administration_methods', [])
+        comment_data = validated_data.pop('comment', None)
+        last_version = instance.versions.order_by('-version_number').first()
+        next_version_number = (last_version.version_number + 1) if last_version else DEFAULT_VERSION
+        if comment_data:
+            validated_data['comment_source'] = comment_data.get('source', '')
+            validated_data['comment_ANO'] = comment_data.get('text', '')
+        new_version = VaccineCardVersion.objects.create(
+            vaccine_card=instance,
+            version_number=next_version_number,
+            version_status=VersionStatus.DRAFT,
+            created_by=user,
+            parent_version=last_version,
+            **validated_data,
+        )
+        if infection_ids:
+            infections = Infection.objects.filter(id__in=infection_ids)
+            new_version.infections.set(infections)
+        bulk_create_relations(
+            new_version, VaccineCardVersionIngredient, ingredients_data, defaults={'role': IngredientRoleType.EXCIPIENT}
+        )
+        bulk_create_relations(
+            new_version,
+            VaccineCardVersionContraindication,
+            contraindications_data,
+            defaults={'contraindication_type': ContraindicationType.ABSOLUTE},
+        )
+        bulk_create_relations(
+            new_version,
+            VaccineCardVersionAdministrationMethod,
+            administration_methods_data,
+            defaults={
+                'age_group': '',
+                'note': '',
+            },
+        )
 
-class AdminVaccineCreateResponseSerializer(serializers.Serializer):
-    """Описывает ответ создания карточки вакцины."""
+        instance.current_version = new_version
+        instance.updated_by = user
+        instance.save(update_fields=['current_version', 'updated_by', 'updated_at'])
+        return new_version
 
-    id = serializers.IntegerField()
-    current_version_id = serializers.IntegerField()
-    status = serializers.CharField()
+
+class VaccinesShortSerializers(serializers.ModelSerializer):
+    """Сериализатор для получения короткой информации о версии вакцины."""
+
+    class Meta:
+        model = VaccineCardVersion
+        fields = (
+            'id',
+            'version_number',
+            'version_status',
+            'name',
+            'official_name',
+        )
+
+
+class AdminVaccinesDetailSerializers(serializers.ModelSerializer):
+    """Сериализатор для получения детальной информации о карточки вакцины."""
+
+    version = VaccinesShortSerializers(source='current_version', read_only=True)
+
+    class Meta:
+        model = VaccineCard
+        fields = ('id', 'current_version', 'published_version', 'status', 'is_visible', 'version')
+
+
+class AdminVaccineCreateResponseSerializer(serializers.ModelSerializer):
+    """Сериализатор для ответа создания карточки вакцины."""
+
+    current_version_id = serializers.IntegerField(source='current_version.id')
+
+    class Meta:
+        model = VaccineCard
+        fields = ('id', 'current_version_id', 'status')
