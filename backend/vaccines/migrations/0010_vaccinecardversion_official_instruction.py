@@ -34,7 +34,7 @@ def unbind_versions_from_official_instructions(apps, schema_editor):
 class Migration(migrations.Migration):
     dependencies = [
         ('instructions', '0002_alter_officialinstruction_options_and_more'),
-        ('vaccines', '0008_alter_vaccinecard_status'),
+        ('vaccines', '0009_alter_vaccinecard_current_version_and_more'),
     ]
 
     operations = [
