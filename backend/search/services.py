@@ -1,14 +1,14 @@
 from django.db.models import DecimalField, ExpressionWrapper, F, Q, QuerySet
 from django.db.models.functions import Lower
 from django.shortcuts import get_object_or_404
-from instructions.services import (
-    increment_official_instruction_select_count,
-    search_official_instructions,
-)
 
 from contraindications.services import (
     increment_contraindication_select_count,
     search_contraindications,
+)
+from instructions.services import (
+    increment_official_instruction_select_count,
+    search_official_instructions,
 )
 from reference_books.models import Infection, Ingredients
 from vaccines.models import VaccineCard
