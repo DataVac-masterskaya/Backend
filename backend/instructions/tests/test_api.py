@@ -3,6 +3,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from instructions.models import OfficialInstruction
+from vaccines.models import VaccineCard, VaccineCardVersion
 
 pytestmark = pytest.mark.django_db
 
@@ -66,12 +67,23 @@ def test_search_official_instructions_by_title(api_client: APIClient):
     assert response.data[0]['title'] == 'Инструкция Пентаксим'
 
 
-def test_detail_official_instruction(api_client: APIClient):
+def test_detail_official_instruction(api_client: APIClient, test_user):
     """Проверяет получение детальной информации об официальной инструкции."""
     instruction = OfficialInstruction.objects.create(
         title='Инструкция Пентаксим',
         url='https://grls.rosminzdrav.ru/instruction/pentaxim',
     )
+    vaccine_card = VaccineCard.objects.create(is_visible=True)
+    version = VaccineCardVersion.objects.create(
+        vaccine_card=vaccine_card,
+        name='Пентаксим',
+        official_name='Пентаксим вакцина',
+        manufacturer='Sanofi',
+        official_instruction=instruction,
+        created_by=test_user,
+    )
+    vaccine_card.published_version = version
+    vaccine_card.save(update_fields=['published_version'])
 
     response = api_client.get(
         f'/api/v1/instructions/official/{instruction.id}/',
@@ -79,7 +91,14 @@ def test_detail_official_instruction(api_client: APIClient):
 
     assert response.status_code == status.HTTP_200_OK
     assert response.data['title'] == 'Инструкция Пентаксим'
-    assert response.data['vaccines'] == []
+    assert response.data['vaccines'] == [
+        {
+            'id': vaccine_card.id,
+            'name': 'Пентаксим',
+            'officialName': 'Пентаксим вакцина',
+            'manufacturer': 'Sanofi',
+        },
+    ]
 
 
 def test_detail_official_instruction_returns_404(api_client: APIClient):
@@ -89,12 +108,23 @@ def test_detail_official_instruction_returns_404(api_client: APIClient):
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
-def test_vaccines_endpoint_returns_stub(api_client: APIClient):
-    """Проверяет заглушку списка вакцин по официальной инструкции."""
+def test_vaccines_endpoint_returns_related_vaccines(api_client: APIClient, test_user):
+    """Проверяет список вакцин по официальной инструкции."""
     instruction = OfficialInstruction.objects.create(
         title='Инструкция Пентаксим',
         url='https://grls.rosminzdrav.ru/instruction/pentaxim',
     )
+    vaccine_card = VaccineCard.objects.create(is_visible=True)
+    version = VaccineCardVersion.objects.create(
+        vaccine_card=vaccine_card,
+        name='Пентаксим',
+        official_name='Пентаксим вакцина',
+        manufacturer='Sanofi',
+        official_instruction=instruction,
+        created_by=test_user,
+    )
+    vaccine_card.published_version = version
+    vaccine_card.save(update_fields=['published_version'])
 
     response = api_client.get(
         f'/api/v1/instructions/official/{instruction.id}/vaccines/',
@@ -102,7 +132,14 @@ def test_vaccines_endpoint_returns_stub(api_client: APIClient):
 
     assert response.status_code == status.HTTP_200_OK
     assert response.data['instructionId'] == instruction.id
-    assert response.data['vaccines'] == []
+    assert response.data['vaccines'] == [
+        {
+            'id': vaccine_card.id,
+            'name': 'Пентаксим',
+            'officialName': 'Пентаксим вакцина',
+            'manufacturer': 'Sanofi',
+        },
+    ]
 
 
 def test_search_endpoint(api_client: APIClient):
