@@ -116,4 +116,4 @@ exclude_lines = [
     '@(abc\\.)?abstractmethod',
 ]
 [tool.ruff.lint.isort]
-known-first-party = ["api", "reference_books", "contraindications", "instructions", "vaccines",]
+known-first-party = ["api", "datavac", "reference_books", "contraindications", "instructions", "vaccines",]
