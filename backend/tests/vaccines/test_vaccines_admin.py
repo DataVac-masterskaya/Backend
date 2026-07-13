@@ -2,7 +2,8 @@ import pytest
 
 from rest_framework import status
 
-from vaccines.models import VaccineCardStatus
+from instructions.models import OfficialInstruction
+from vaccines.models import VaccineCardStatus, VaccineCardVersion
 
 
 @pytest.mark.django_db
@@ -15,6 +16,25 @@ def test_create_vaccine_success(auth_client, minimal_vaccine_payload, admin_vacc
 
 
 @pytest.mark.django_db
+def test_create_vaccine_with_official_instruction(
+    auth_client,
+    minimal_vaccine_payload,
+    admin_vaccines_card_url,
+):
+    """Проверяет сохранение связи версии вакцины с официальной инструкцией."""
+    instruction = OfficialInstruction.objects.create(
+        title='Инструкция Пентаксим',
+        url='https://grls.rosminzdrav.ru/instruction/pentaxim',
+    )
+    minimal_vaccine_payload['official_instruction_id'] = instruction.id
+
+    response = auth_client.post(admin_vaccines_card_url, minimal_vaccine_payload, format='json')
+
+    version = VaccineCardVersion.objects.get(id=response.data['current_version_id'])
+    assert response.status_code == status.HTTP_201_CREATED
+    assert version.official_instruction == instruction
+
+
 def test_admin_vaccine_detail_success(auth_client, minimal_vaccine_payload, admin_vaccines_card_url, vaccine_detail_url):
     """Тест успешного получения детальной информации о карточке."""
     create_response = auth_client.post(admin_vaccines_card_url, minimal_vaccine_payload, format='json')

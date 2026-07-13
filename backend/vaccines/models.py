@@ -252,6 +252,14 @@ class VaccineCardVersion(models.Model):
         null=True,
         verbose_name='Ссылка на инструкцию',
     )
+    official_instruction = models.ForeignKey(
+        'instructions.OfficialInstruction',
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='vaccine_versions',
+        verbose_name='Официальная инструкция',
+    )
     pdf_url = models.URLField(
         max_length=URL_MAX_LEN,
         blank=True,
