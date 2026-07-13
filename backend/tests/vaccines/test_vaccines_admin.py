@@ -33,6 +33,8 @@ def test_create_vaccine_with_official_instruction(
     version = VaccineCardVersion.objects.get(id=response.data['current_version_id'])
     assert response.status_code == status.HTTP_201_CREATED
     assert version.official_instruction == instruction
+
+
 def test_admin_vaccine_detail_success(auth_client, minimal_vaccine_payload, admin_vaccines_card_url, vaccine_detail_url):
     """Тест успешного получения детальной информации о карточке."""
     create_response = auth_client.post(admin_vaccines_card_url, minimal_vaccine_payload, format='json')
