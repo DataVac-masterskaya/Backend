@@ -1,10 +1,10 @@
 from decimal import Decimal
 
 import pytest
-from instructions.models import OfficialInstruction
 from rest_framework import status
 
 from contraindications.models import Contraindication
+from instructions.models import OfficialInstruction
 from reference_books.models import Infection, Ingredients
 from vaccines.models import VaccineCard, VaccineCardVersion
 

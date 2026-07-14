@@ -1,16 +1,16 @@
 from functools import partial
 
-from datavac.utils import increment_select_count
 from django.shortcuts import get_object_or_404, redirect
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, OpenApiTypes, extend_schema
-from instructions.models import OfficialInstruction
 from rest_framework import filters, status, viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from contraindications.models import Contraindication
+from datavac.utils import increment_select_count
+from instructions.models import OfficialInstruction
 from reference_books.models import Infection, Ingredients, MethodsOfAdministration
 from vaccines.models import VaccineCard
 

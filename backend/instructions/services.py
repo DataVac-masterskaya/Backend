@@ -3,17 +3,29 @@ from django.db.models.functions import Lower
 from django.shortcuts import get_object_or_404
 
 from instructions.models import OfficialInstruction
+from vaccines.models import VaccineCard
 
 
 def get_vaccines_by_official_instruction(instruction_id: int) -> list[dict]:
-    """
-    Возвращает вакцины, связанные с официальной инструкцией.
+    """Возвращает опубликованные вакцины, связанные с официальной инструкцией."""
+    vaccine_cards = (
+        VaccineCard.objects.filter(
+            is_visible=True,
+            published_version__official_instruction_id=instruction_id,
+        )
+        .select_related('published_version')
+        .order_by('published_version__name', 'id')
+    )
 
-    TODO: Подключить выборку вакцин после реализации моделей
-    VaccineCard/VaccineCardVersion. По ТЗ ссылка на инструкцию должна
-    храниться на уровне версии карточки вакцины.
-    """
-    return []
+    return [
+        {
+            'id': vaccine_card.id,
+            'name': vaccine_card.published_version.name,
+            'officialName': vaccine_card.published_version.official_name,
+            'manufacturer': vaccine_card.published_version.manufacturer,
+        }
+        for vaccine_card in vaccine_cards
+    ]
 
 
 def search_official_instructions(query: str, limit: int = 6):

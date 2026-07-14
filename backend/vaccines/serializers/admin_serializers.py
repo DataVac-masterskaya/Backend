@@ -2,6 +2,7 @@ from django.db import transaction
 from rest_framework import serializers
 
 from contraindications.models import Contraindication
+from instructions.models import OfficialInstruction
 from reference_books.models import Infection, Ingredients, MethodsOfAdministration
 from vaccines.constants import DEFAULT_VERSION
 from vaccines.models import (
@@ -83,6 +84,12 @@ class AdminVaccinesCreatedSerializers(serializers.ModelSerializer):
         allow_empty=True,
     )
 
+    official_instruction_id = serializers.PrimaryKeyRelatedField(
+        source='official_instruction',
+        queryset=OfficialInstruction.objects.all(),
+        required=False,
+        allow_null=True,
+    )
     ingredients = IngredientItemSerializer(many=True, required=False, default=list)
     contraindications = ContraindicationItemSerializer(many=True, required=False, default=list)
     administration_methods = AdministrationMethodItemSerializer(many=True, required=False, default=list)
@@ -110,6 +117,7 @@ class AdminVaccinesCreatedSerializers(serializers.ModelSerializer):
             'ohlp_url',
             'nonspec_url',
             'instruction_url',
+            'official_instruction_id',
             'pdf_url',
             'infection_ids',
             'ingredients',
