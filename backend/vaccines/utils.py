@@ -26,3 +26,22 @@ def bulk_create_relations(version, model, items_data, defaults=None):
         for item in items_data
     ]
     return model.objects.bulk_create(objects)
+
+
+def format_age(months):
+    """Форматирует возраст в месяцах в читаемую строку."""
+    if months is None:
+        return None
+    if months == 0:
+        return '0 дней'
+    if months == 1:
+        return '1 месяца'
+    if months % 12 == 0:
+        years = months // 12
+        if years == 1:
+            return f'{years} год'
+        elif 2 <= years <= 4:
+            return f'{years} года'
+        else:
+            return f'{years} лет'
+    return f'{months} месяцев'
