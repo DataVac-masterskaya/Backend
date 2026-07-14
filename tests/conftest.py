@@ -3,9 +3,9 @@ from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
 
 from contraindications.models import Contraindication, ContraindicationCategory
+from instructions.models import OfficialInstruction
 from reference_books.models import CategoryInfection, Infection, Ingredients
 from vaccines.models import VaccineCard, VaccineCardVersion
-from instructions.models import OfficialInstruction
 
 User = get_user_model()
 
@@ -44,8 +44,7 @@ def sample_contraindications(db, sample_categories):
     """Создает противопоказания с привязкой к категориям для pytest-тестов."""
     category1, category2 = sample_categories
 
-    contraindication1 = Contraindication.objects.create(
-        name='Аллергия на компоненты')
+    contraindication1 = Contraindication.objects.create(name='Аллергия на компоненты')
     contraindication1.categories.add(category1)
 
     contraindication2 = Contraindication.objects.create(name='Беременность')
@@ -58,12 +57,9 @@ def sample_contraindications(db, sample_categories):
 def sample_ingredients(db):
     """Создает ингредиенты для pytest-тестов."""
     ingredients = [
-        Ingredients.objects.create(
-            name='Алюминия гидроксид', type='Вспомогательное вещество'),
-        Ingredients.objects.create(
-            name='Анатоксин дифтерийный', type='Действующее вещество'),
-        Ingredients.objects.create(
-            name='Анатоксин столбнячный', type='Действующее вещество'),
+        Ingredients.objects.create(name='Алюминия гидроксид', type='Вспомогательное вещество'),
+        Ingredients.objects.create(name='Анатоксин дифтерийный', type='Действующее вещество'),
+        Ingredients.objects.create(name='Анатоксин столбнячный', type='Действующее вещество'),
     ]
     return ingredients
 
@@ -135,6 +131,7 @@ def sample_vaccine_card_with_versions(db, test_user):
     vaccine_card.save()
 
     return vaccine_card, versions
+
 
 @pytest.fixture
 def sample_official_instructions(db):

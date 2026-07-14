@@ -18,14 +18,10 @@ class TestVaccineList:
         url = reverse(self.URL_LIST)
         response = api_client.get(url)
 
-        assert response.status_code == 200, (
-            f'Ожидался статус 200, получен {response.status_code}. '
-            f'URL: {url}'
-        )
+        assert response.status_code == 200, f'Ожидался статус 200, получен {response.status_code}. URL: {url}'
         data = response.json()
         assert len(data) == len(sample_vaccine_versions), (
-            f'Ожидалось {len(sample_vaccine_versions)} вакцин, '
-            f'получено {len(data)}. Данные: {data}'
+            f'Ожидалось {len(sample_vaccine_versions)} вакцин, получено {len(data)}. Данные: {data}'
         )
 
     def test_sort_by_name_asc(self, api_client, sample_vaccine_versions):
@@ -35,16 +31,13 @@ class TestVaccineList:
         response = api_client.get(f'{url}?{urlencode(params)}')
 
         assert response.status_code == 200, (
-            f'Ожидался статус 200, получен {response.status_code}. '
-            f'URL: {url}, params: {params}'
+            f'Ожидался статус 200, получен {response.status_code}. URL: {url}, params: {params}'
         )
         data = response.json()
         names = [item['name'] for item in data]
         expected = sorted(names)
         assert names == expected, (
-            f'Сортировка по name asc не работает. '
-            f'Ожидалось: {expected}, получено: {names}. '
-            f'Параметры: {params}'
+            f'Сортировка по name asc не работает. Ожидалось: {expected}, получено: {names}. Параметры: {params}'
         )
 
     def test_sort_by_name_desc(self, api_client, sample_vaccine_versions):
@@ -54,16 +47,13 @@ class TestVaccineList:
         response = api_client.get(f'{url}?{urlencode(params)}')
 
         assert response.status_code == 200, (
-            f'Ожидался статус 200, получен {response.status_code}. '
-            f'URL: {url}, params: {params}'
+            f'Ожидался статус 200, получен {response.status_code}. URL: {url}, params: {params}'
         )
         data = response.json()
         names = [item['name'] for item in data]
         expected = sorted(names, reverse=True)
         assert names == expected, (
-            f'Сортировка по name desc не работает. '
-            f'Ожидалось: {expected}, получено: {names}. '
-            f'Параметры: {params}'
+            f'Сортировка по name desc не работает. Ожидалось: {expected}, получено: {names}. Параметры: {params}'
         )
 
     def test_sort_by_official_name_asc(self, api_client, sample_vaccine_versions):
@@ -73,8 +63,7 @@ class TestVaccineList:
         response = api_client.get(f'{url}?{urlencode(params)}')
 
         assert response.status_code == 200, (
-            f'Ожидался статус 200, получен {response.status_code}. '
-            f'URL: {url}, params: {params}'
+            f'Ожидался статус 200, получен {response.status_code}. URL: {url}, params: {params}'
         )
         data = response.json()
         official_names = [item['official_name'] for item in data]
@@ -92,8 +81,7 @@ class TestVaccineList:
         response = api_client.get(f'{url}?{urlencode(params)}')
 
         assert response.status_code == 200, (
-            f'Ожидался статус 200, получен {response.status_code}. '
-            f'URL: {url}, params: {params}'
+            f'Ожидался статус 200, получен {response.status_code}. URL: {url}, params: {params}'
         )
         data = response.json()
         official_names = [item['official_name'] for item in data]
@@ -111,8 +99,7 @@ class TestVaccineList:
         response = api_client.get(f'{url}?{urlencode(params)}')
 
         assert response.status_code in [400, 200], (
-            f'Ожидался статус 400 или 200, получен {response.status_code}. '
-            f'URL: {url}, params: {params}'
+            f'Ожидался статус 400 или 200, получен {response.status_code}. URL: {url}, params: {params}'
         )
 
     def test_sort_invalid_direction(self, api_client):
@@ -122,8 +109,7 @@ class TestVaccineList:
         response = api_client.get(f'{url}?{urlencode(params)}')
 
         assert response.status_code in [400, 200], (
-            f'Ожидался статус 400 или 200, получен {response.status_code}. '
-            f'URL: {url}, params: {params}'
+            f'Ожидался статус 400 или 200, получен {response.status_code}. URL: {url}, params: {params}'
         )
 
     def test_filter_by_first_letter(self, api_client, sample_vaccine_versions):
@@ -133,18 +119,15 @@ class TestVaccineList:
         response = api_client.get(f'{url}?{urlencode(params)}')
 
         assert response.status_code == 200, (
-            f'Ожидался статус 200, получен {response.status_code}. '
-            f'URL: {url}, params: {params}'
+            f'Ожидался статус 200, получен {response.status_code}. URL: {url}, params: {params}'
         )
         data = response.json()
         assert len(data) > 0, (
-            f'Ожидался хотя бы 1 результат для first_letter=А, '
-            f'получено {len(data)} результатов. Данные: {data}'
+            f'Ожидался хотя бы 1 результат для first_letter=А, получено {len(data)} результатов. Данные: {data}'
         )
         for item in data:
             assert item['name'].startswith('А'), (
-                f'Ожидалось имя, начинающееся на "А", '
-                f'получено \'{item["name"]}\'. Данные: {item}'
+                f'Ожидалось имя, начинающееся на "А", получено \'{item["name"]}\'. Данные: {item}'
             )
 
     def test_filter_by_first_letter_lowercase(self, api_client, sample_vaccine_versions):
@@ -154,15 +137,14 @@ class TestVaccineList:
         response = api_client.get(f'{url}?{urlencode(params)}')
 
         assert response.status_code == 200, (
-            f'Ожидался статус 200, получен {response.status_code}. '
-            f'URL: {url}, params: {params}'
+            f'Ожидался статус 200, получен {response.status_code}. URL: {url}, params: {params}'
         )
         data = response.json()
         if len(data) > 0:
             for item in data:
                 assert item['name'].startswith('А'), (
                     f'Ожидалось имя, начинающееся на "А" (регистронезависимо), '
-                    f'получено \'{item["name"]}\'. Данные: {item}'
+                    f"получено '{item['name']}'. Данные: {item}"
                 )
 
     def test_filter_by_first_letter_no_results(self, api_client):
@@ -172,13 +154,11 @@ class TestVaccineList:
         response = api_client.get(f'{url}?{urlencode(params)}')
 
         assert response.status_code == 200, (
-            f'Ожидался статус 200, получен {response.status_code}. '
-            f'URL: {url}, params: {params}'
+            f'Ожидался статус 200, получен {response.status_code}. URL: {url}, params: {params}'
         )
         data = response.json()
         assert len(data) == 0, (
-            f'Ожидался пустой список для first_letter=Я, '
-            f'получено {len(data)} записей. Данные: {data}'
+            f'Ожидался пустой список для first_letter=Я, получено {len(data)} записей. Данные: {data}'
         )
 
     def test_filter_by_first_letter_different_letters(self, api_client, sample_vaccine_versions):
@@ -190,33 +170,25 @@ class TestVaccineList:
         response = api_client.get(f'{url}?{urlencode(params)}')
 
         assert response.status_code == 200, (
-            f'Ожидался статус 200, получен {response.status_code}. '
-            f'URL: {url}, params: {params}'
+            f'Ожидался статус 200, получен {response.status_code}. URL: {url}, params: {params}'
         )
         data = response.json()
         assert len(data) > 0, (
-            f'Ожидался хотя бы 1 результат для first_letter=Г, '
-            f'получено {len(data)} результатов. Данные: {data}'
+            f'Ожидался хотя бы 1 результат для first_letter=Г, получено {len(data)} результатов. Данные: {data}'
         )
         for item in data:
             assert item['name'].startswith('Г'), (
-                f'Ожидалось имя, начинающееся на "Г", '
-                f'получено \'{item["name"]}\'. Данные: {item}'
+                f'Ожидалось имя, начинающееся на "Г", получено \'{item["name"]}\'. Данные: {item}'
             )
 
     def test_combined_sort_and_filter(self, api_client, sample_vaccine_versions):
         """Комбинация сортировки и фильтрации через query-параметры."""
         url = reverse(self.URL_LIST)
-        params = {
-            'sort_by': 'name',
-            'direction': 'desc',
-            'first_letter': 'А'
-        }
+        params = {'sort_by': 'name', 'direction': 'desc', 'first_letter': 'А'}
         response = api_client.get(f'{url}?{urlencode(params)}')
 
         assert response.status_code == 200, (
-            f'Ожидался статус 200, получен {response.status_code}. '
-            f'URL: {url}, params: {params}'
+            f'Ожидался статус 200, получен {response.status_code}. URL: {url}, params: {params}'
         )
         data = response.json()
         for item in data:
@@ -272,12 +244,8 @@ class TestVaccineList:
         assert response.status_code == 200
         data = response.json()
         names = [item['name'] for item in data]
-        assert 'Видимая вакцина' in names, (
-            f'Видимая вакцина должна быть в списке. Данные: {names}'
-        )
-        assert 'Скрытая вакцина' not in names, (
-            f'Скрытая вакцина не должна быть в списке. Данные: {names}'
-        )
+        assert 'Видимая вакцина' in names, f'Видимая вакцина должна быть в списке. Данные: {names}'
+        assert 'Скрытая вакцина' not in names, f'Скрытая вакцина не должна быть в списке. Данные: {names}'
 
 
 class TestVaccineDetail:
@@ -292,17 +260,14 @@ class TestVaccineDetail:
         response = api_client.get(url)
 
         assert response.status_code == 200, (
-            f'Ожидался статус 200, получен {response.status_code}. '
-            f'URL: {url}, card_id={version.vaccine_card.id}'
+            f'Ожидался статус 200, получен {response.status_code}. URL: {url}, card_id={version.vaccine_card.id}'
         )
         data = response.json()
         assert data['name'] == version.name, (
-            f'Ожидалось имя \'{version.name}\', '
-            f'получено \'{data.get("name")}\'. Данные: {data}'
+            f"Ожидалось имя '{version.name}', получено '{data.get('name')}'. Данные: {data}"
         )
         assert data['official_name'] == version.official_name, (
-            f'Ожидалось official_name \'{version.official_name}\', '
-            f'получено \'{data.get("official_name")}\'. Данные: {data}'
+            f"Ожидалось official_name '{version.official_name}', получено '{data.get('official_name')}'. Данные: {data}"
         )
 
     def test_get_full_card_with_versions(self, api_client, sample_vaccine_card_with_versions):
@@ -312,13 +277,11 @@ class TestVaccineDetail:
         response = api_client.get(url)
 
         assert response.status_code == 200, (
-            f'Ожидался статус 200, получен {response.status_code}. '
-            f'URL: {url}, card_id={vaccine_card.id}'
+            f'Ожидался статус 200, получен {response.status_code}. URL: {url}, card_id={vaccine_card.id}'
         )
         data = response.json()
         assert data['name'] == versions[-1].name, (
-            f'Ожидалось имя последней версии \'{versions[-1].name}\', '
-            f'получено \'{data.get("name")}\'. Данные: {data}'
+            f"Ожидалось имя последней версии '{versions[-1].name}', получено '{data.get('name')}'. Данные: {data}"
         )
 
     def test_get_nonexistent_vaccine(self, api_client):
@@ -327,8 +290,7 @@ class TestVaccineDetail:
         response = api_client.get(url)
 
         assert response.status_code == 404, (
-            f'Ожидался статус 404 для несуществующей вакцины, '
-            f'получен {response.status_code}. URL: {url}'
+            f'Ожидался статус 404 для несуществующей вакцины, получен {response.status_code}. URL: {url}'
         )
 
     def test_get_hidden_vaccine(self, api_client, test_user):
@@ -353,8 +315,7 @@ class TestVaccineDetail:
         response = api_client.get(url)
 
         assert response.status_code in [404, 403], (
-            f'Ожидался статус 404 или 403 для скрытой вакцины, '
-            f'получен {response.status_code}. URL: {url}'
+            f'Ожидался статус 404 или 403 для скрытой вакцины, получен {response.status_code}. URL: {url}'
         )
 
 
@@ -370,17 +331,12 @@ class TestVaccinePdf:
         response = api_client.get(f'{url}pdf/')
 
         assert response.status_code == 200, (
-            f'Ожидался статус 200, получен {response.status_code}. '
-            f'URL: {url}pdf/, card_id={version.vaccine_card.id}'
+            f'Ожидался статус 200, получен {response.status_code}. URL: {url}pdf/, card_id={version.vaccine_card.id}'
         )
         data = response.json()
-        assert 'pdf_url' in data, (
-            f'Ожидалось поле \'pdf_url\' в ответе. '
-            f'Ключи: {list(data.keys())}'
-        )
+        assert 'pdf_url' in data, f"Ожидалось поле 'pdf_url' в ответе. Ключи: {list(data.keys())}"
         assert data['pdf_url'] == version.pdf_url, (
-            f'Ожидалась ссылка \'{version.pdf_url}\', '
-            f'получена \'{data.get("pdf_url")}\'. Данные: {data}'
+            f"Ожидалась ссылка '{version.pdf_url}', получена '{data.get('pdf_url')}'. Данные: {data}"
         )
 
     def test_get_pdf_url_empty(self, api_client, sample_vaccine_versions):
@@ -392,25 +348,16 @@ class TestVaccinePdf:
         url = reverse(self.URL_DETAIL, kwargs={'pk': version.vaccine_card.id})
         response = api_client.get(f'{url}pdf/')
 
-        assert response.status_code == 200, (
-            f'Ожидался статус 200, получен {response.status_code}. '
-            f'URL: {url}pdf/'
-        )
+        assert response.status_code == 200, f'Ожидался статус 200, получен {response.status_code}. URL: {url}pdf/'
         data = response.json()
-        assert data['pdf_url'] == '', (
-            f'Ожидалась пустая строка, '
-            f'получено \'{data.get("pdf_url")}\'. Данные: {data}'
-        )
+        assert data['pdf_url'] == '', f"Ожидалась пустая строка, получено '{data.get('pdf_url')}'. Данные: {data}"
 
     def test_get_pdf_nonexistent_vaccine(self, api_client):
         """PDF для несуществующей вакцины."""
         url = reverse(self.URL_DETAIL, kwargs={'pk': 99999})
         response = api_client.get(f'{url}pdf/')
 
-        assert response.status_code == 404, (
-            f'Ожидался статус 404, получен {response.status_code}. '
-            f'URL: {url}pdf/'
-        )
+        assert response.status_code == 404, f'Ожидался статус 404, получен {response.status_code}. URL: {url}pdf/'
 
 
 class TestVaccineOfficialLink:
@@ -429,13 +376,9 @@ class TestVaccineOfficialLink:
             f'URL: {url}official-link/, card_id={version.vaccine_card.id}'
         )
         data = response.json()
-        assert 'ohlp_url' in data, (
-            f'Ожидалось поле \'ohlp_url\' в ответе. '
-            f'Ключи: {list(data.keys())}'
-        )
+        assert 'ohlp_url' in data, f"Ожидалось поле 'ohlp_url' в ответе. Ключи: {list(data.keys())}"
         assert data['ohlp_url'] == version.ohlp_url, (
-            f'Ожидалась ссылка \'{version.ohlp_url}\', '
-            f'получена \'{data.get("ohlp_url")}\'. Данные: {data}'
+            f"Ожидалась ссылка '{version.ohlp_url}', получена '{data.get('ohlp_url')}'. Данные: {data}"
         )
 
     def test_get_ohlp_url_empty(self, api_client, sample_vaccine_versions):
@@ -448,14 +391,10 @@ class TestVaccineOfficialLink:
         response = api_client.get(f'{url}official-link/')
 
         assert response.status_code == 200, (
-            f'Ожидался статус 200, получен {response.status_code}. '
-            f'URL: {url}official-link/'
+            f'Ожидался статус 200, получен {response.status_code}. URL: {url}official-link/'
         )
         data = response.json()
-        assert data['ohlp_url'] == '', (
-            f'Ожидалась пустая строка, '
-            f'получено \'{data.get("ohlp_url")}\'. Данные: {data}'
-        )
+        assert data['ohlp_url'] == '', f"Ожидалась пустая строка, получено '{data.get('ohlp_url')}'. Данные: {data}"
 
     def test_get_ohlp_nonexistent_vaccine(self, api_client):
         """Ссылка для несуществующей вакцины."""
@@ -463,8 +402,7 @@ class TestVaccineOfficialLink:
         response = api_client.get(f'{url}official-link/')
 
         assert response.status_code == 404, (
-            f'Ожидался статус 404, получен {response.status_code}. '
-            f'URL: {url}official-link/'
+            f'Ожидался статус 404, получен {response.status_code}. URL: {url}official-link/'
         )
 
 
@@ -484,13 +422,9 @@ class TestVaccineInstructionPatient:
             f'URL: {url}instruction-patient/, card_id={version.vaccine_card.id}'
         )
         data = response.json()
-        assert 'nonspec_url' in data, (
-            f'Ожидалось поле \'nonspec_url\' в ответе. '
-            f'Ключи: {list(data.keys())}'
-        )
+        assert 'nonspec_url' in data, f"Ожидалось поле 'nonspec_url' в ответе. Ключи: {list(data.keys())}"
         assert data['nonspec_url'] == version.nonspec_url, (
-            f'Ожидалась ссылка \'{version.nonspec_url}\', '
-            f'получена \'{data.get("nonspec_url")}\'. Данные: {data}'
+            f"Ожидалась ссылка '{version.nonspec_url}', получена '{data.get('nonspec_url')}'. Данные: {data}"
         )
 
     def test_get_nonspec_url_empty(self, api_client, sample_vaccine_versions):
@@ -503,13 +437,11 @@ class TestVaccineInstructionPatient:
         response = api_client.get(f'{url}instruction-patient/')
 
         assert response.status_code == 200, (
-            f'Ожидался статус 200, получен {response.status_code}. '
-            f'URL: {url}instruction-patient/'
+            f'Ожидался статус 200, получен {response.status_code}. URL: {url}instruction-patient/'
         )
         data = response.json()
         assert data['nonspec_url'] == '', (
-            f'Ожидалась пустая строка, '
-            f'получено \'{data.get("nonspec_url")}\'. Данные: {data}'
+            f"Ожидалась пустая строка, получено '{data.get('nonspec_url')}'. Данные: {data}"
         )
 
     def test_get_nonspec_nonexistent_vaccine(self, api_client):
@@ -518,8 +450,7 @@ class TestVaccineInstructionPatient:
         response = api_client.get(f'{url}instruction-patient/')
 
         assert response.status_code == 404, (
-            f'Ожидался статус 404, получен {response.status_code}. '
-            f'URL: {url}instruction-patient/'
+            f'Ожидался статус 404, получен {response.status_code}. URL: {url}instruction-patient/'
         )
 
 
@@ -539,13 +470,9 @@ class TestVaccineInstructionSpecialist:
             f'URL: {url}instruction-specialist/, card_id={version.vaccine_card.id}'
         )
         data = response.json()
-        assert 'instruction_url' in data, (
-            f'Ожидалось поле \'instruction_url\' в ответе. '
-            f'Ключи: {list(data.keys())}'
-        )
+        assert 'instruction_url' in data, f"Ожидалось поле 'instruction_url' в ответе. Ключи: {list(data.keys())}"
         assert data['instruction_url'] == version.instruction_url, (
-            f'Ожидалась ссылка \'{version.instruction_url}\', '
-            f'получена \'{data.get("instruction_url")}\'. Данные: {data}'
+            f"Ожидалась ссылка '{version.instruction_url}', получена '{data.get('instruction_url')}'. Данные: {data}"
         )
 
     def test_get_instruction_url_empty(self, api_client, sample_vaccine_versions):
@@ -558,13 +485,11 @@ class TestVaccineInstructionSpecialist:
         response = api_client.get(f'{url}instruction-specialist/')
 
         assert response.status_code == 200, (
-            f'Ожидался статус 200, получен {response.status_code}. '
-            f'URL: {url}instruction-specialist/'
+            f'Ожидался статус 200, получен {response.status_code}. URL: {url}instruction-specialist/'
         )
         data = response.json()
         assert data['instruction_url'] == '', (
-            f'Ожидалась пустая строка, '
-            f'получено \'{data.get("instruction_url")}\'. Данные: {data}'
+            f"Ожидалась пустая строка, получено '{data.get('instruction_url')}'. Данные: {data}"
         )
 
     def test_get_instruction_nonexistent_vaccine(self, api_client):
@@ -573,6 +498,5 @@ class TestVaccineInstructionSpecialist:
         response = api_client.get(f'{url}instruction-specialist/')
 
         assert response.status_code == 404, (
-            f'Ожидался статус 404, получен {response.status_code}. '
-            f'URL: {url}instruction-specialist/'
+            f'Ожидался статус 404, получен {response.status_code}. URL: {url}instruction-specialist/'
         )

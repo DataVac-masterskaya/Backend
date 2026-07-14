@@ -7,7 +7,7 @@ pytestmark = pytest.mark.django_db
 
 
 class TestInfections:
-    """Тесты для /infections/"""
+    """Тесты для /infections/."""
 
     URL_LIST = 'infections-list'
 
