@@ -23,7 +23,7 @@ class IngredientItemSerializer(serializers.Serializer):
     """Сериализатор для валидации ингредиента в составе вакцины."""
 
     ingredient_id = serializers.IntegerField()
-    role = serializers.ChoiceField(choices=IngredientRoleType.choices, default=IngredientRoleType.EXCIPIENT)
+    role = serializers.ChoiceField(choices=IngredientRoleType.choices, default=IngredientRoleType.ACTIVE)
 
     def validate_ingredient_id(self, value):
         """Проверяет существование ингредиента в БД."""
@@ -151,7 +151,7 @@ class AdminVaccinesCreatedSerializers(serializers.ModelSerializer):
         if infection_ids:
             version.infections.set(infection_ids)
         bulk_create_relations(
-            version, VaccineCardVersionIngredient, ingredients_data, defaults={'role': IngredientRoleType.EXCIPIENT}
+            version, VaccineCardVersionIngredient, ingredients_data, defaults={'role': IngredientRoleType.ACTIVE}
         )
         bulk_create_relations(
             version,
@@ -198,7 +198,7 @@ class AdminVaccinesCreatedSerializers(serializers.ModelSerializer):
             infections = Infection.objects.filter(id__in=infection_ids)
             new_version.infections.set(infections)
         bulk_create_relations(
-            new_version, VaccineCardVersionIngredient, ingredients_data, defaults={'role': IngredientRoleType.EXCIPIENT}
+            new_version, VaccineCardVersionIngredient, ingredients_data, defaults={'role': IngredientRoleType.ACTIVE}
         )
         bulk_create_relations(
             new_version,
