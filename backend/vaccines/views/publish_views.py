@@ -5,6 +5,7 @@ from rest_framework import filters, generics, status
 from vaccines.constants import VACCINE_TAG
 from vaccines.filters import VaccineFilter
 from vaccines.models import VaccineCard
+from vaccines.pagination import StandardPagination
 from vaccines.serializers.publush_serializers import VaccineCardDetail, VaccineCardShort
 
 
@@ -57,6 +58,7 @@ class PublishVaccinesViews(generics.ListAPIView):
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     ordering_fields = ['current_version__name', 'current_version__official_name']
     ordering = ['current_version__name']
+    pagination_class = StandardPagination
 
     def get_queryset(self):
         return VaccineCard.objects.filter(is_visible=True, status='active').select_related('current_version')

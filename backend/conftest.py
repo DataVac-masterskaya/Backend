@@ -87,18 +87,17 @@ def published_vaccine_factory(test_user):
         official_name='Анатоксин дифтерийно-столбнячный',
         is_visible=True,
         contraindication=None,
-        min_age=6,
-        max_age=18,
-        pregnancy_usage_status='caution',
+        min_age_months=6,
+        max_age_months=18,
     ):
         vaccine_card = VaccineCard.objects.create(is_visible=is_visible)
         version = VaccineCardVersion.objects.create(
             vaccine_card=vaccine_card,
             name=name,
             official_name=official_name,
-            min_age=min_age,
-            max_age=max_age,
-            pregnancy_usage_status=pregnancy_usage_status,
+            min_age_months=min_age_months,
+            max_age_months=max_age_months,
+            pregnancy_usage_status=True,
             created_by=test_user,
         )
         vaccine_card.published_version = version
