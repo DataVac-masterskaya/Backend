@@ -127,10 +127,11 @@ class VaccineCardVersion(models.Model):
     )
     parent_version = models.ForeignKey(
         'self',
-        null=True,
         on_delete=models.SET_NULL,
         related_name='children',
         verbose_name='Предыдущая версия',
+        blank=True,
+        null=True,
     )
     moderation_request = models.PositiveIntegerField(
         blank=True,
