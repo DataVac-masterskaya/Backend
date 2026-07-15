@@ -22,4 +22,5 @@ urlpatterns = [
     path('search/select', SearchSelectView.as_view(), name='search-select'),
     path('vaccines/{id}/instruction-patient', instruction_patient),
     path('external/feedback', ExternalFeedbackView.as_view(), name='external-feedback'),
+    path('', include(router.urls)),
 ]
