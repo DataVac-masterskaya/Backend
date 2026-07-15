@@ -46,7 +46,7 @@ def test_get_vaccines_by_contraindication_returns_related_vaccines(published_vac
             'officialName': 'Анатоксин дифтерийно-столбнячный',
             'minAge': 6,
             'maxAge': 18,
-            'pregnancyUsageStatus': 'caution',
+            'pregnancyUsageStatus': True,
             'contraindications': [
                 {
                     'id': contraindication.id,

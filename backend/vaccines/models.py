@@ -10,11 +10,9 @@ from vaccines.constants import (
     DECIMAL_PLACES,
     DEFAULT_VERSION,
     INGREDIENT_ROLE_MAX_LEN,
-    IS_AVAILABLE_IN_RF_MAX_LEN,
     MAX_DIGITS_SEARCH_WEIGHT,
     NAME_MAX_LEN,
     OFFICIAL_NAME_MAX_LEN,
-    PREGNANCY_USAGE_STATUS,
     STATUS_MAX_LEN,
     URL_MAX_LEN,
     VERSION_STATUS_MAX_LEN,
@@ -97,6 +95,7 @@ class VaccineCard(models.Model):
         auto_now=True,
         verbose_name='Дата редактирования',
     )
+    popularity = models.PositiveIntegerField(blank=True, null=True, verbose_name='Популярность')
 
     class Meta:
         verbose_name = 'Карточка вакцины'
@@ -161,24 +160,23 @@ class VaccineCardVersion(models.Model):
         null=True,
         verbose_name='Производитель',
     )
-    is_available_in_rf = models.CharField(
-        max_length=IS_AVAILABLE_IN_RF_MAX_LEN,
+    is_available_in_rf = models.BooleanField(
         blank=True,
         null=True,
         verbose_name='Доступность в РФ',
+        default=False,
     )
-    min_age = models.PositiveIntegerField(blank=True, null=True, verbose_name='Минимальный возраст')
-    max_age = models.PositiveIntegerField(
+    min_age_months = models.PositiveIntegerField(blank=True, null=True, verbose_name='Минимальный возраст')
+    max_age_months = models.PositiveIntegerField(
         blank=True,
         null=True,
         verbose_name='Максимальный возраст',
     )
-    pregnancy_usage_status = models.CharField(
-        max_length=PREGNANCY_USAGE_STATUS,
+    pregnancy_usage_status = models.BooleanField(
         blank=True,
         null=True,
         verbose_name='Применение при беременности',
-        choices=PregnancyUsageStatus.choices,
+        default=False,
     )
     storage_conditions = models.TextField(
         blank=True,
