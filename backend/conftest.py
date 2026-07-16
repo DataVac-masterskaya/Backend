@@ -99,9 +99,19 @@ def published_vaccine_factory(test_user):
             max_age_months=max_age_months,
             pregnancy_usage_status=True,
             created_by=test_user,
+            pdf_url='https://datavac.vaccina.info/vaccines/Pentaxim/',
+            instruction_url='https://datavac.vaccina.info/vaccines/Pentaxim/',
+            nonspec_url='https://datavac.vaccina.info/vaccines/Pentaxim/',
+            ohlp_url='https://datavac.vaccina.info/vaccines/Pentaxim/',
         )
         vaccine_card.published_version = version
-        vaccine_card.save(update_fields=('published_version',))
+        vaccine_card.current_version = version
+        vaccine_card.save(
+            update_fields=(
+                'published_version',
+                'current_version',
+            )
+        )
         if contraindication:
             VaccineCardVersionContraindication.objects.create(
                 vaccine_card_version=version,
@@ -188,5 +198,45 @@ def vaccine_detail_url():
 
     def get_url(vaccine_id):
         return reverse('admin-vaccine-detail', args=[vaccine_id])
+
+    return get_url
+
+
+@pytest.fixture
+def vaccine_pdf_url():
+    """Возвращает URL для pdf по ID."""
+
+    def get_url(vaccine_id):
+        return reverse('vaccine-pdf', args=[vaccine_id])
+
+    return get_url
+
+
+@pytest.fixture
+def vaccine_instruction_url():
+    """Возвращает URL для инструкции по ID."""
+
+    def get_url(vaccine_id):
+        return reverse('official-link', args=[vaccine_id])
+
+    return get_url
+
+
+@pytest.fixture
+def vaccine_instruction_patient_url():
+    """Возвращает URL инструкции для пациентов по ID."""
+
+    def get_url(vaccine_id):
+        return reverse('instruction-patient', args=[vaccine_id])
+
+    return get_url
+
+
+@pytest.fixture
+def vaccine_instruction_specialist_url():
+    """Возвращает URL инструкции для пациентов по ID."""
+
+    def get_url(vaccine_id):
+        return reverse('instruction-specialist', args=[vaccine_id])
 
     return get_url
