@@ -101,7 +101,8 @@ def published_vaccine_factory(test_user):
             created_by=test_user,
         )
         vaccine_card.published_version = version
-        vaccine_card.save(update_fields=('published_version',))
+        vaccine_card.current_version = version
+        vaccine_card.save(update_fields=('published_version', 'current_version'))
         if contraindication:
             VaccineCardVersionContraindication.objects.create(
                 vaccine_card_version=version,
@@ -188,5 +189,21 @@ def vaccine_detail_url():
 
     def get_url(vaccine_id):
         return reverse('admin-vaccine-detail', args=[vaccine_id])
+
+    return get_url
+
+
+@pytest.fixture
+def vaccine_list_url():
+    """Возвращает URL списка вакцин (публичный)."""
+    return reverse('publish-vaccine')
+
+
+@pytest.fixture
+def vaccine_publish_detail_url():
+    """Возвращает URL для детального просмотра (публичный)."""
+
+    def get_url(id):
+        return reverse('publish-vaccine-detail', args=[id])
 
     return get_url
