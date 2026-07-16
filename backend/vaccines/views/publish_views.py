@@ -15,7 +15,8 @@ from vaccines.serializers.publush_serializers import VaccineCardDetail, VaccineC
 @extend_schema(
     tags=[VACCINE_TAG],
     summary='Список вакцин',
-    description='Возвращает список вакцин с поддержкой сортировки, фильтрации по первой букве и связанной сущности.',
+    description='Возвращает список вакцин с поддержкой сортировки, пагинации, \n'
+    'фильтрации, по первой букве и связанной сущности.',
     parameters=[
         OpenApiParameter(
             name='ordering',
@@ -54,7 +55,7 @@ from vaccines.serializers.publush_serializers import VaccineCardDetail, VaccineC
     },
 )
 class PublishVaccinesViews(generics.ListAPIView):
-    """Публичный эндпоинт списока вакцин с поддержкой сортировки, фильтрации."""
+    """Публичный эндпоинт списока вакцин с поддержкой сортировки, фильтрации и пагинации."""
 
     serializer_class = VaccineCardShort
     filterset_class = VaccineFilter
@@ -106,6 +107,11 @@ class BaseVaccineLinkView(APIView):
         return Response({'url': url})
 
 
+@extend_schema(
+    tags=[VACCINE_TAG],
+    summary='PDF-файл карточки вакцины',
+    description='Перенаправляет на PDF-файл по ID карточки вакцины',
+)
 class VaccinePDFView(BaseVaccineLinkView):
     """Перенаправляет на PDF-файл карточки вакцины."""
 
@@ -114,6 +120,11 @@ class VaccinePDFView(BaseVaccineLinkView):
     error_message = 'PDF у карточки не найден.'
 
 
+@extend_schema(
+    tags=[VACCINE_TAG],
+    summary='Официальная инструкция',
+    description='Возвращает ссылку на официальную инструкцию по ID карточки вакцины',
+)
 class VaccineInstructionView(BaseVaccineLinkView):
     """Возвращает ссылку на официальную инструкцию."""
 
@@ -121,6 +132,11 @@ class VaccineInstructionView(BaseVaccineLinkView):
     error_message = 'Ссылка на инструкцию не найдена.'
 
 
+@extend_schema(
+    tags=[VACCINE_TAG],
+    summary='Инструкция для пациентов',
+    description='Возвращает ссылку на инструкцию для пациентов по ID карточки вакцины',
+)
 class VaccineInstructionPatientView(BaseVaccineLinkView):
     """Возвращает ссылку на инструкцию для пациентов."""
 
@@ -128,6 +144,11 @@ class VaccineInstructionPatientView(BaseVaccineLinkView):
     error_message = 'Ссылка на инструкцию для пациента не найдена.'
 
 
+@extend_schema(
+    tags=[VACCINE_TAG],
+    summary='Инструкцию для специалистов',
+    description='Возвращает ссылку на инструкцию для специалистов по ID карточки вакцины',
+)
 class VaccineInstructionSpecialistView(BaseVaccineLinkView):
     """Возвращает ссылку на инструкцию для специалистов."""
 
