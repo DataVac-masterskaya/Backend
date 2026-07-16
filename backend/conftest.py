@@ -107,12 +107,6 @@ def published_vaccine_factory(test_user):
         vaccine_card.published_version = version
         vaccine_card.current_version = version
         vaccine_card.save(update_fields=('published_version', 'current_version'))
-        vaccine_card.save(
-            update_fields=(
-                'published_version',
-                'current_version',
-            )
-        )
         if contraindication:
             VaccineCardVersionContraindication.objects.create(
                 vaccine_card_version=version,
@@ -215,6 +209,11 @@ def vaccine_publish_detail_url():
 
     def get_url(id):
         return reverse('publish-vaccine-detail', args=[id])
+
+    return get_url
+
+
+@pytest.fixture
 def vaccine_pdf_url():
     """Возвращает URL для pdf по ID."""
 
