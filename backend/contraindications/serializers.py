@@ -15,7 +15,7 @@ class ContraindicationCategorySerializer(serializers.ModelSerializer):
 
 
 class ContraindicationListSerializer(serializers.ModelSerializer):
-    """Преобразует противопоказание для списка API."""
+    """Преобразует противопоказание для старого списка API."""
 
     categories = ContraindicationCategorySerializer(many=True, read_only=True)
     searchSelectCount = serializers.IntegerField(
@@ -40,6 +40,35 @@ class ContraindicationListSerializer(serializers.ModelSerializer):
             'searchSelectCount',
             'searchWeight',
         )
+
+
+class ContraindicationFrontendListSerializer(serializers.ModelSerializer):
+    """Преобразует противопоказание по контракту фронтенда."""
+
+    category = serializers.SerializerMethodField()
+    popularity = serializers.IntegerField(
+        source='search_select_count',
+        read_only=True,
+    )
+
+    class Meta:
+        """Описывает поля противопоказания для нового списка API."""
+
+        model = Contraindication
+        fields = (
+            'id',
+            'name',
+            'category',
+            'subcategory',
+            'popularity',
+        )
+
+    def get_category(self, obj: Contraindication) -> dict | None:
+        """Возвращает первую категорию в алфавитном порядке."""
+        categories = list(obj.categories.all())
+        if not categories:
+            return None
+        return ContraindicationCategorySerializer(categories[0]).data
 
 
 class ContraindicationDetailSerializer(ContraindicationListSerializer):
