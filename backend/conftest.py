@@ -204,7 +204,6 @@ def vaccine_detail_url():
 
 
 @pytest.fixture
-<<<<<<< HEAD
 def vaccine_list_url():
     """Возвращает URL списка вакцин (публичный)."""
     return reverse('publish-vaccine')
@@ -216,7 +215,6 @@ def vaccine_publish_detail_url():
 
     def get_url(id):
         return reverse('publish-vaccine-detail', args=[id])
-=======
 def vaccine_pdf_url():
     """Возвращает URL для pdf по ID."""
 
@@ -252,6 +250,5 @@ def vaccine_instruction_specialist_url():
 
     def get_url(vaccine_id):
         return reverse('instruction-specialist', args=[vaccine_id])
->>>>>>> develop
 
     return get_url
