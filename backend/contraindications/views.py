@@ -8,6 +8,7 @@ from contraindications.models import Contraindication, ContraindicationCategory
 from contraindications.serializers import (
     ContraindicationCategorySerializer,
     ContraindicationDetailSerializer,
+    ContraindicationFrontendListSerializer,
     ContraindicationListSerializer,
     ContraindicationSearchSerializer,
     ContraindicationVaccinesResponseSerializer,
@@ -32,7 +33,60 @@ class ContraindicationCategoryListView(APIView):
 
 
 class ContraindicationListView(APIView):
-    """Отдает список противопоказаний с фильтрацией и поиском."""
+    """Отдает список противопоказаний по контракту фронтенда."""
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name='category',
+                description='Название категории противопоказаний.',
+                required=False,
+                type=str,
+            ),
+            OpenApiParameter(
+                name='sort',
+                description='Сортировка списка: popularity или name.',
+                required=False,
+                type=str,
+                enum=['popularity', 'name'],
+            ),
+        ],
+        responses=ContraindicationFrontendListSerializer(many=True),
+    )
+    def get(self, request):
+        """Возвращает список с основной категорией и популярностью."""
+        contraindications = Contraindication.objects.prefetch_related(
+            'categories',
+        ).order_by('name')
+        category = request.query_params.get('category')
+        sort = request.query_params.get('sort', 'name')
+
+        if category:
+            contraindications = contraindications.filter(
+                categories__name=category.strip(),
+            )
+
+        if sort not in {'popularity', 'name'}:
+            return Response(
+                {'detail': 'sort must be one of: popularity, name.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if sort == 'popularity':
+            contraindications = contraindications.order_by(
+                '-search_select_count',
+                'name',
+            )
+
+        serializer = ContraindicationFrontendListSerializer(
+            contraindications.distinct(),
+            many=True,
+        )
+        return Response(serializer.data)
+
+
+class ContraindicationLegacyListView(APIView):
+    """Отдает список противопоказаний по прежнему контракту."""
 
     @extend_schema(
         parameters=[
@@ -50,9 +104,10 @@ class ContraindicationListView(APIView):
             ),
         ],
         responses=ContraindicationListSerializer(many=True),
+        deprecated=True,
     )
     def get(self, request):
-        """Возвращает список противопоказаний по query-параметрам."""
+        """Возвращает прежний список с фильтрацией и поиском."""
         contraindications = Contraindication.objects.prefetch_related(
             'categories',
         ).order_by('name')

@@ -3,6 +3,7 @@ from django.urls import path
 from contraindications.views import (
     ContraindicationCategoryListView,
     ContraindicationDetailView,
+    ContraindicationLegacyListView,
     ContraindicationListView,
     ContraindicationSearchView,
     ContraindicationVaccinesView,
@@ -20,6 +21,11 @@ urlpatterns = [
         'contraindications/',
         ContraindicationListView.as_view(),
         name='contraindication-list',
+    ),
+    path(
+        'contraindications/legacy/',
+        ContraindicationLegacyListView.as_view(),
+        name='contraindication-legacy-list',
     ),
     path(
         'contraindications/search/',
