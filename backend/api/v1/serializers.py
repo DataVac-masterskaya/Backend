@@ -50,6 +50,7 @@ class InfectionSerializer(serializers.ModelSerializer):
             'id',
             'name',
             'category',
+            'popularity',
         )
 
 
@@ -64,6 +65,7 @@ class InfectionCartSerializer(InfectionSerializer):
             'id',
             'name',
             'category',
+            'popularity',
             'vaccines',
         )
 

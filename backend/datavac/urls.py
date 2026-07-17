@@ -14,4 +14,5 @@ urlpatterns = [
     path('api/search/', include('search.urls')),
     path('api/v1/', include('api.v1.urls')),
     path('api/v1/', include('vaccines.urls')),
+    path('api/v1/', include('accounts.urls')),
 ]

@@ -35,6 +35,7 @@ class InfectionViewSet(viewsets.ReadOnlyModelViewSet):
     filter_backends = (DjangoFilterBackend, OrderingFilterSortBy)
     filterset_class = InfectionFilter
     ordering_fields = ('name', 'category', 'search_weight')
+    pagination_class = InfectionPagination
 
     @extend_schema(
         parameters=[

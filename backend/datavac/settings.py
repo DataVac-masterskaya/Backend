@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 import sys
+from datetime import timedelta
 from pathlib import Path
 
 from decouple import Config, RepositoryEnv
@@ -69,6 +70,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # Additional
     'rest_framework',
+    'rest_framework_simplejwt',
     'corsheaders',
     'drf_spectacular',
     'django_filters',
@@ -77,7 +79,6 @@ INSTALLED_APPS = [
     #'app1',
     #'app2',
     'contraindications.apps.ContraindicationsConfig',
-    'users.apps.UsersConfig',
     'audit.apps.AuditConfig',
     'api.apps.ApiConfig',
     'reference_books.apps.ReferenceBooksConfig',
@@ -85,10 +86,12 @@ INSTALLED_APPS = [
     'vaccines.apps.VaccinesConfig',
     'search',
     'notifications.apps.NotificationsConfig',
+    'accounts.apps.AccountsConfig',
 ]
 
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_AUTHENTICATION_CLASSES': ('rest_framework_simplejwt.authentication.JWTAuthentication',),
 }
 
 SPECTACULAR_SETTINGS = {
@@ -194,7 +197,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru-RU'
 
 LOCALE_PATHS = [str(BASE_DIR / 'locale') if DEBUG else '/var/www/django/locale']
 
@@ -290,3 +293,10 @@ CELERY_ENABLE_UTC = True
 # Настройки воркеров
 CELERY_WORKER_CONCURRENCY = 4
 CELERY_WORKER_MAX_TASKS_PER_CHILD = 1000
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'TOKEN_OBTAIN_SERIALIZER': 'accounts.serializers.TokenObtainPairSerializer',
+}
+AUTH_USER_MODEL = 'accounts.User'

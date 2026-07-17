@@ -28,7 +28,7 @@ class TestAuditLog:
 
     def test_anonymous_access_denied(self, anonymous_client):
         response = anonymous_client.get(AUDIT_LOGS_URL)
-        assert response.status_code == HTTPStatus.FORBIDDEN
+        assert response.status_code == HTTPStatus.UNAUTHORIZED
 
     def test_normal_user_access_denied(self, normal_client):
         response = normal_client.get(AUDIT_LOGS_URL)
