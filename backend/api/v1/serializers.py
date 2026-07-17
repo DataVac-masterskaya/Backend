@@ -88,12 +88,7 @@ class IngredientsSerializer(serializers.ModelSerializer):
         ('Следы производства', 'Следы производства')
     ]
 
-    type = serializers.ChoiceField(
-        choices=TYPE_CHOICES,
-        error_messages={
-            'invalid_choice': 'Неверный тип ингредиента'
-        }
-    )
+    type = serializers.ChoiceField(choices=TYPE_CHOICES, error_messages={'invalid_choice': 'Неверный тип ингредиента'})
 
     class Meta:
         model = Ingredients
