@@ -217,6 +217,9 @@ def data_for_success_auth(test_user):
 def data_wrong_password(test_user):
     """Данные для аутентификации с неверным паролем."""
     return {'username': test_user.username, 'password': 'wrong_password123'}
+
+
+@pytest.fixture
 def vaccine_list_url():
     """Возвращает URL списка вакцин (публичный)."""
     return reverse('publish-vaccine')
