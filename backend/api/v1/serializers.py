@@ -85,7 +85,7 @@ class IngredientsSerializer(serializers.ModelSerializer):
         ('Консервант', 'Консервант'),
         ('Подсластитель', 'Подсластитель'),
         ('Эмульгатор', 'Эмульгатор'),
-        ('Следы производства', 'Следы производства')
+        ('Следы производства', 'Следы производства'),
     ]
 
     type = serializers.ChoiceField(choices=TYPE_CHOICES, error_messages={'invalid_choice': 'Неверный тип ингредиента'})
