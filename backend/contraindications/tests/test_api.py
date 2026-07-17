@@ -21,18 +21,124 @@ def test_list_categories(api_client):
 
 
 def test_list_contraindications(api_client):
-    """Проверяет получение списка противопоказаний."""
-    Contraindication.objects.create(name='Аллергия на компонент вакцины')
+    """Проверяет новый формат списка противопоказаний."""
+    category = ContraindicationCategory.objects.create(name='Аллергии')
+    contraindication = Contraindication.objects.create(
+        name='Аллергия на компонент вакцины',
+        subcategory='Аллергия на лекарственные компоненты',
+        search_select_count=12,
+    )
+    contraindication.categories.add(category)
 
     response = api_client.get('/api/v1/contraindications/')
 
     assert response.status_code == status.HTTP_200_OK
+    assert response.data == [
+        {
+            'id': contraindication.id,
+            'name': 'Аллергия на компонент вакцины',
+            'category': {
+                'id': category.id,
+                'name': 'Аллергии',
+            },
+            'subcategory': 'Аллергия на лекарственные компоненты',
+            'popularity': 12,
+        },
+    ]
+
+
+def test_new_list_uses_first_category_alphabetically(api_client):
+    """Проверяет выбор первой категории для нового контракта."""
+    allergies = ContraindicationCategory.objects.create(name='Аллергии')
+    chronic = ContraindicationCategory.objects.create(name='Хронические заболевания')
+    contraindication = Contraindication.objects.create(name='Бронхиальная астма')
+    contraindication.categories.add(chronic, allergies)
+
+    response = api_client.get('/api/v1/contraindications/')
+
+    assert response.status_code == status.HTTP_200_OK
+    assert response.data[0]['category']['name'] == 'Аллергии'
+
+
+def test_new_list_returns_null_category_and_subcategory(api_client):
+    """Проверяет nullable-поля нового контракта."""
+    Contraindication.objects.create(name='Противопоказание без категории')
+
+    response = api_client.get('/api/v1/contraindications/')
+
+    assert response.status_code == status.HTTP_200_OK
+    assert response.data[0]['category'] is None
+    assert response.data[0]['subcategory'] is None
+
+
+def test_new_list_filters_by_category_name(api_client):
+    """Проверяет фильтрацию нового списка по названию категории."""
+    allergies = ContraindicationCategory.objects.create(name='Аллергии')
+    immune = ContraindicationCategory.objects.create(name='Иммунодефициты')
+    first = Contraindication.objects.create(name='Аллергия')
+    second = Contraindication.objects.create(name='Иммунодефицит')
+    first.categories.add(allergies)
+    second.categories.add(immune)
+
+    response = api_client.get('/api/v1/contraindications/?category=Аллергии')
+
+    assert response.status_code == status.HTTP_200_OK
     assert len(response.data) == 1
-    assert response.data[0]['name'] == 'Аллергия на компонент вакцины'
+    assert response.data[0]['name'] == 'Аллергия'
 
 
-def test_filter_contraindications_by_category(api_client):
-    """Проверяет фильтрацию противопоказаний по категории."""
+def test_new_list_sorts_by_popularity(api_client):
+    """Проверяет сортировку по убыванию популярности."""
+    Contraindication.objects.create(name='Менее популярное', search_select_count=2)
+    Contraindication.objects.create(name='Популярное Б', search_select_count=10)
+    Contraindication.objects.create(name='Популярное А', search_select_count=10)
+
+    response = api_client.get('/api/v1/contraindications/?sort=popularity')
+
+    assert response.status_code == status.HTTP_200_OK
+    assert [item['name'] for item in response.data] == [
+        'Популярное А',
+        'Популярное Б',
+        'Менее популярное',
+    ]
+
+
+def test_new_list_rejects_invalid_sort(api_client):
+    """Проверяет ошибку для неподдерживаемой сортировки."""
+    response = api_client.get('/api/v1/contraindications/?sort=unknown')
+
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.data == {
+        'detail': 'sort must be one of: popularity, name.',
+    }
+
+
+def test_legacy_list_preserves_old_contract(api_client):
+    """Проверяет сохранение прежнего формата на legacy-маршруте."""
+    category = ContraindicationCategory.objects.create(name='Аллергии')
+    contraindication = Contraindication.objects.create(
+        name='Аллергия',
+        search_select_count=3,
+        search_weight='4.00',
+    )
+    contraindication.categories.add(category)
+
+    response = api_client.get('/api/v1/contraindications/legacy/')
+
+    assert response.status_code == status.HTTP_200_OK
+    assert response.data == [
+        {
+            'id': contraindication.id,
+            'name': 'Аллергия',
+            'categories': [{'id': category.id, 'name': 'Аллергии'}],
+            'searchSelectCount': 3,
+            'searchWeight': '4.00',
+        },
+    ]
+
+
+def test_legacy_list_filters_by_category_id(api_client):
+    """Проверяет старую фильтрацию по идентификатору категории."""
     allergies = ContraindicationCategory.objects.create(name='Аллергии')
     immune = ContraindicationCategory.objects.create(name='Иммунодефициты')
     first = Contraindication.objects.create(name='Аллергия')
@@ -41,7 +147,7 @@ def test_filter_contraindications_by_category(api_client):
     second.categories.add(immune)
 
     response = api_client.get(
-        f'/api/v1/contraindications/?categoryId={allergies.id}',
+        f'/api/v1/contraindications/legacy/?categoryId={allergies.id}',
     )
 
     assert response.status_code == status.HTTP_200_OK
@@ -49,21 +155,19 @@ def test_filter_contraindications_by_category(api_client):
     assert response.data[0]['name'] == 'Аллергия'
 
 
-def test_filter_contraindications_rejects_invalid_category_id(
-    api_client,
-):
-    """Проверяет ошибку при некорректном идентификаторе категории."""
-    response = api_client.get('/api/v1/contraindications/?categoryId=abc')
+def test_legacy_list_rejects_invalid_category_id(api_client):
+    """Проверяет старую валидацию идентификатора категории."""
+    response = api_client.get('/api/v1/contraindications/legacy/?categoryId=abc')
 
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
-def test_search_contraindications_by_name(api_client):
-    """Проверяет поиск противопоказаний по названию."""
+def test_legacy_list_searches_by_name(api_client):
+    """Проверяет старый поиск по названию."""
     Contraindication.objects.create(name='Аллергия')
     Contraindication.objects.create(name='Иммунодефицит')
 
-    response = api_client.get('/api/v1/contraindications/?search=аллер')
+    response = api_client.get('/api/v1/contraindications/legacy/?search=Аллер')
 
     assert response.status_code == status.HTTP_200_OK
     assert len(response.data) == 1
@@ -116,7 +220,7 @@ def test_search_endpoint(api_client):
     """Проверяет отдельный endpoint поисковых подсказок."""
     Contraindication.objects.create(name='Аллергия')
 
-    response = api_client.get('/api/v1/contraindications/search/?q=аллер')
+    response = api_client.get('/api/v1/contraindications/search/?q=Аллер')
 
     assert response.status_code == status.HTTP_200_OK
     assert response.data[0]['name'] == 'Аллергия'

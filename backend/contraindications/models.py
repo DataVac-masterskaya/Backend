@@ -37,6 +37,12 @@ class Contraindication(models.Model):
         blank=True,
         verbose_name='Категории',
     )
+    subcategory = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        verbose_name='Подкатегория',
+    )
     search_select_count = models.PositiveBigIntegerField(default=0, verbose_name='Количество поисковых запросов')
     search_weight = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name='Поисковой вес')
 
