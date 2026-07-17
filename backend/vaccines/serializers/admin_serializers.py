@@ -2,6 +2,7 @@ from django.db import transaction
 from rest_framework import serializers
 
 from contraindications.models import Contraindication
+from instructions.models import OfficialInstruction
 from reference_books.models import Infection, Ingredients, MethodsOfAdministration
 from vaccines.constants import DEFAULT_VERSION
 from vaccines.models import (
@@ -22,7 +23,7 @@ class IngredientItemSerializer(serializers.Serializer):
     """Сериализатор для валидации ингредиента в составе вакцины."""
 
     ingredient_id = serializers.IntegerField()
-    role = serializers.ChoiceField(choices=IngredientRoleType.choices, default=IngredientRoleType.EXCIPIENT)
+    role = serializers.ChoiceField(choices=IngredientRoleType.choices, default=IngredientRoleType.ACTIVE)
 
     def validate_ingredient_id(self, value):
         """Проверяет существование ингредиента в БД."""
@@ -83,6 +84,12 @@ class AdminVaccinesCreatedSerializers(serializers.ModelSerializer):
         allow_empty=True,
     )
 
+    official_instruction_id = serializers.PrimaryKeyRelatedField(
+        source='official_instruction',
+        queryset=OfficialInstruction.objects.all(),
+        required=False,
+        allow_null=True,
+    )
     ingredients = IngredientItemSerializer(many=True, required=False, default=list)
     contraindications = ContraindicationItemSerializer(many=True, required=False, default=list)
     administration_methods = AdministrationMethodItemSerializer(many=True, required=False, default=list)
@@ -96,8 +103,8 @@ class AdminVaccinesCreatedSerializers(serializers.ModelSerializer):
             'description',
             'manufacturer',
             'is_available_in_rf',
-            'min_age',
-            'max_age',
+            'min_age_months',
+            'max_age_months',
             'pregnancy_usage_status',
             'storage_conditions',
             'interaction_info',
@@ -110,6 +117,7 @@ class AdminVaccinesCreatedSerializers(serializers.ModelSerializer):
             'ohlp_url',
             'nonspec_url',
             'instruction_url',
+            'official_instruction_id',
             'pdf_url',
             'infection_ids',
             'ingredients',
@@ -143,7 +151,7 @@ class AdminVaccinesCreatedSerializers(serializers.ModelSerializer):
         if infection_ids:
             version.infections.set(infection_ids)
         bulk_create_relations(
-            version, VaccineCardVersionIngredient, ingredients_data, defaults={'role': IngredientRoleType.EXCIPIENT}
+            version, VaccineCardVersionIngredient, ingredients_data, defaults={'role': IngredientRoleType.ACTIVE}
         )
         bulk_create_relations(
             version,
@@ -190,7 +198,7 @@ class AdminVaccinesCreatedSerializers(serializers.ModelSerializer):
             infections = Infection.objects.filter(id__in=infection_ids)
             new_version.infections.set(infections)
         bulk_create_relations(
-            new_version, VaccineCardVersionIngredient, ingredients_data, defaults={'role': IngredientRoleType.EXCIPIENT}
+            new_version, VaccineCardVersionIngredient, ingredients_data, defaults={'role': IngredientRoleType.ACTIVE}
         )
         bulk_create_relations(
             new_version,

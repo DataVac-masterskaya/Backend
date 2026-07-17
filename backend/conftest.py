@@ -85,22 +85,26 @@ def published_vaccine_factory(test_user):
         official_name='Анатоксин дифтерийно-столбнячный',
         is_visible=True,
         contraindication=None,
-        min_age=6,
-        max_age=18,
-        pregnancy_usage_status='caution',
+        min_age_months=6,
+        max_age_months=18,
     ):
         vaccine_card = VaccineCard.objects.create(is_visible=is_visible)
         version = VaccineCardVersion.objects.create(
             vaccine_card=vaccine_card,
             name=name,
             official_name=official_name,
-            min_age=min_age,
-            max_age=max_age,
-            pregnancy_usage_status=pregnancy_usage_status,
+            min_age_months=min_age_months,
+            max_age_months=max_age_months,
+            pregnancy_usage_status=True,
             created_by=test_user,
+            pdf_url='https://datavac.vaccina.info/vaccines/Pentaxim/',
+            instruction_url='https://datavac.vaccina.info/vaccines/Pentaxim/',
+            nonspec_url='https://datavac.vaccina.info/vaccines/Pentaxim/',
+            ohlp_url='https://datavac.vaccina.info/vaccines/Pentaxim/',
         )
         vaccine_card.published_version = version
-        vaccine_card.save(update_fields=('published_version',))
+        vaccine_card.current_version = version
+        vaccine_card.save(update_fields=('published_version', 'current_version'))
         if contraindication:
             VaccineCardVersionContraindication.objects.create(
                 vaccine_card_version=version,
@@ -213,3 +217,56 @@ def data_for_success_auth(test_user):
 def data_wrong_password(test_user):
     """Данные для аутентификации с неверным паролем."""
     return {'username': test_user.username, 'password': 'wrong_password123'}
+def vaccine_list_url():
+    """Возвращает URL списка вакцин (публичный)."""
+    return reverse('publish-vaccine')
+
+
+@pytest.fixture
+def vaccine_publish_detail_url():
+    """Возвращает URL для детального просмотра (публичный)."""
+
+    def get_url(id):
+        return reverse('publish-vaccine-detail', args=[id])
+
+    return get_url
+
+
+@pytest.fixture
+def vaccine_pdf_url():
+    """Возвращает URL для pdf по ID."""
+
+    def get_url(vaccine_id):
+        return reverse('vaccine-pdf', args=[vaccine_id])
+
+    return get_url
+
+
+@pytest.fixture
+def vaccine_instruction_url():
+    """Возвращает URL для инструкции по ID."""
+
+    def get_url(vaccine_id):
+        return reverse('official-link', args=[vaccine_id])
+
+    return get_url
+
+
+@pytest.fixture
+def vaccine_instruction_patient_url():
+    """Возвращает URL инструкции для пациентов по ID."""
+
+    def get_url(vaccine_id):
+        return reverse('instruction-patient', args=[vaccine_id])
+
+    return get_url
+
+
+@pytest.fixture
+def vaccine_instruction_specialist_url():
+    """Возвращает URL инструкции для пациентов по ID."""
+
+    def get_url(vaccine_id):
+        return reverse('instruction-specialist', args=[vaccine_id])
+
+    return get_url

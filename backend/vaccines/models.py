@@ -10,11 +10,9 @@ from vaccines.constants import (
     DECIMAL_PLACES,
     DEFAULT_VERSION,
     INGREDIENT_ROLE_MAX_LEN,
-    IS_AVAILABLE_IN_RF_MAX_LEN,
     MAX_DIGITS_SEARCH_WEIGHT,
     NAME_MAX_LEN,
     OFFICIAL_NAME_MAX_LEN,
-    PREGNANCY_USAGE_STATUS,
     STATUS_MAX_LEN,
     URL_MAX_LEN,
     VERSION_STATUS_MAX_LEN,
@@ -42,20 +40,6 @@ class VaccineCardStatus(models.TextChoices):
     ARCHIVED = 'archived', 'Архивирована'
     DELETED = 'deleted', 'Удалена'
     DRAFT = 'draft', 'Черновик'
-
-
-class VaccineCardVersionRelationMixin(models.Model):
-    """Базовый миксин для связей с версией карточки."""
-
-    vaccine_card_version = models.ForeignKey(
-        'VaccineCardVersion',
-        on_delete=models.CASCADE,
-        related_name='%(class)ss',
-        verbose_name='Версия карточки',
-    )
-
-    class Meta:
-        abstract = True
 
 
 class VaccineCard(models.Model):
@@ -111,6 +95,7 @@ class VaccineCard(models.Model):
         auto_now=True,
         verbose_name='Дата редактирования',
     )
+    popularity = models.PositiveIntegerField(blank=True, null=True, verbose_name='Популярность')
 
     class Meta:
         verbose_name = 'Карточка вакцины'
@@ -142,10 +127,11 @@ class VaccineCardVersion(models.Model):
     )
     parent_version = models.ForeignKey(
         'self',
-        null=True,
         on_delete=models.SET_NULL,
         related_name='children',
         verbose_name='Предыдущая версия',
+        blank=True,
+        null=True,
     )
     moderation_request = models.PositiveIntegerField(
         blank=True,
@@ -175,24 +161,23 @@ class VaccineCardVersion(models.Model):
         null=True,
         verbose_name='Производитель',
     )
-    is_available_in_rf = models.CharField(
-        max_length=IS_AVAILABLE_IN_RF_MAX_LEN,
+    is_available_in_rf = models.BooleanField(
         blank=True,
         null=True,
         verbose_name='Доступность в РФ',
+        default=False,
     )
-    min_age = models.PositiveIntegerField(blank=True, null=True, verbose_name='Минимальный возраст')
-    max_age = models.PositiveIntegerField(
+    min_age_months = models.PositiveIntegerField(blank=True, null=True, verbose_name='Минимальный возраст')
+    max_age_months = models.PositiveIntegerField(
         blank=True,
         null=True,
         verbose_name='Максимальный возраст',
     )
-    pregnancy_usage_status = models.CharField(
-        max_length=PREGNANCY_USAGE_STATUS,
+    pregnancy_usage_status = models.BooleanField(
         blank=True,
         null=True,
         verbose_name='Применение при беременности',
-        choices=PregnancyUsageStatus.choices,
+        default=False,
     )
     storage_conditions = models.TextField(
         blank=True,
@@ -252,12 +237,27 @@ class VaccineCardVersion(models.Model):
         null=True,
         verbose_name='Ссылка на инструкцию',
     )
+    official_instruction = models.ForeignKey(
+        'instructions.OfficialInstruction',
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='vaccine_versions',
+        verbose_name='Официальная инструкция',
+    )
     pdf_url = models.URLField(
         max_length=URL_MAX_LEN,
         blank=True,
         null=True,
         verbose_name='Ссылка на PDF',
     )
+    qr_code_url = models.URLField(
+        max_length=URL_MAX_LEN,
+        blank=True,
+        null=True,
+        verbose_name='Ссылка на qr',
+    )
+
     infections = models.ManyToManyField(
         Infection, through='VaccineCardVersionInfection', related_name='vaccine_versions'
     )
@@ -325,11 +325,18 @@ class ContraindicationType(models.TextChoices):
 
 class IngredientRoleType(models.TextChoices):
     ACTIVE = 'active', 'Действующее'
-    EXCIPIENT = 'excipient', 'Вспомогательное'
+    AUXILIARY = 'auxiliary', 'Вспомогательное'
 
 
-class VaccineCardVersionInfection(VaccineCardVersionRelationMixin):
+class VaccineCardVersionInfection(models.Model):
     """Связь версии карточки с инфекцией."""
+
+    vaccine_card_version = models.ForeignKey(
+        'VaccineCardVersion',
+        on_delete=models.CASCADE,
+        related_name='infection_relations',
+        verbose_name='Версия карточки',
+    )
 
     infection = models.ForeignKey(
         Infection, on_delete=models.PROTECT, related_name='version_infections', verbose_name='Инфекция'
@@ -349,16 +356,22 @@ class VaccineCardVersionInfection(VaccineCardVersionRelationMixin):
         return f'{self.vaccine_card_version} - {self.infection.name}'
 
 
-class VaccineCardVersionIngredient(VaccineCardVersionRelationMixin):
+class VaccineCardVersionIngredient(models.Model):
     """Связь версии карточки с ингредиентом."""
 
+    vaccine_card_version = models.ForeignKey(
+        'VaccineCardVersion',
+        on_delete=models.CASCADE,
+        related_name='ingredient_relations',
+        verbose_name='Версия карточки',
+    )
     ingredient = models.ForeignKey(
-        Ingredients, on_delete=models.PROTECT, related_name='version_ingredients', verbose_name='Ингредиент'
+        Ingredients, on_delete=models.PROTECT, related_name='ingredient_relations', verbose_name='Ингредиент'
     )
     role = models.CharField(
         max_length=INGREDIENT_ROLE_MAX_LEN,
         choices=IngredientRoleType.choices,
-        default=IngredientRoleType.EXCIPIENT,
+        default=IngredientRoleType.ACTIVE,
         verbose_name='Роль ингредиента',
     )
 
@@ -374,13 +387,18 @@ class VaccineCardVersionIngredient(VaccineCardVersionRelationMixin):
         verbose_name_plural = 'Связи версий с ингредиентами'
 
 
-class VaccineCardVersionContraindication(VaccineCardVersionRelationMixin):
+class VaccineCardVersionContraindication(models.Model):
     """Связь версии карточки с противопоказанием."""
 
+    vaccine_card_version = models.ForeignKey(
+        'VaccineCardVersion',
+        on_delete=models.CASCADE,
+        related_name='contraindications_relations',
+        verbose_name='Версия карточки',
+    )
     contraindication = models.ForeignKey(
         Contraindication,
         on_delete=models.PROTECT,
-        related_name='version_contraindications',
         verbose_name='Противопоказание',
     )
     contraindication_type = models.CharField(
@@ -404,9 +422,15 @@ class VaccineCardVersionContraindication(VaccineCardVersionRelationMixin):
         return f'{self.vaccine_card_version} - {self.contraindication.name}'
 
 
-class VaccineCardVersionAdministrationMethod(VaccineCardVersionRelationMixin):
+class VaccineCardVersionAdministrationMethod(models.Model):
     """Связь версии карточки со способами введения."""
 
+    vaccine_card_version = models.ForeignKey(
+        'VaccineCardVersion',
+        on_delete=models.CASCADE,
+        related_name='administration_method_relations',
+        verbose_name='Версия карточки',
+    )
     administration_method = models.ForeignKey(
         MethodsOfAdministration,
         on_delete=models.PROTECT,
@@ -414,6 +438,8 @@ class VaccineCardVersionAdministrationMethod(VaccineCardVersionRelationMixin):
         verbose_name='Способ введения',
     )
     age_group = models.CharField(max_length=AGE_GROUP_MAX_LEN, blank=True, null=True, verbose_name='Возрастная группа')
+    age_from = models.PositiveIntegerField(null=True, blank=True, verbose_name='Возраст от')
+    age_to = models.PositiveIntegerField(null=True, blank=True, verbose_name='Возраст до')
     note = models.TextField(blank=True, null=True, verbose_name='Примечание')
 
     class Meta:

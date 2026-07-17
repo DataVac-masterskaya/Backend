@@ -23,13 +23,13 @@ def get_vaccines_by_contraindication(contraindication_id: int) -> list[dict]:
         .select_related('published_version')
         .prefetch_related(
             Prefetch(
-                'published_version__vaccinecardversioncontraindications',
+                'published_version__contraindications_relations',
                 queryset=VaccineCardVersionContraindication.objects.select_related(
                     'contraindication',
                 ),
             ),
             Prefetch(
-                'published_version__vaccinecardversionadministrationmethods',
+                'published_version__administration_method_relations',
                 queryset=VaccineCardVersionAdministrationMethod.objects.select_related(
                     'administration_method',
                 ),
@@ -50,7 +50,7 @@ def _serialize_vaccine_card(vaccine: VaccineCard) -> dict:
             'name': relation.contraindication.name,
             'type': relation.contraindication_type,
         }
-        for relation in version.vaccinecardversioncontraindications.all()
+        for relation in version.contraindications_relations.all()
     ]
     administration_methods = [
         {
@@ -59,15 +59,15 @@ def _serialize_vaccine_card(vaccine: VaccineCard) -> dict:
             'ageGroup': relation.age_group,
             'note': relation.note,
         }
-        for relation in version.vaccinecardversionadministrationmethods.all()
+        for relation in version.administration_method_relations.all()
     ]
 
     return {
         'id': vaccine.id,
         'name': version.name,
         'officialName': version.official_name,
-        'minAge': version.min_age,
-        'maxAge': version.max_age,
+        'minAge': version.min_age_months,
+        'maxAge': version.max_age_months,
         'pregnancyUsageStatus': version.pregnancy_usage_status,
         'contraindications': contraindications,
         'administrationMethods': administration_methods,

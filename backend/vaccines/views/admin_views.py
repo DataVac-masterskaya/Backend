@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 
 from vaccines.constants import VACCINE_TAG
 from vaccines.models import VaccineCard
-from vaccines.serializers import (
+from vaccines.serializers.admin_serializers import (
     AdminVaccineCreateResponseSerializer,
     AdminVaccinesCreatedSerializers,
     AdminVaccinesDetailSerializers,

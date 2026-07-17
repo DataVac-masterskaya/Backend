@@ -7,7 +7,7 @@ pytestmark = pytest.mark.django_db
 
 
 class TestIngredients:
-    """Тесты для /ingredients (router basename='ingredients')."""
+    """Тесты для /ingredients/."""
 
     URL_LIST = 'ingredients-list'
 
