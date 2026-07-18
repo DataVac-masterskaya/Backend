@@ -64,6 +64,7 @@ class IngredientsViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = Ingredients.objects.all()
     serializer_class = IngredientsSerializer
+    pagination_class = InfectionPagination
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
     filterset_fields = {
         'type': ['exact'],
@@ -73,12 +74,19 @@ class IngredientsViewSet(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         queryset = super().get_queryset()
 
-        sort_by = self.request.query_params.get('sort_by')
-        direction = self.request.query_params.get('direction', 'asc')
+        type_filter = self.request.query_params.get('type')
+        if type_filter:
+            queryset = queryset.filter(type=type_filter)
 
-        if sort_by:
-            if sort_by in ['name', 'id', 'type']:
-                order = sort_by if direction == 'asc' else f'-{sort_by}'
+        sort = self.request.query_params.get('sort')
+        allowed_sorts = ['name', 'name_desc', 'type', 'type_desc', 'popularity']
+        if sort:
+            if sort in allowed_sorts:
+                if sort.endswith('_desc'):
+                    order = '-' + sort[:-5]
+                else:
+                    order = sort
+
                 queryset = queryset.order_by(order)
 
         return queryset
