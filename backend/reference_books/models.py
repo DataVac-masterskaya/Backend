@@ -97,8 +97,15 @@ class MethodsOfAdministration(models.Model):
     """Cпособы введения."""
 
     name = models.CharField(verbose_name='Название', unique=True)
+    code = models.SlugField(verbose_name='Код', unique=True, null=True)
     description = models.TextField(
         verbose_name='Описание',
+        blank=True,
+        null=True,
+        help_text='Описание способа введения',
+    )
+    note = models.TextField(
+        verbose_name='Описание 2',
         blank=True,
         null=True,
         help_text='Описание способа введения',
