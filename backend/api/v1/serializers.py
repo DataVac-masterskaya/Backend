@@ -112,7 +112,7 @@ class MethodsOfAdministrationSerializer(serializers.ModelSerializer):
             'name',
             'description',
             'list_icon_url',
-            'note',
+            # 'note',
             'code',
         )
 
@@ -129,7 +129,7 @@ class MethodsOfAdministrationCartSerializer(serializers.ModelSerializer):
             'name',
             'description',
             'detail_image_url',
-            'note',
+            # 'note',
             'code',
         )
 
