@@ -11,9 +11,10 @@ class VaccineCardShort(serializers.ModelSerializer):
     name = serializers.CharField(source='current_version.name')
     official_name = serializers.CharField(source='current_version.official_name')
     is_available_in_rf = serializers.BooleanField(source='current_version.is_available_in_rf')
-    min_age_months = serializers.IntegerField(source='current_version.min_age_months')
-    max_age_months = serializers.IntegerField(source='current_version.max_age_months')
-    pregnancy_usage_status = serializers.CharField(source='current_version.pregnancy_usage_status')
+    # min_age_months = serializers.IntegerField(source='current_version.min_age_months')
+    # max_age_months = serializers.IntegerField(source='current_version.max_age_months')
+    age_allowed = serializers.CharField(source='current_version.age_allowed')
+    pregnancy_usage_status = serializers.BooleanField(source='current_version.pregnancy_usage_status')
     infections = serializers.SerializerMethodField()
     administration_methods = serializers.SerializerMethodField()
     popularity = serializers.IntegerField()
@@ -25,8 +26,9 @@ class VaccineCardShort(serializers.ModelSerializer):
             'name',
             'official_name',
             'is_available_in_rf',
-            'min_age_months',
-            'max_age_months',
+            # 'min_age_months',
+            # 'max_age_months',
+            'age_allowed',
             'pregnancy_usage_status',
             'infections',
             'administration_methods',
@@ -44,7 +46,7 @@ class VaccineCardShort(serializers.ModelSerializer):
         methods = obj.current_version.administration_method_relations.select_related('administration_method')
         return [
             {
-                'code': item.administration_method.name,
+                'code': item.administration_method.code,
                 'age_group': None,
                 'note': item.note,
             }
@@ -61,8 +63,9 @@ class VaccineCardDetail(serializers.ModelSerializer):
     revision_date = serializers.CharField(source='current_version.revision_date')
     nonspec_url = serializers.URLField(source='current_version.nonspec_url')
     instruction_url = serializers.URLField(source='current_version.instruction_url')
-    min_age_months = serializers.IntegerField(source='current_version.min_age_months')
-    max_age_months = serializers.IntegerField(source='current_version.max_age_months')
+    # min_age_months = serializers.IntegerField(source='current_version.min_age_months')
+    # max_age_months = serializers.IntegerField(source='current_version.max_age_months')
+    age_allowed = serializers.CharField(source='current_version.age_allowed')
     pregnancy_usage_status = serializers.BooleanField(source='current_version.pregnancy_usage_status')
     infections = serializers.SerializerMethodField()
     administration_methods = serializers.SerializerMethodField()
@@ -87,8 +90,9 @@ class VaccineCardDetail(serializers.ModelSerializer):
             'revision_date',
             'nonspec_url',
             'instruction_url',
-            'min_age_months',
-            'max_age_months',
+            # 'min_age_months',
+            # 'max_age_months',
+            'age_allowed',
             'pregnancy_usage_status',
             'infections',
             'administration_methods',
@@ -121,7 +125,7 @@ class VaccineCardDetail(serializers.ModelSerializer):
         methods = obj.current_version.administration_method_relations.select_related('administration_method')
         return [
             {
-                'code': item.administration_method.name,
+                'code': item.administration_method.code,
                 'age_group': item.age_group,
                 'note': item.note,
             }

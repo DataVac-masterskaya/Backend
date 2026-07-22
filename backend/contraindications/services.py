@@ -68,6 +68,7 @@ def _serialize_vaccine_card(vaccine: VaccineCard) -> dict:
         'officialName': version.official_name,
         'minAge': version.min_age_months,
         'maxAge': version.max_age_months,
+        'age_allowed': version.age_allowed,
         'pregnancyUsageStatus': version.pregnancy_usage_status,
         'contraindications': contraindications,
         'administrationMethods': administration_methods,

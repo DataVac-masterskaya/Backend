@@ -14,11 +14,11 @@ class RoleChoices(models.TextChoices):
 class User(AbstractUser):
     """Базовая модель пользователя наследуется от AbstractUser."""
 
-    full_name = models.CharField(
-        max_length=FULL_NAME_MAX_LENGTH,
+    full_name = models.CharField(max_length=FULL_NAME_MAX_LENGTH, verbose_name='Полное Имя')
+    role = models.CharField(
+        max_length=ROLE_MAX_LENGTH, choices=RoleChoices.choices, default=RoleChoices.MODERATOR, verbose_name='Роль'
     )
-    role = models.CharField(max_length=ROLE_MAX_LENGTH, choices=RoleChoices.choices, default=RoleChoices.MODERATOR)
-    email = models.EmailField(unique=True)
+    email = models.EmailField(unique=True, verbose_name='Емаил')
 
     @property
     def is_admin(self):
