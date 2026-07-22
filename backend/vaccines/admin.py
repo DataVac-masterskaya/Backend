@@ -170,12 +170,12 @@ class VaccineCardVersionAdmin(admin.ModelAdmin):
     )
 
     def save_model(self, request, obj, form, change):
-        if not change:
-            if obj.vaccine_card and not obj.vaccine_card.current_version:
-                obj.vaccine_card.current_version = obj
-                obj.vaccine_card.published_version = obj
-                obj.vaccine_card.save()
         super().save_model(request, obj, form, change)
+        if not change and obj.vaccine_card and not obj.vaccine_card.current_version:
+            card = obj.vaccine_card
+            card.current_version = obj
+            card.published_version = obj
+            card.save(update_fields=['current_version', 'published_version', 'updated_at'])
 
 
 @admin.register(VaccineCard)
