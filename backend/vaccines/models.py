@@ -314,7 +314,7 @@ class VaccineCardVersion(models.Model):
         constraints = [models.UniqueConstraint(fields=['vaccine_card', 'version_number'], name='unique_version')]
 
     def __str__(self):
-        return self.name
+        return self.name or f'Версия {self.id}'
 
 
 # ======================================================================================
