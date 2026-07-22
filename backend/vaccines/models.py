@@ -4,6 +4,7 @@ from django.db import models
 from contraindications.models import Contraindication
 from reference_books.models import Infection, Ingredients, MethodsOfAdministration
 from vaccines.constants import (
+    AGE_ALLOWED_MAX_LEN,
     AGE_GROUP_MAX_LEN,
     COMMENT_MAX_LEN,
     CONTRAINDICATION_TYPE_MAX_LEN,
@@ -173,6 +174,7 @@ class VaccineCardVersion(models.Model):
         null=True,
         verbose_name='Максимальный возраст',
     )
+    age_allowed = models.CharField(max_length=AGE_ALLOWED_MAX_LEN, default='', verbose_name='Возраст применения')
     pregnancy_usage_status = models.BooleanField(
         blank=True,
         null=True,

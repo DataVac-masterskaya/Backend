@@ -87,12 +87,14 @@ def published_vaccine_factory(test_user):
         contraindication=None,
         min_age_months=6,
         max_age_months=18,
+        age_allowed='от 0 дней до 99999',
     ):
         vaccine_card = VaccineCard.objects.create(is_visible=is_visible)
         version = VaccineCardVersion.objects.create(
             vaccine_card=vaccine_card,
             name=name,
             official_name=official_name,
+            age_allowed=age_allowed,
             min_age_months=min_age_months,
             max_age_months=max_age_months,
             pregnancy_usage_status=True,
