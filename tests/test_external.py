@@ -5,7 +5,7 @@ pytestmark = pytest.mark.django_db
 
 
 class TestExternalRedirects:
-    """Тесты для /vaccines/."""
+    """Тесты для /external/."""
 
     def test_support_redirect(self, api_client):
         """Редирект /external/support."""
