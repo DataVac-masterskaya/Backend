@@ -164,7 +164,6 @@ class VaccineCardVersionAdmin(admin.ModelAdmin):
                     'created_by',
                     'approved_by',
                 ),
-                'classes': ('collapse',),
             },
         ),
     )
