@@ -44,6 +44,34 @@ class VaccineCardStatus(models.TextChoices):
     DRAFT = 'draft', 'Черновик'
 
 
+# class Age(models.Model):
+#     value = models.CharField(
+#         verbose_name='Значение',
+#         max_length=NAME_MAX_LEN,
+#         unique=True,
+#     )
+#     old_from_age_id = models.PositiveIntegerField(
+#         verbose_name='Старый ID возраста от',
+#         help_text='ID из старой базы',
+#         unique=True,
+#         null=True,
+#         blank=True,
+#     )
+#     old_through_age_id = models.PositiveIntegerField(
+#         verbose_name='Старый ID возраста до',
+#         help_text='ID из старой базы',
+#         unique=True,
+#         null=True,
+#         blank=True,
+#     )
+#     class Meta:
+#         verbose_name = 'Возраст'
+#         verbose_name_plural = 'Возраста'
+
+#     def __str__(self):
+#         return self.value
+
+
 class VaccineCard(models.Model):
     """Карточка вакцины."""
 
@@ -149,6 +177,12 @@ class VaccineCardVersion(models.Model):
         blank=True,
         null=True,
         verbose_name='Официальное название',
+    )
+    code_name = models.CharField(
+        max_length=OFFICIAL_NAME_MAX_LEN,
+        blank=True,
+        null=True,
+        verbose_name='Английское название',
     )
     description = models.TextField(
         blank=True,

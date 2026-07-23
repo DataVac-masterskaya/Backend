@@ -25,3 +25,14 @@ class VaccineCardAdmin(admin.ModelAdmin):
     search_fields = ('id', 'versions__name', 'versions__official_name')
     readonly_fields = ('id', 'created_at', 'updated_at', 'created_by', 'updated_by')
     inlines = [VaccineCardVersionInline]
+
+@admin.register(VaccineCardVersion)
+
+class VaccineCardVersionAdmin(admin.ModelAdmin):
+    """Админка для карточки вакцины."""
+
+    list_display = ('id', 'vaccine_card', 'version_number', 'version_status',
+                    'moderation_request', 'name', 'official_name')
+    search_fields = ('id', 'vaccine_card', 'version_number', 'version_status',
+                    'moderation_request', 'name', 'official_name')
+    

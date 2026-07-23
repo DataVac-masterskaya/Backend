@@ -33,8 +33,8 @@ class CategoryInfection(models.Model):
     name = models.SlugField(verbose_name='Название', unique=True)
 
     class Meta:
-        verbose_name = 'Категория'
-        verbose_name_plural = 'Категории'
+        verbose_name = 'Категория инфекции'
+        verbose_name_plural = 'Категории инфекций'
 
     def __str__(self):
         return self.name[:30]
@@ -48,6 +48,14 @@ class Infection(SearchStatsMixin):
         on_delete=models.CASCADE,
         verbose_name='Категория',
         null=False,
+    )
+
+    old_id = models.IntegerField(
+        verbose_name='Старый ID',
+        help_text='ID из старой базы',
+        unique=True,
+        null=True,
+        blank=True,
     )
 
     class Meta:
@@ -97,6 +105,13 @@ class MethodsOfAdministration(models.Model):
         blank=True,
         null=True,
         help_text='Описание способа введения',
+    )
+    old_id = models.IntegerField(
+        verbose_name='Старый ID',
+        help_text='ID из старой базы',
+        unique=True,
+        null=True,
+        blank=True,
     )
     list_icon_url = models.ImageField(verbose_name='Иконка в списке', upload_to='admin-methods/list_icons/', null=True)
     detail_image_url = models.ImageField(
