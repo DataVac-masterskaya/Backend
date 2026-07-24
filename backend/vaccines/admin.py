@@ -176,3 +176,12 @@ class VaccineCardVersionAdmin(admin.ModelAdmin):
             card.published_version = obj
             card.save(update_fields=['current_version', 'published_version', 'updated_at'])
 
+
+@admin.register(VaccineCard)
+class VaccineCardAdmin(admin.ModelAdmin):
+    """Админка для карточки вакцины."""
+
+    list_display = ('id', 'status', 'is_visible', 'created_at')
+    list_filter = ('status', 'is_visible')
+    search_fields = ('id', 'versions__name', 'versions__official_name')
+    readonly_fields = ('id', 'created_at', 'updated_at', 'created_by', 'updated_by')
