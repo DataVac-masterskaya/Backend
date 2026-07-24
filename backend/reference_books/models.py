@@ -22,6 +22,11 @@ class SearchStatsMixin(models.Model):
         null=False,
         default=0,
     )
+    popularity = models.PositiveIntegerField(
+        verbose_name='Популярность',
+        null=False,
+        default=0,
+    )
 
     class Meta:
         abstract = True
@@ -100,6 +105,7 @@ class MethodsOfAdministration(models.Model):
     """Cпособы введения."""
 
     name = models.CharField(verbose_name='Название', unique=True)
+    code = models.SlugField(verbose_name='Код', unique=True, null=True)
     description = models.TextField(
         verbose_name='Описание',
         blank=True,

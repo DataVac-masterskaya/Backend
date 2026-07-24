@@ -50,6 +50,7 @@ class InfectionSerializer(serializers.ModelSerializer):
             'id',
             'name',
             'category',
+            'popularity',
         )
 
 
@@ -64,6 +65,7 @@ class InfectionCartSerializer(InfectionSerializer):
             'id',
             'name',
             'category',
+            'popularity',
             'vaccines',
         )
 
@@ -77,13 +79,24 @@ class InfectionCartSerializer(InfectionSerializer):
 class IngredientsSerializer(serializers.ModelSerializer):
     """Ингредиенты."""
 
+    TYPE_CHOICES = [
+        ('Адъювант', 'Адъювант'),
+        ('Стабилизатор', 'Стабилизатор'),
+        ('Консервант', 'Консервант'),
+        ('Подсластитель', 'Подсластитель'),
+        ('Эмульгатор', 'Эмульгатор'),
+        ('Следы производства', 'Следы производства'),
+    ]
+
+    type = serializers.ChoiceField(choices=TYPE_CHOICES, error_messages={'invalid_choice': 'Неверный тип ингредиента'})
+
     class Meta:
         model = Ingredients
         fields = (
             'id',
             'name',
             'type',
-            'description',
+            'popularity',
         )
 
 
@@ -99,6 +112,8 @@ class MethodsOfAdministrationSerializer(serializers.ModelSerializer):
             'name',
             'description',
             'list_icon_url',
+            # 'note',
+            'code',
         )
 
 
@@ -114,6 +129,8 @@ class MethodsOfAdministrationCartSerializer(serializers.ModelSerializer):
             'name',
             'description',
             'detail_image_url',
+            # 'note',
+            'code',
         )
 
 

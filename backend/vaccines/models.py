@@ -4,17 +4,16 @@ from django.db import models
 from contraindications.models import Contraindication
 from reference_books.models import Infection, Ingredients, MethodsOfAdministration
 from vaccines.constants import (
+    AGE_ALLOWED_MAX_LEN,
     AGE_GROUP_MAX_LEN,
     COMMENT_MAX_LEN,
     CONTRAINDICATION_TYPE_MAX_LEN,
     DECIMAL_PLACES,
     DEFAULT_VERSION,
     INGREDIENT_ROLE_MAX_LEN,
-    IS_AVAILABLE_IN_RF_MAX_LEN,
     MAX_DIGITS_SEARCH_WEIGHT,
     NAME_MAX_LEN,
     OFFICIAL_NAME_MAX_LEN,
-    PREGNANCY_USAGE_STATUS,
     STATUS_MAX_LEN,
     URL_MAX_LEN,
     VERSION_STATUS_MAX_LEN,
@@ -125,6 +124,7 @@ class VaccineCard(models.Model):
         auto_now=True,
         verbose_name='Дата редактирования',
     )
+    popularity = models.PositiveIntegerField(blank=True, null=True, verbose_name='Популярность')
 
     class Meta:
         verbose_name = 'Карточка вакцины'
@@ -156,10 +156,11 @@ class VaccineCardVersion(models.Model):
     )
     parent_version = models.ForeignKey(
         'self',
-        null=True,
         on_delete=models.SET_NULL,
         related_name='children',
         verbose_name='Предыдущая версия',
+        blank=True,
+        null=True,
     )
     moderation_request = models.PositiveIntegerField(
         blank=True,
@@ -195,24 +196,24 @@ class VaccineCardVersion(models.Model):
         null=True,
         verbose_name='Производитель',
     )
-    is_available_in_rf = models.CharField(
-        max_length=IS_AVAILABLE_IN_RF_MAX_LEN,
+    is_available_in_rf = models.BooleanField(
         blank=True,
         null=True,
         verbose_name='Доступность в РФ',
+        default=False,
     )
-    min_age = models.PositiveIntegerField(blank=True, null=True, verbose_name='Минимальный возраст')
-    max_age = models.PositiveIntegerField(
+    min_age_months = models.PositiveIntegerField(blank=True, null=True, verbose_name='Минимальный возраст')
+    max_age_months = models.PositiveIntegerField(
         blank=True,
         null=True,
         verbose_name='Максимальный возраст',
     )
-    pregnancy_usage_status = models.CharField(
-        max_length=PREGNANCY_USAGE_STATUS,
+    age_allowed = models.CharField(max_length=AGE_ALLOWED_MAX_LEN, default='', verbose_name='Возраст применения')
+    pregnancy_usage_status = models.BooleanField(
         blank=True,
         null=True,
         verbose_name='Применение при беременности',
-        choices=PregnancyUsageStatus.choices,
+        default=False,
     )
     storage_conditions = models.TextField(
         blank=True,
@@ -347,7 +348,7 @@ class VaccineCardVersion(models.Model):
         constraints = [models.UniqueConstraint(fields=['vaccine_card', 'version_number'], name='unique_version')]
 
     def __str__(self):
-        return self.name
+        return self.name or f'Версия {self.id}'
 
 
 # ======================================================================================

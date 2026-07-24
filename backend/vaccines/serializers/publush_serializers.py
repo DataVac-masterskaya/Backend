@@ -1,13 +1,8 @@
-from collections import defaultdict
-
 from rest_framework import serializers
 
 from vaccines.models import (
-    ContraindicationType,
-    IngredientRoleType,
     VaccineCard,
 )
-from vaccines.utils import format_age
 
 
 class VaccineCardShort(serializers.ModelSerializer):
@@ -15,102 +10,158 @@ class VaccineCardShort(serializers.ModelSerializer):
 
     name = serializers.CharField(source='current_version.name')
     official_name = serializers.CharField(source='current_version.official_name')
+    is_available_in_rf = serializers.BooleanField(source='current_version.is_available_in_rf')
+    # min_age_months = serializers.IntegerField(source='current_version.min_age_months')
+    # max_age_months = serializers.IntegerField(source='current_version.max_age_months')
+    age_allowed = serializers.CharField(source='current_version.age_allowed')
+    pregnancy_usage_status = serializers.BooleanField(source='current_version.pregnancy_usage_status')
     infections = serializers.SerializerMethodField()
+    administration_methods = serializers.SerializerMethodField()
+    popularity = serializers.IntegerField()
 
     class Meta:
         model = VaccineCard
-        fields = ('id', 'name', 'official_name', 'infections')
+        fields = (
+            'id',
+            'name',
+            'official_name',
+            'is_available_in_rf',
+            # 'min_age_months',
+            # 'max_age_months',
+            'age_allowed',
+            'pregnancy_usage_status',
+            'infections',
+            'administration_methods',
+            'popularity',
+        )
 
     def get_infections(self, obj):
         if obj.current_version:
-            return list(obj.current_version.infections.values_list('name', flat=True))
+            return list(obj.current_version.infections.values('id', 'name'))
         return []
 
-
-class VaccineCardDetail(VaccineCardShort):
-    """Сериализатор для детального просмотра карточки вакцины."""
-
-    revision_date = serializers.CharField(source='current_version.revision_date', allow_null=True)
-    pregnancy_status = serializers.CharField(source='current_version.pregnancy_usage_status', allow_null=True)
-    storage_conditions = serializers.CharField(source='current_version.storage_conditions', allow_null=True)
-    contraindications = serializers.SerializerMethodField()
-    ingredients = serializers.SerializerMethodField()
-    age_allowed = serializers.SerializerMethodField()
-    administration_methods = serializers.SerializerMethodField()
-    instruction_patient_url = serializers.URLField(source='current_version.nonspec_url', allow_null=True)
-    instruction_specialist_url = serializers.URLField(source='current_version.ohlp_url', allow_null=True)
-    qr_code_url = serializers.URLField(source='current_version.qr_code_url', allow_null=True)
-
-    class Meta(VaccineCardShort.Meta):
-        fields = VaccineCardShort.Meta.fields + (
-            'revision_date',
-            'pregnancy_status',
-            'age_allowed',
-            'administration_methods',
-            'contraindications',
-            'ingredients',
-            'storage_conditions',
-            'qr_code_url',
-            'instruction_patient_url',
-            'instruction_specialist_url',
-        )
-
-    def get_contraindications(self, obj):
-        """Возвращает противопоказания."""
-        if not obj.current_version:
-            return {ContraindicationType.ABSOLUTE: [], ContraindicationType.TEMPORARY: []}
-
-        contraindications = obj.current_version.contraindications_relations.select_related('contraindication')
-        result = defaultdict(list)
-        for item in contraindications:
-            result[item.contraindication_type].append(item.contraindication.name)
-        return dict(result)
-
-    def get_ingredients(self, obj):
-        """Возвращает ингредиенты."""
-        if not obj.current_version:
-            return {IngredientRoleType.ACTIVE: [], IngredientRoleType.AUXILIARY: []}
-        ingredients = obj.current_version.ingredient_relations.select_related('ingredient')
-        result = defaultdict(list)
-        for item in ingredients:
-            if item.role == IngredientRoleType.ACTIVE:
-                result[IngredientRoleType.ACTIVE].append(item.ingredient.name)
-            elif item.role == IngredientRoleType.AUXILIARY:
-                result[IngredientRoleType.AUXILIARY].append(item.ingredient.name)
-        return dict(result)
-
     def get_administration_methods(self, obj):
-        """Возвращает способы введения."""
         if not obj.current_version:
             return []
         methods = obj.current_version.administration_method_relations.select_related('administration_method')
         return [
             {
-                'method': item.administration_method.name,
-                'age_from': item.age_from,
-                'age_to': item.age_to,
+                'code': item.administration_method.code,
+                'age_group': None,
+                'note': item.note,
             }
             for item in methods
         ]
 
-    def get_age_allowed(self, obj):
-        """Возвращает допустимый возрат."""
+
+class VaccineCardDetail(serializers.ModelSerializer):
+    """Сериализатор для детального просмотра карточки вакцины."""
+
+    name = serializers.CharField(source='current_version.name')
+    official_name = serializers.CharField(source='current_version.official_name')
+    is_available_in_rf = serializers.BooleanField(source='current_version.is_available_in_rf')
+    revision_date = serializers.CharField(source='current_version.revision_date')
+    nonspec_url = serializers.URLField(source='current_version.nonspec_url')
+    instruction_url = serializers.URLField(source='current_version.instruction_url')
+    # min_age_months = serializers.IntegerField(source='current_version.min_age_months')
+    # max_age_months = serializers.IntegerField(source='current_version.max_age_months')
+    age_allowed = serializers.CharField(source='current_version.age_allowed')
+    pregnancy_usage_status = serializers.BooleanField(source='current_version.pregnancy_usage_status')
+    infections = serializers.SerializerMethodField()
+    administration_methods = serializers.SerializerMethodField()
+    contraindications = serializers.SerializerMethodField()
+    ingredients = serializers.SerializerMethodField()
+    comment = serializers.SerializerMethodField()
+    manufacturer = serializers.CharField(source='current_version.manufacturer')
+    storage_conditions = serializers.CharField(source='current_version.storage_conditions')
+    schedule_info = serializers.CharField(source='current_version.schedule_info')
+    side_effects = serializers.CharField(source='current_version.side_effects')
+    indications = serializers.CharField(source='current_version.indications')
+    interaction_info = serializers.CharField(source='current_version.interaction_info')
+    compatibility_info = serializers.CharField(source='current_version.compatibility_info')
+
+    class Meta:
+        model = VaccineCard
+        fields = (
+            'id',
+            'name',
+            'official_name',
+            'is_available_in_rf',
+            'revision_date',
+            'nonspec_url',
+            'instruction_url',
+            # 'min_age_months',
+            # 'max_age_months',
+            'age_allowed',
+            'pregnancy_usage_status',
+            'infections',
+            'administration_methods',
+            'contraindications',
+            'ingredients',
+            'comment',
+            'manufacturer',
+            'storage_conditions',
+            'schedule_info',
+            'side_effects',
+            'indications',
+            'interaction_info',
+            'compatibility_info',
+        )
+
+    def get_infections(self, obj):
+        if obj.current_version:
+            return list(
+                obj.current_version.infections.values(
+                    'id',
+                    'name',
+                )
+            )
+        return []
+
+    def get_administration_methods(self, obj):
         if not obj.current_version:
-            return 'не указано'
-        min_age = obj.current_version.min_age
-        max_age = obj.current_version.max_age
-        if min_age and max_age and min_age % 12 == 0 and max_age % 12 == 0:
-            min_years = min_age // 12
-            max_years = max_age // 12
-            if min_years == max_years:
-                return format_age(min_age)
-            return f'от {min_years} до {max_years} лет'
-        if min_age and max_age:
-            if min_age == max_age:
-                return format_age(min_age)
-            return f'от {format_age(min_age)} до {format_age(max_age)}'
-        elif min_age:
-            return f'от {format_age(min_age)}'
-        elif max_age:
-            return f'до {format_age(max_age)}'
-        return 'не указано'
+            return []
+
+        methods = obj.current_version.administration_method_relations.select_related('administration_method')
+        return [
+            {
+                'code': item.administration_method.code,
+                'age_group': item.age_group,
+                'note': item.note,
+            }
+            for item in methods
+        ]
+
+    def get_contraindications(self, obj):
+        if not obj.current_version:
+            return []
+
+        contraindications = obj.current_version.contraindications_relations.select_related('contraindication')
+        return [
+            {
+                'id': item.contraindication.id,
+                'name': item.contraindication.name,
+                'type': item.contraindication_type,
+            }
+            for item in contraindications
+        ]
+
+    def get_ingredients(self, obj):
+        if not obj.current_version:
+            return []
+
+        ingredients = obj.current_version.ingredient_relations.select_related('ingredient')
+        return [
+            {
+                'id': item.ingredient.id,
+                'name': item.ingredient.name,
+                'role': item.role,
+            }
+            for item in ingredients
+        ]
+
+    def get_comment(self, obj):
+        return {
+            'source': obj.current_version.comment_source,
+            'text': obj.current_version.comment_ANO,
+        }
