@@ -62,6 +62,13 @@ class VaccineCard(models.Model):
         related_name='cards_as_published',
         verbose_name='Опубликованная версия',
     )
+    old_id = models.IntegerField(
+        verbose_name='Старый ID',
+        help_text='ID из старой базы',
+        unique=True,
+        null=True,
+        blank=True,
+    )
     status = models.CharField(
         max_length=STATUS_MAX_LEN,
         blank=True,
@@ -151,6 +158,12 @@ class VaccineCardVersion(models.Model):
         null=True,
         verbose_name='Официальное название',
     )
+    code_name = models.CharField(
+        max_length=OFFICIAL_NAME_MAX_LEN,
+        blank=True,
+        null=True,
+        verbose_name='Английское название',
+    )
     description = models.TextField(
         blank=True,
         null=True,
@@ -168,8 +181,15 @@ class VaccineCardVersion(models.Model):
         verbose_name='Доступность в РФ',
         default=False,
     )
-    min_age_months = models.PositiveIntegerField(blank=True, null=True, verbose_name='Минимальный возраст')
-    max_age_months = models.PositiveIntegerField(
+    old_id = models.IntegerField(
+        verbose_name='Старый ID',
+        help_text='ID из старой базы',
+        unique=True,
+        null=True,
+        blank=True,
+    )
+    min_age_days = models.PositiveIntegerField(blank=True, null=True, verbose_name='Минимальный возраст')
+    max_age_days = models.PositiveIntegerField(
         blank=True,
         null=True,
         verbose_name='Максимальный возраст',
@@ -180,6 +200,11 @@ class VaccineCardVersion(models.Model):
         null=True,
         verbose_name='Применение при беременности',
         default=False,
+    )
+    pregnancy_usage_old = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name='Применение при беременности старое',
     )
     storage_conditions = models.TextField(
         blank=True,
@@ -448,7 +473,8 @@ class VaccineCardVersionAdministrationMethod(models.Model):
         db_table = 'vaccine_card_version_administration_methods'
         constraints = [
             models.UniqueConstraint(
-                fields=['vaccine_card_version', 'administration_method'], name='unique_version_administration_method'
+                fields=['vaccine_card_version', 'administration_method', 'age_from'],
+                name='unique_version_administration_method',
             )
         ]
         verbose_name = 'Связь версии со способом введения'
