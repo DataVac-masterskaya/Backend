@@ -15,4 +15,4 @@ class Command(BaseCommand):
             vaccine.pregnancy_usage_status = values[i % len(values)]
             vaccine.save(update_fields=['pregnancy_usage_status'])
 
-        self.stdout.write(self.style.SUCCESS('Тестовые значения успешно проставлены.'))
+        self.stdout.write(self.style.SUCCESS('Тестовые значения проставлены.'))
