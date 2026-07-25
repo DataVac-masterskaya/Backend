@@ -44,7 +44,7 @@ class TestVaccineList:
             f'popularity должен быть int, получен {type(item["popularity"])}: {item["popularity"]}'
         )
 
-        for field in ['min_age_months', 'max_age_months']:
+        for field in ['min_age_days', 'max_age_days']:
             assert field in item, f'Ожидалось поле "{field}" в элементе. Ключи: {list(item.keys())}'
             if item[field] is not None:
                 assert isinstance(item[field], int), (
@@ -399,7 +399,7 @@ class TestVaccineDetail:
             f'pregnancy_usage_status должен быть bool или null, получен {type(pregnancy)}: {pregnancy}'
         )
 
-        for age_field in ['min_age_months', 'max_age_months']:
+        for age_field in ['min_age_days', 'max_age_days']:
             if data.get(age_field) is not None:
                 assert isinstance(data[age_field], int), (
                     f'{age_field} должен быть int, получен {type(data[age_field])}: {data[age_field]}'
