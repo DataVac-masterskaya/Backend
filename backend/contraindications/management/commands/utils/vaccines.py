@@ -7,35 +7,37 @@ from vaccines.models import VaccineCard, VaccineCardStatus, VaccineCardVersion, 
 
 def import_vaccines(wb, system_user):
     """Импорт карточек и версий вакцин."""
-    ws1 = get_sheet(wb, 'vaccines')
-    headers1 = [cell.value for cell in next(ws1.iter_rows(min_row=1, max_row=1))]
-    id_idx = headers1.index('id')
-    short_name_idx = headers1.index('short_name')
-    long_name_idx = headers1.index('long_name')
-    code_name_idx = headers1.index('code_name')
-    manufacturer_idx = headers1.index('manufacturer')
-    in_use_in_Russia_idx = headers1.index('in_use_in_Russia')
+    ws = get_sheet(wb, 'vaccines')
+    headers = [cell.value for cell in next(ws.iter_rows(min_row=1, max_row=1))]
+    id_idx = headers.index('id')
+    short_name_idx = headers.index('short_name')
+    long_name_idx = headers.index('long_name')
+    code_name_idx = headers.index('code_name')
+    manufacturer_idx = headers.index('manufacturer')
+    in_use_in_Russia_idx = headers.index('in_use_in_Russia')
+    OKhLP_specialists_link_idx = headers.index('OKhLP_specialists_link')
+    laypeople_leaflet_GRLS_link_idx = headers.index('laypeople_leaflet_GRLS_link')
+    GRLS_instruction_link_idx = headers.index('GRLS_instruction_link')
 
     count_add = 0
-    for row1 in ws1.iter_rows(min_row=2, values_only=True):
-        if row1[id_idx] is None:
+    for row in ws.iter_rows(min_row=2, values_only=True):
+        if row[id_idx] is None:
             continue
-        vaccine_id = row1[id_idx]
+        vaccine_id = row[id_idx]
         if isinstance(vaccine_id, str):
             vaccine_id = vaccine_id.strip()
             if vaccine_id.startswith('='):
                 vaccine_id = vaccine_id[1:]
         vaccine_id = int(vaccine_id)
-        name = row1[short_name_idx]
-        official_name = row1[long_name_idx]
-        code_name = row1[code_name_idx]
-        manufacturer = row1[manufacturer_idx]
-        in_use_in_Russia = row1[in_use_in_Russia_idx]
+        name = row[short_name_idx]
+        official_name = row[long_name_idx]
+        code_name = row[code_name_idx]
+        manufacturer = row[manufacturer_idx]
+        in_use_in_Russia = row[in_use_in_Russia_idx]
         in_use_in_Russia = bool_usage(in_use_in_Russia)
-        ohlp_url = None
-        nonspec_url = None
-        instruction_url = None
-        official_instruction = None
+        ohlp_url = row[OKhLP_specialists_link_idx]
+        nonspec_url = row[laypeople_leaflet_GRLS_link_idx]
+        instruction_url = row[GRLS_instruction_link_idx]
         card, created = VaccineCard.objects.update_or_create(
             old_id=vaccine_id,
             defaults={
@@ -62,7 +64,6 @@ def import_vaccines(wb, system_user):
                 'ohlp_url': ohlp_url,
                 'nonspec_url': nonspec_url,
                 'instruction_url': instruction_url,
-                'official_instruction': official_instruction,
             },
         )
         if created:
