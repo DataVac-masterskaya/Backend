@@ -220,7 +220,7 @@ def set_vaccine_ages(wb):
 
 
 def set_vaccine_nonspec_links(wb):
-    """Импорт возрастов использования вакцины."""
+    """Импорт ссылок на вкладыш для неспециалистов."""
     ws = get_sheet(wb, 'ages_text')
 
     headers = [cell.value for cell in next(ws.iter_rows(min_row=1, max_row=1))]

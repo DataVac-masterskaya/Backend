@@ -12,7 +12,7 @@ from contraindications.management.commands.utils.vaccines import (
     import_vaccine_storage,
     import_vaccines,
     set_vaccine_ages,
-    set_vaccine_nonspec_links
+    set_vaccine_nonspec_links,
 )
 from contraindications.models import Contraindication
 from reference_books.models import (
