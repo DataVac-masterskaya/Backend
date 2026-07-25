@@ -16,7 +16,6 @@ def import_vaccines(wb, system_user):
     manufacturer_idx = headers.index('manufacturer')
     in_use_in_Russia_idx = headers.index('in_use_in_Russia')
     OKhLP_specialists_link_idx = headers.index('OKhLP_specialists_link')
-    laypeople_leaflet_GRLS_link_idx = headers.index('laypeople_leaflet_GRLS_link')
     GRLS_instruction_link_idx = headers.index('GRLS_instruction_link')
 
     count_add = 0
@@ -36,7 +35,6 @@ def import_vaccines(wb, system_user):
         in_use_in_Russia = row[in_use_in_Russia_idx]
         in_use_in_Russia = bool_usage(in_use_in_Russia)
         ohlp_url = row[OKhLP_specialists_link_idx]
-        nonspec_url = row[laypeople_leaflet_GRLS_link_idx]
         instruction_url = row[GRLS_instruction_link_idx]
         card, created = VaccineCard.objects.update_or_create(
             old_id=vaccine_id,
@@ -62,7 +60,6 @@ def import_vaccines(wb, system_user):
                 'created_by': system_user,
                 'approved_by': system_user,
                 'ohlp_url': ohlp_url,
-                'nonspec_url': nonspec_url,
                 'instruction_url': instruction_url,
             },
         )
@@ -218,5 +215,27 @@ def set_vaccine_ages(wb):
         version.min_age_days = age_from
         version.max_age_days = age_to
         version.save(update_fields=['min_age_days', 'max_age_days'])
+        updated += 1
+    return updated
+
+
+def set_vaccine_nonspec_links(wb):
+    """Импорт возрастов использования вакцины."""
+    ws = get_sheet(wb, 'ages_text')
+
+    headers = [cell.value for cell in next(ws.iter_rows(min_row=1, max_row=1))]
+    vaccine_id_idx = headers.index('vaccine_id')
+    ages_version_link_idx = headers.index('ages_version_link')
+    updated = 0
+    for row in ws.iter_rows(min_row=2, values_only=True):
+        if row[vaccine_id_idx] is None:
+            continue
+        vaccine_id = row[vaccine_id_idx]
+        nonspec_instruction_link = row[ages_version_link_idx]
+        if not nonspec_instruction_link or '.pdf' not in nonspec_instruction_link:
+            nonspec_instruction_link = None
+        version = get_version_by_old_id(int(vaccine_id))
+        version.nonspec_url = nonspec_instruction_link
+        version.save(update_fields=['nonspec_url'])
         updated += 1
     return updated

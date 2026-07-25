@@ -12,6 +12,7 @@ from contraindications.management.commands.utils.vaccines import (
     import_vaccine_storage,
     import_vaccines,
     set_vaccine_ages,
+    set_vaccine_nonspec_links
 )
 from contraindications.models import Contraindication
 from reference_books.models import (
@@ -326,6 +327,8 @@ class Command(BaseCommand):
                     )
                     count = set_vaccine_ages(wb)
                     self.stdout.write(f'Возраста использования вакцин обновлены, добавлено: {count}.')
+                    count = set_vaccine_nonspec_links(wb)
+                    self.stdout.write(f'Ссылки для неспециалистов обновлены, добавлено: {count}.')
             except Exception as e:
                 raise CommandError(e)
         finally:
