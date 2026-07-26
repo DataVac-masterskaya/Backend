@@ -113,3 +113,25 @@ contraindication_name
 ```
 
 При повторном импорте существующие записи обновляются по contraindication_ID.
+
+## Импорт базы данных
+
+Для импорта базы данных из Excel-файла используется команда:
+
+```bash
+docker compose exec -it web python backend/manage.py import_database path/to/file.xlsx
+```
+
+Файл должен содержать используемые в команде листы и колонки, иначе выведется ошибка 
+и импорт не завершится.
+
+При повторном импорте существующие записи обновляются по old_id.
+
+## ДЛЯ ТЕСТЕРОВ
+
+Для заполнения поля pregnancy_usage_status используется команда:
+
+```bash
+docker compose exec -it web python backend/manage.py set_pregnancy_status_for_tests
+```
+Статус задается, исходя из остатка от деления id вакцины на 3.

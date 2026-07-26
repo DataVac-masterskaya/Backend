@@ -11,8 +11,8 @@ class VaccineCardShort(serializers.ModelSerializer):
     name = serializers.CharField(source='current_version.name')
     official_name = serializers.CharField(source='current_version.official_name')
     is_available_in_rf = serializers.BooleanField(source='current_version.is_available_in_rf')
-    # min_age_months = serializers.IntegerField(source='current_version.min_age_months')
-    # max_age_months = serializers.IntegerField(source='current_version.max_age_months')
+    # min_age_days = serializers.IntegerField(source='current_version.min_age_days')
+    # max_age_days = serializers.IntegerField(source='current_version.max_age_days')
     age_allowed = serializers.CharField(source='current_version.age_allowed')
     pregnancy_usage_status = serializers.BooleanField(source='current_version.pregnancy_usage_status')
     infections = serializers.SerializerMethodField()
@@ -26,8 +26,8 @@ class VaccineCardShort(serializers.ModelSerializer):
             'name',
             'official_name',
             'is_available_in_rf',
-            # 'min_age_months',
-            # 'max_age_months',
+            # 'min_age_days',
+            # 'max_age_days',
             'age_allowed',
             'pregnancy_usage_status',
             'infections',
@@ -63,8 +63,8 @@ class VaccineCardDetail(serializers.ModelSerializer):
     revision_date = serializers.CharField(source='current_version.revision_date')
     nonspec_url = serializers.URLField(source='current_version.nonspec_url')
     instruction_url = serializers.URLField(source='current_version.instruction_url')
-    # min_age_months = serializers.IntegerField(source='current_version.min_age_months')
-    # max_age_months = serializers.IntegerField(source='current_version.max_age_months')
+    # min_age_days = serializers.IntegerField(source='current_version.min_age_days')
+    # max_age_days = serializers.IntegerField(source='current_version.max_age_days')
     age_allowed = serializers.CharField(source='current_version.age_allowed')
     pregnancy_usage_status = serializers.BooleanField(source='current_version.pregnancy_usage_status')
     infections = serializers.SerializerMethodField()
@@ -90,8 +90,8 @@ class VaccineCardDetail(serializers.ModelSerializer):
             'revision_date',
             'nonspec_url',
             'instruction_url',
-            # 'min_age_months',
-            # 'max_age_months',
+            # 'min_age_days',
+            # 'max_age_days',
             'age_allowed',
             'pregnancy_usage_status',
             'infections',

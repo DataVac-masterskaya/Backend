@@ -100,8 +100,8 @@ class VaccineCardVersionAdmin(admin.ModelAdmin):
             'Возраст и беременность',
             {
                 'fields': (
-                    # 'min_age_months',
-                    # 'max_age_months',
+                    # 'min_age_days',
+                    # 'max_age_days',
                     'age_allowed',
                     'pregnancy_usage_status',
                 )

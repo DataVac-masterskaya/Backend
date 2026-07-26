@@ -85,8 +85,8 @@ def published_vaccine_factory(test_user):
         official_name='Анатоксин дифтерийно-столбнячный',
         is_visible=True,
         contraindication=None,
-        min_age_months=6,
-        max_age_months=18,
+        min_age_days=6,
+        max_age_days=18,
         age_allowed='от 0 дней до 99999',
     ):
         vaccine_card = VaccineCard.objects.create(is_visible=is_visible)
@@ -95,8 +95,8 @@ def published_vaccine_factory(test_user):
             name=name,
             official_name=official_name,
             age_allowed=age_allowed,
-            min_age_months=min_age_months,
-            max_age_months=max_age_months,
+            min_age_days=min_age_days,
+            max_age_days=max_age_days,
             pregnancy_usage_status=True,
             created_by=test_user,
             pdf_url='https://datavac.vaccina.info/vaccines/Pentaxim/',

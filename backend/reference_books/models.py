@@ -27,6 +27,13 @@ class SearchStatsMixin(models.Model):
         null=False,
         default=0,
     )
+    old_id = models.IntegerField(
+        verbose_name='Старый ID',
+        help_text='ID из старой базы',
+        unique=True,
+        null=True,
+        blank=True,
+    )
 
     class Meta:
         abstract = True
@@ -96,13 +103,20 @@ class Ingredients(SearchStatsMixin):
 class MethodsOfAdministration(models.Model):
     """Cпособы введения."""
 
-    name = models.CharField(verbose_name='Название', unique=True)
+    name = models.CharField(verbose_name='Название')
     code = models.SlugField(verbose_name='Код', unique=True, null=True)
     description = models.TextField(
         verbose_name='Описание',
         blank=True,
         null=True,
         help_text='Описание способа введения',
+    )
+    old_id = models.IntegerField(
+        verbose_name='Старый ID',
+        help_text='ID из старой базы',
+        unique=True,
+        null=True,
+        blank=True,
     )
     note = models.TextField(
         verbose_name='Описание 2',
@@ -118,6 +132,12 @@ class MethodsOfAdministration(models.Model):
     class Meta:
         verbose_name = 'Cпособ введения'
         verbose_name_plural = 'Cпособы введения'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['name', 'detail_image_url'],
+                name='unique_method_name_image',
+            )
+        ]
 
     def __str__(self):
         return self.name[:30]
