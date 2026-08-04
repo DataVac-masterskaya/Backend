@@ -34,12 +34,14 @@ def extract_text(content: bytes, content_type: str, url: str) -> str:
 
 
 def extract_text_from_pdf(content: bytes) -> str:
+    """Извлекает текстовое содержимое из PDF-файла."""
     reader = PdfReader(BytesIO(content))
     pages_text = (page.extract_text() or '' for page in reader.pages)
     return '\n'.join(text.strip() for text in pages_text if text.strip())
 
 
 def extract_text_from_html(content: bytes) -> str:
+    """Извлекает текстовое содержимое из HTML-страницы, удаляя шумовые теги."""
     soup = BeautifulSoup(content, 'lxml')
     for tag in soup.find_all(NOISE_TAGS):
         tag.decompose()
