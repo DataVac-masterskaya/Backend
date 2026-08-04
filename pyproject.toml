@@ -36,6 +36,9 @@ dependencies = [
     "drf-spectacular>=0.29.0",
     "openpyxl>=3.1.5",
     "djangorestframework-simplejwt>=5.5.1",
+    "beautifulsoup4>=4.12.3",
+    "lxml>=5.3.0",
+    "pypdf>=5.1.0",
 ]
 
 [tool.pytest.ini_options]
@@ -79,7 +82,7 @@ ignore = [
 flake8-quotes.inline-quotes = 'single'
 
 [tool.ruff.lint.per-file-ignores]
-'*/migrations/*.py' = ['D101', 'E501', 'RUF012', 'Q000']
+'*/migrations/*.py' = ['D101', 'D103', 'E501', 'RUF012', 'Q000']
 'tests/*.py' = ['S101']
 '*/models.py' = ['D105']
 
