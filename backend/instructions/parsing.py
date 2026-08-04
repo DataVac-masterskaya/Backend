@@ -54,7 +54,7 @@ def compute_hash(text: str) -> str:
 
 
 def check_official_instruction_update(instruction: OfficialInstruction) -> bool:
-    """Сверяет текст инструкции с источником, обновляет снэпшот. Возвращает True, если по сравнению с предыдущим успешным снэпшотом обнаружено изменение текста."""
+    """Сверяет текст инструкции с источником, обновляет снэпшот."""
     try:
         content, content_type = fetch_source_content(instruction.url)
         text = extract_text(content, content_type, instruction.url)

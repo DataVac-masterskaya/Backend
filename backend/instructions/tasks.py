@@ -24,6 +24,7 @@ def check_official_instructions_updates() -> None:
 
 
 def notify_admins_instruction_updated(instruction: OfficialInstruction) -> None:
+    """Создает уведомления для всех администраторов об обновлении текста инструкции."""
     admins = User.objects.filter(role=RoleChoices.ADMIN)
     Notification.objects.bulk_create(
         Notification(
