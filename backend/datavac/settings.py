@@ -74,6 +74,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'drf_spectacular',
     'django_filters',
+    'django_celery_beat',
     # 'djoser',
     # Local
     #'app1',
