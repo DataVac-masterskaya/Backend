@@ -12,7 +12,6 @@ class Notification(models.Model):
         ('moderation_request', 'Запрос на модерацию'),
         ('moderation_approved', 'Одобрение модерации'),
         ('moderation_rejected', 'Отказ в модерации'),
-        ('instruction_source_updated', 'Обновление источника инструкции'),
     )
 
     entity_id = models.PositiveIntegerField(verbose_name='ID связанной сущности')
