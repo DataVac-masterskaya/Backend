@@ -1,4 +1,3 @@
-from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from openpyxl import load_workbook
@@ -12,7 +11,7 @@ from contraindications.management.commands.utils.vaccines import (
     import_vaccine_storage,
     import_vaccines,
     set_vaccine_ages,
-    set_vaccine_nonspec_links
+    set_vaccine_nonspec_links,
 )
 from contraindications.models import Contraindication
 from reference_books.models import (
@@ -26,6 +25,7 @@ from vaccines.models import (
     VaccineCardVersionContraindication,
     VaccineCardVersionInfection,
 )
+
 
 def import_contraindications(wb):
     """Импорт противопоказаний."""
@@ -61,11 +61,13 @@ def import_contraindications(wb):
             count_add += 1
     return count_add
 
+
 CATEGORY_MAP = {
     'национальный календарь': 'national',
     'сверх календаря': 'additional',
     'другие': 'others',
 }
+
 
 def import_infection_categories(wb):
     """Импорт категорий инфекций."""
@@ -265,6 +267,7 @@ def import_vaccine_version_administration_methods(wb):
         if created:
             count += 1
     return count
+
 
 class Command(BaseCommand):
     help = 'Импортирует противопоказания из указанного excel-файла со страницы contraindications_list'

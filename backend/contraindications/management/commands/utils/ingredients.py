@@ -1,5 +1,5 @@
-import re
 import csv
+import re
 
 from contraindications.management.commands.utils.common import clean_text, get_version_by_old_id
 from reference_books.models import Ingredients
@@ -95,11 +95,9 @@ def import_ingredients(wb):
         for ingredient_type, block in ingredients_blocks.items():
             block = clean_text(block)
             for ingredient in split_ingredients(block):
-                if ". " in ingredient:
+                if '. ' in ingredient:
                     suspicious.append(ingredient)
-                ingredient, created = Ingredients.objects.get_or_create(
-                    name=ingredient
-                )
+                ingredient, created = Ingredients.objects.get_or_create(name=ingredient)
                 VaccineCardVersionIngredient.objects.get_or_create(
                     vaccine_card_version=vaccine_card_version,
                     ingredient=ingredient,
@@ -109,7 +107,7 @@ def import_ingredients(wb):
                 )
                 if created:
                     ingredient_count += 1
-    with open("column.csv", "w", newline="", encoding="utf-8-sig") as f:
+    with open('column.csv', 'w', newline='', encoding='utf-8-sig') as f:
         writer = csv.writer(f)
         writer.writerows([[item] for item in suspicious])
     return ingredient_count

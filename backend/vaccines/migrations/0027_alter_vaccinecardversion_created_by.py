@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('vaccines', '0026_rename_max_age_months_vaccinecardversion_max_age_days_and_more'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
@@ -16,6 +15,13 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='vaccinecardversion',
             name='created_by',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='created_versions', to=settings.AUTH_USER_MODEL, verbose_name='Кем создана версия'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name='created_versions',
+                to=settings.AUTH_USER_MODEL,
+                verbose_name='Кем создана версия',
+            ),
         ),
     ]
