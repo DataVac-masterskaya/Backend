@@ -311,6 +311,8 @@ class VaccineCardVersion(models.Model):
     created_by = models.ForeignKey(
         User,
         on_delete=models.PROTECT,
+        null=True,
+        blank=True,
         related_name='created_versions',
         verbose_name='Кем создана версия',
     )

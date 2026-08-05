@@ -12,7 +12,7 @@ from contraindications.management.commands.utils.vaccines import (
     import_vaccine_storage,
     import_vaccines,
     set_vaccine_ages,
-    set_vaccine_nonspec_links,
+    set_vaccine_nonspec_links
 )
 from contraindications.models import Contraindication
 from reference_books.models import (
@@ -26,9 +26,6 @@ from vaccines.models import (
     VaccineCardVersionContraindication,
     VaccineCardVersionInfection,
 )
-
-User = get_user_model()
-
 
 def import_contraindications(wb):
     """Импорт противопоказаний."""
@@ -64,13 +61,11 @@ def import_contraindications(wb):
             count_add += 1
     return count_add
 
-
 CATEGORY_MAP = {
     'национальный календарь': 'national',
     'сверх календаря': 'additional',
     'другие': 'others',
 }
-
 
 def import_infection_categories(wb):
     """Импорт категорий инфекций."""
@@ -271,16 +266,6 @@ def import_vaccine_version_administration_methods(wb):
             count += 1
     return count
 
-
-# def get_age(age_str):
-#     """Соответствие возрастов из легаси в количество дней. Используется только при одноразовой миграции данных."""
-#     age_str = age_str.replace('\xa0', ' ').strip()
-#     age = AGES_MAP.get(age_str)
-#     if age_str not in AGES_MAP:
-#         raise CommandError(f'Неизвестное значение возраста: "{age_str}"')
-#     return age
-
-
 class Command(BaseCommand):
     help = 'Импортирует противопоказания из указанного excel-файла со страницы contraindications_list'
 
@@ -289,7 +274,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         file_path = options['excel_file']
-        system_user = User.objects.get(username='admin')
         try:
             wb = load_workbook(file_path, read_only=True, data_only=True)
             try:
@@ -300,10 +284,9 @@ class Command(BaseCommand):
                     self.stdout.write(f'Импорт категорий инфекций завершён. Добавлено: {count}.')
                     count = import_infections(wb)
                     self.stdout.write(f'Импорт инфекций завершён. Добавлено: {count}.')
-
                     count = import_methods_of_administration(wb)
                     self.stdout.write(f'Импорт методов введения завершён. Добавлено: {count}.')
-                    count = import_vaccines(wb, system_user)
+                    count = import_vaccines(wb)
                     self.stdout.write(f'Импорт вакцин завершён. Добавлено: {count}.')
                     count = import_ingredients(wb)
                     self.stdout.write(f'Импорт ингредиентов завершён. Добавлено: {count}.')
