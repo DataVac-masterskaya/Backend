@@ -256,6 +256,56 @@ def test_search_endpoint_rejects_empty_query(api_client, url):
     assert 'q' in response.data
 
 
+def test_search_endpoint_rejects_too_long_query(api_client):
+    """Проверяет ограничение поискового запроса в 255 символов."""
+    response = api_client.get(
+        '/api/v1/contraindications/search/',
+        {'q': 'A' * 256},
+    )
+
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert 'q' in response.data
+
+
+def test_search_endpoint_allows_query_at_max_length(api_client):
+    """Проверяет допустимый запрос длиной ровно 255 символов."""
+    response = api_client.get(
+        '/api/v1/contraindications/search/',
+        {'q': 'A' * 255},
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+
+
+def test_search_endpoint_rejects_only_special_characters(api_client):
+    """Проверяет запрет запроса только из специальных символов."""
+    response = api_client.get(
+        '/api/v1/contraindications/search/',
+        {'q': '!@#$'},
+    )
+
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert 'q' in response.data
+
+
+@pytest.mark.parametrize(
+    'query',
+    (
+        'COVID-19',
+        'ОРВИ 38°C',
+        'Аллергия (острая форма)',
+    ),
+)
+def test_search_endpoint_allows_medical_punctuation(api_client, query):
+    """Проверяет допустимую пунктуацию в медицинских запросах."""
+    response = api_client.get(
+        '/api/v1/contraindications/search/',
+        {'q': query},
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+
+
 def test_select_endpoint_increments_select_count(api_client):
     """Проверяет увеличение счетчика выбора подсказки."""
     contraindication = Contraindication.objects.create(name='Аллергия')

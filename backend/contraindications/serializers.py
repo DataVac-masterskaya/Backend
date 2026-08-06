@@ -110,7 +110,16 @@ class ContraindicationSearchQuerySerializer(serializers.Serializer):
         required=True,
         allow_blank=False,
         trim_whitespace=True,
+        max_length=255,
     )
+
+    def validate_q(self, value: str) -> str:
+        """Разрешает запросы, содержащие хотя бы одну букву или цифру."""
+        if not any(char.isalnum() for char in value):
+            raise serializers.ValidationError(
+                'Search query must contain at least one letter or digit.',
+            )
+        return value
 
 
 class VaccineContraindicationSerializer(serializers.Serializer):
