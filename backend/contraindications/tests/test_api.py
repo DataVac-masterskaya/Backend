@@ -226,6 +226,22 @@ def test_search_endpoint(api_client):
     assert response.data[0]['name'] == 'Аллергия'
 
 
+@pytest.mark.parametrize(
+    'url',
+    (
+        '/api/v1/contraindications/search/',
+        '/api/v1/contraindications/search/?q=',
+        '/api/v1/contraindications/search/?q=%20%20',
+    ),
+)
+def test_search_endpoint_rejects_empty_query(api_client, url):
+    """Проверяет обязательность непустого поискового запроса."""
+    response = api_client.get(url)
+
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert 'q' in response.data
+
+
 def test_select_endpoint_increments_select_count(api_client):
     """Проверяет увеличение счетчика выбора подсказки."""
     contraindication = Contraindication.objects.create(name='Аллергия')

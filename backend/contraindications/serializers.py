@@ -103,6 +103,16 @@ class ContraindicationSearchSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'score')
 
 
+class ContraindicationSearchQuerySerializer(serializers.Serializer):
+    """Проверяет параметры запроса поисковых подсказок."""
+
+    q = serializers.CharField(
+        required=True,
+        allow_blank=False,
+        trim_whitespace=True,
+    )
+
+
 class VaccineContraindicationSerializer(serializers.Serializer):
     """Описывает противопоказание в краткой карточке вакцины."""
 

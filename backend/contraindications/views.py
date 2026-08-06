@@ -10,6 +10,7 @@ from contraindications.serializers import (
     ContraindicationDetailSerializer,
     ContraindicationFrontendListSerializer,
     ContraindicationListSerializer,
+    ContraindicationSearchQuerySerializer,
     ContraindicationSearchSerializer,
     ContraindicationVaccinesResponseSerializer,
     SelectCounterResponseSerializer,
@@ -175,7 +176,7 @@ class ContraindicationSearchView(APIView):
             OpenApiParameter(
                 name='q',
                 description='Поисковая строка.',
-                required=False,
+                required=True,
                 type=str,
             ),
         ],
@@ -183,7 +184,11 @@ class ContraindicationSearchView(APIView):
     )
     def get(self, request):
         """Возвращает до шести подсказок по поисковой строке."""
-        query = request.query_params.get('q', '')
+        query_serializer = ContraindicationSearchQuerySerializer(
+            data=request.query_params,
+        )
+        query_serializer.is_valid(raise_exception=True)
+        query = query_serializer.validated_data['q']
         serializer = ContraindicationSearchSerializer(
             search_contraindications(query),
             many=True,
