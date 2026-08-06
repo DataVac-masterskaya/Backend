@@ -196,6 +196,20 @@ def test_detail_contraindication_returns_404(api_client):
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
+@pytest.mark.parametrize(
+    'invalid_id',
+    ('-1', '0', 'abc', '1abc', '1.5', '1%20'),
+)
+def test_detail_contraindication_rejects_invalid_id(api_client, invalid_id):
+    """Проверяет ответ 400 для некорректного ID в detail endpoint."""
+    response = api_client.get(
+        f'/api/v1/contraindications/{invalid_id}/',
+    )
+
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert 'id' in response.data
+
+
 def test_vaccines_endpoint_returns_related_vaccines(
     api_client,
     vaccine_with_contraindication,
@@ -252,3 +266,26 @@ def test_select_endpoint_increments_select_count(api_client):
 
     assert response.status_code == status.HTTP_200_OK
     assert response.data['searchSelectCount'] == 1
+
+
+@pytest.mark.parametrize(
+    'invalid_id',
+    ('-1', '0', 'abc', '1abc', '1.5', '1%20'),
+)
+def test_select_endpoint_rejects_invalid_id(api_client, invalid_id):
+    """Проверяет ответ 400 для некорректного ID в select endpoint."""
+    response = api_client.post(
+        f'/api/v1/contraindications/{invalid_id}/select/',
+    )
+
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert 'id' in response.data
+
+
+def test_select_endpoint_returns_404_for_missing_id(api_client):
+    """Проверяет ответ 404 для корректного отсутствующего ID."""
+    response = api_client.post(
+        '/api/v1/contraindications/999/select/',
+    )
+
+    assert response.status_code == status.HTTP_404_NOT_FOUND
