@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404
-from drf_spectacular.utils import OpenApiParameter, extend_schema
+from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -10,6 +10,7 @@ from contraindications.serializers import (
     ContraindicationDetailSerializer,
     ContraindicationFrontendListSerializer,
     ContraindicationListSerializer,
+    ContraindicationSearchQuerySerializer,
     ContraindicationSearchSerializer,
     ContraindicationVaccinesResponseSerializer,
     SelectCounterResponseSerializer,
@@ -19,6 +20,7 @@ from contraindications.services import (
     increment_contraindication_select_count,
     search_contraindications,
 )
+from contraindications.validators import validate_positive_integer_id
 
 
 class ContraindicationCategoryListView(APIView):
@@ -139,12 +141,32 @@ class ContraindicationLegacyListView(APIView):
 class ContraindicationDetailView(APIView):
     """Отдает детальную информацию о противопоказании."""
 
-    @extend_schema(responses=ContraindicationDetailSerializer)
-    def get(self, request, pk: int):
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name='pk',
+                location=OpenApiParameter.PATH,
+                description='Положительный целочисленный ID противопоказания.',
+                required=True,
+                type=int,
+            ),
+        ],
+        responses={
+            status.HTTP_200_OK: ContraindicationDetailSerializer,
+            status.HTTP_400_BAD_REQUEST: OpenApiResponse(
+                description='ID имеет неверный формат.',
+            ),
+            status.HTTP_404_NOT_FOUND: OpenApiResponse(
+                description='Противопоказание не найдено.',
+            ),
+        },
+    )
+    def get(self, request, pk: str):
         """Возвращает противопоказание, категории и связанные вакцины."""
+        contraindication_id = validate_positive_integer_id(pk)
         contraindication = get_object_or_404(
             Contraindication.objects.prefetch_related('categories'),
-            id=pk,
+            id=contraindication_id,
         )
         serializer = ContraindicationDetailSerializer(contraindication)
         return Response(serializer.data)
@@ -174,8 +196,11 @@ class ContraindicationSearchView(APIView):
         parameters=[
             OpenApiParameter(
                 name='q',
-                description='Поисковая строка.',
-                required=False,
+                description=(
+                    'Непустая поисковая строка длиной до 255 символов, '
+                    'содержащая хотя бы одну букву или цифру.'
+                ),
+                required=True,
                 type=str,
             ),
         ],
@@ -183,7 +208,11 @@ class ContraindicationSearchView(APIView):
     )
     def get(self, request):
         """Возвращает до шести подсказок по поисковой строке."""
-        query = request.query_params.get('q', '')
+        query_serializer = ContraindicationSearchQuerySerializer(
+            data=request.query_params,
+        )
+        query_serializer.is_valid(raise_exception=True)
+        query = query_serializer.validated_data['q']
         serializer = ContraindicationSearchSerializer(
             search_contraindications(query),
             many=True,
@@ -194,10 +223,33 @@ class ContraindicationSearchView(APIView):
 class SelectContraindicationView(APIView):
     """Фиксирует выбор противопоказания в поисковой подсказке."""
 
-    @extend_schema(request=None, responses=SelectCounterResponseSerializer)
-    def post(self, request, pk: int):
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name='pk',
+                location=OpenApiParameter.PATH,
+                description='Положительный целочисленный ID противопоказания.',
+                required=True,
+                type=int,
+            ),
+        ],
+        request=None,
+        responses={
+            status.HTTP_200_OK: SelectCounterResponseSerializer,
+            status.HTTP_400_BAD_REQUEST: OpenApiResponse(
+                description='ID имеет неверный формат.',
+            ),
+            status.HTTP_404_NOT_FOUND: OpenApiResponse(
+                description='Противопоказание не найдено.',
+            ),
+        },
+    )
+    def post(self, request, pk: str):
         """Увеличивает счетчик выбора противопоказания."""
-        contraindication = increment_contraindication_select_count(pk)
+        contraindication_id = validate_positive_integer_id(pk)
+        contraindication = increment_contraindication_select_count(
+            contraindication_id,
+        )
         return Response(
             {
                 'id': contraindication.id,
