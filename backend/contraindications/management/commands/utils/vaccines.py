@@ -5,7 +5,7 @@ from vaccines.constants import AGES_MAP
 from vaccines.models import VaccineCard, VaccineCardStatus, VaccineCardVersion, VersionStatus
 
 
-def import_vaccines(wb, system_user):
+def import_vaccines(wb):
     """Импорт карточек и версий вакцин."""
     ws = get_sheet(wb, 'vaccines')
     headers = [cell.value for cell in next(ws.iter_rows(min_row=1, max_row=1))]
@@ -41,8 +41,8 @@ def import_vaccines(wb, system_user):
             defaults={
                 'status': VaccineCardStatus.ACTIVE,
                 'is_visible': True,
-                'created_by': system_user,
-                'updated_by': system_user,
+                'created_by': None,
+                'updated_by': None,
             },
         )
         version, _ = VaccineCardVersion.objects.update_or_create(
@@ -50,15 +50,15 @@ def import_vaccines(wb, system_user):
             defaults={
                 'vaccine_card': card,
                 'version_number': 1,
-                'version_status': VersionStatus.DRAFT,
-                'moderation_request': 1,
+                'version_status': VersionStatus.APPROVED,
+                'moderation_request': None,
                 'name': name,
                 'official_name': official_name,
                 'code_name': code_name,
                 'manufacturer': manufacturer,
                 'is_available_in_rf': in_use_in_Russia,
-                'created_by': system_user,
-                'approved_by': system_user,
+                'created_by': None,
+                'approved_by': None,
                 'ohlp_url': ohlp_url,
                 'instruction_url': instruction_url,
             },
