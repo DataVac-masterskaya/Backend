@@ -80,7 +80,6 @@ def import_ingredients(wb):
     vaccines_id = headers.index('vaccine_id')
     ingredients_text = headers.index('ingredients_text_w/o_html')
     ingredient_count = 0
-    suspicious = []
 
     for row in ws.iter_rows(min_row=2, values_only=True):
         vaccine_id = row[vaccines_id]
@@ -95,8 +94,6 @@ def import_ingredients(wb):
         for ingredient_type, block in ingredients_blocks.items():
             block = clean_text(block)
             for ingredient in split_ingredients(block):
-                if '. ' in ingredient:
-                    suspicious.append(ingredient)
                 ingredient, created = Ingredients.objects.get_or_create(name=ingredient)
                 VaccineCardVersionIngredient.objects.get_or_create(
                     vaccine_card_version=vaccine_card_version,
@@ -107,7 +104,4 @@ def import_ingredients(wb):
                 )
                 if created:
                     ingredient_count += 1
-    with open('column.csv', 'w', newline='', encoding='utf-8-sig') as f:
-        writer = csv.writer(f)
-        writer.writerows([[item] for item in suspicious])
     return ingredient_count

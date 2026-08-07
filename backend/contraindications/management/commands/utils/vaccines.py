@@ -63,6 +63,7 @@ def import_vaccines(wb):
                 'instruction_url': instruction_url,
             },
         )
+        
         if created:
             count_add += 1
     return count_add
@@ -237,5 +238,16 @@ def set_vaccine_nonspec_links(wb):
         version = get_version_by_old_id(int(vaccine_id))
         version.nonspec_url = nonspec_instruction_link
         version.save(update_fields=['nonspec_url'])
+        updated += 1
+    return updated
+
+def set_current_version():
+    cards = VaccineCard.objects.all()
+    versions = VaccineCardVersion.objects.all()
+    updated = 0
+    for card in cards:
+        current_version = versions.get(old_id=card.old_id)
+        card.current_version = current_version
+        card.save(update_fields=['current_version'])
         updated += 1
     return updated
