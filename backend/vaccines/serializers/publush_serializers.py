@@ -209,3 +209,6 @@ class VaccineCardDetail(VaccineCardShort):
 
     def get_compatibility_info(self, obj):
         return self.get_version_attr(obj, 'compatibility_info')
+
+
+#
