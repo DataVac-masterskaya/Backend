@@ -197,8 +197,7 @@ class ContraindicationSearchView(APIView):
             OpenApiParameter(
                 name='q',
                 description=(
-                    'Непустая поисковая строка длиной до 255 символов, '
-                    'содержащая хотя бы одну букву или цифру.'
+                    'Непустая поисковая строка длиной до 255 символов, содержащая хотя бы одну букву или цифру.'
                 ),
                 required=True,
                 type=str,
