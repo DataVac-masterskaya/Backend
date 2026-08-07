@@ -36,8 +36,10 @@ def import_vaccines(wb):
         in_use_in_Russia = bool_usage(in_use_in_Russia)
         ohlp_url = row[OKhLP_specialists_link_idx]
         instruction_url = row[GRLS_instruction_link_idx]
-        if 'нет' in instruction_url:
+        if 'нет' or 'есть' in instruction_url:
             instruction_url = None
+        if 'нет' or 'есть' in ohlp_url:
+            ohlp_url = None
         card, created = VaccineCard.objects.update_or_create(
             old_id=vaccine_id,
             defaults={
@@ -65,7 +67,6 @@ def import_vaccines(wb):
                 'instruction_url': instruction_url,
             },
         )
-        
         if created:
             count_add += 1
     return count_add
@@ -245,7 +246,9 @@ def set_vaccine_nonspec_links(wb):
         updated += 1
     return updated
 
+
 def set_current_version():
+    """Устанавливает актуальную и опубликованную версию карточки."""
     cards = VaccineCard.objects.all()
     versions = VaccineCardVersion.objects.all()
     updated = 0

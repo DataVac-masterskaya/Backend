@@ -1,4 +1,3 @@
-import csv
 import re
 
 from contraindications.management.commands.utils.common import clean_text, get_version_by_old_id
