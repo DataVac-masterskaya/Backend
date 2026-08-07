@@ -10,6 +10,7 @@ from contraindications.management.commands.utils.vaccines import (
     import_vaccine_simult_administration,
     import_vaccine_storage,
     import_vaccines,
+    set_current_version,
     set_vaccine_ages,
     set_vaccine_nonspec_links,
 )
@@ -315,6 +316,8 @@ class Command(BaseCommand):
                     self.stdout.write(f'Возраста использования вакцин обновлены, добавлено: {count}.')
                     count = set_vaccine_nonspec_links(wb)
                     self.stdout.write(f'Ссылки для неспециалистов обновлены, добавлено: {count}.')
+                    count = set_current_version()
+                    self.stdout.write(f'Актуальные версии вакцины обновлены, добавлено: {count}.')
             except Exception as e:
                 raise CommandError(e)
         finally:

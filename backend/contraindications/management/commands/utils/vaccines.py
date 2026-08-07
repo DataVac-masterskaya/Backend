@@ -36,6 +36,10 @@ def import_vaccines(wb):
         in_use_in_Russia = bool_usage(in_use_in_Russia)
         ohlp_url = row[OKhLP_specialists_link_idx]
         instruction_url = row[GRLS_instruction_link_idx]
+        if 'нет' or 'есть' in instruction_url:
+            instruction_url = None
+        if 'нет' or 'есть' in ohlp_url:
+            ohlp_url = None
         card, created = VaccineCard.objects.update_or_create(
             old_id=vaccine_id,
             defaults={
@@ -207,6 +211,7 @@ def set_vaccine_ages(wb):
         age_to = row[ages_to]
         age_from = clean_text(age_from)
         age_to = clean_text(age_to)
+        age_allowed = f'от {ages_from} до {age_to}'
         age_from = AGES_MAP[age_from]
         age_to = AGES_MAP[age_to]
         if vaccine_id is None:
@@ -214,7 +219,8 @@ def set_vaccine_ages(wb):
         version = get_version_by_old_id(int(vaccine_id))
         version.min_age_days = age_from
         version.max_age_days = age_to
-        version.save(update_fields=['min_age_days', 'max_age_days'])
+        version.age_allowed = age_allowed
+        version.save(update_fields=['min_age_days', 'max_age_days', 'age_allowed'])
         updated += 1
     return updated
 
@@ -237,5 +243,19 @@ def set_vaccine_nonspec_links(wb):
         version = get_version_by_old_id(int(vaccine_id))
         version.nonspec_url = nonspec_instruction_link
         version.save(update_fields=['nonspec_url'])
+        updated += 1
+    return updated
+
+
+def set_current_version():
+    """Устанавливает актуальную и опубликованную версию карточки."""
+    cards = VaccineCard.objects.all()
+    versions = VaccineCardVersion.objects.all()
+    updated = 0
+    for card in cards:
+        current_version = versions.get(old_id=card.old_id)
+        card.current_version = current_version
+        card.published_version = current_version
+        card.save(update_fields=['current_version', 'published_version'])
         updated += 1
     return updated
