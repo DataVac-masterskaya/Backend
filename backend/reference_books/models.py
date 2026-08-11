@@ -8,6 +8,16 @@ from datavac.constants import (
 )
 
 
+class MethodsOfAdministrationCode(models.TextChoices):
+    INTRAMUSCULARLY = 'intramuscularly', 'Внутримышечно'
+    SUBCUTANEOUSLY = 'subcutaneously', 'Подкожно'
+    CUTANEOUSLY = 'cutaneously', 'Кожно'
+    INTRADERMALLY = 'intradermally', 'Внутрикожно'
+    DROPS = 'drops', 'Капли'
+    PILLS = 'pills', 'Таблетки'
+    INTRANASALLY = 'intranasally', 'Интраназально'
+
+
 class SearchStatsMixin(models.Model):
     """Название и поисковые характеристики."""
 
@@ -104,7 +114,11 @@ class MethodsOfAdministration(models.Model):
     """Cпособы введения."""
 
     name = models.CharField(verbose_name='Название')
-    code = models.SlugField(verbose_name='Код', unique=True, null=True)
+    code = models.SlugField(
+        verbose_name='Код',
+        null=True,
+        choices=MethodsOfAdministrationCode.choices,
+    )
     description = models.TextField(
         verbose_name='Описание',
         blank=True,
