@@ -10,6 +10,7 @@ class VaccineCardShort(serializers.ModelSerializer):
 
     name = serializers.SerializerMethodField()
     official_name = serializers.SerializerMethodField()
+    code_name = serializers.SerializerMethodField()
     is_available_in_rf = serializers.SerializerMethodField()
     # min_age_days = serializers.IntegerField(source='current_version.min_age_days')
     # max_age_days = serializers.IntegerField(source='current_version.max_age_days')
@@ -25,6 +26,7 @@ class VaccineCardShort(serializers.ModelSerializer):
             'id',
             'name',
             'official_name',
+            'code_name',
             'is_available_in_rf',
             # 'min_age_days',
             # 'max_age_days',
@@ -61,6 +63,11 @@ class VaccineCardShort(serializers.ModelSerializer):
     def get_official_name(self, obj):
         if obj.current_version and obj.current_version.official_name:
             return obj.current_version.official_name
+        return None
+
+    def get_code_name(self, obj):
+        if obj.current_version and obj.current_version.code_name:
+            return obj.current_version.code_name
         return None
 
     def get_is_available_in_rf(self, obj):
@@ -102,6 +109,7 @@ class VaccineCardDetail(VaccineCardShort):
             'id',
             'name',
             'official_name',
+            'code_name',
             'is_available_in_rf',
             'revision_date',
             'nonspec_url',

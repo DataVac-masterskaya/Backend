@@ -111,6 +111,7 @@ class MethodsOfAdministrationAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'name',
+        'code',
         'description',
         'list_icon_url',
         'detail_image_url',
