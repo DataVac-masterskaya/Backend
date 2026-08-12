@@ -18,6 +18,7 @@ class MethodsOfAdministrationCode(models.TextChoices):
     INTRANASALLY = 'intranasally', 'Интраназально'
     OTHER = 'other', 'Другое'
 
+
 class SearchStatsMixin(models.Model):
     """Название и поисковые характеристики."""
 
