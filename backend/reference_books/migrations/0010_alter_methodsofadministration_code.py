@@ -21,7 +21,6 @@ class Migration(migrations.Migration):
                     ('drops', 'Капли'),
                     ('pills', 'Таблетки'),
                     ('intranasally', 'Интраназально'),
-                    ('other', 'Другое'),
                 ],
                 null=True,
                 verbose_name='Код',
