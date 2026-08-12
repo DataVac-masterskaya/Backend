@@ -1,7 +1,10 @@
+from random import randint
+
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
-from vaccines.models import VaccineCardVersion
+from reference_books.models import Infection, Ingredients
+from vaccines.models import VaccineCard, VaccineCardVersion
 
 
 class Command(BaseCommand):
@@ -17,7 +20,7 @@ class Command(BaseCommand):
             vaccine.side_effects = test_data
             vaccine.indications = test_data
             vaccine.schedule_info = test_data
-            vaccine.revision_date = vaccine.created_at
+            vaccine.revision_date = vaccine.created_at.date()
 
             vaccine.save(
                 update_fields=[
@@ -28,5 +31,18 @@ class Command(BaseCommand):
                     'revision_date',
                 ]
             )
+        for i, vaccine in enumerate(VaccineCard.objects.all()):
+            vaccine.search_select_count = randint(1, 100)
+            vaccine.popularity = randint(1, 100)
+            vaccine.save(update_fields=['search_select_count', 'popularity'])
 
+        for i, ingredient in enumerate(Ingredients.objects.all()):
+            ingredient.search_select_count = randint(1, 100)
+            ingredient.popularity = randint(1, 100)
+            ingredient.save(update_fields=['search_select_count', 'popularity'])
+
+        for i, infection in enumerate(Infection.objects.all()):
+            infection.search_select_count = randint(1, 100)
+            infection.popularity = randint(1, 100)
+            infection.save(update_fields=['search_select_count', 'popularity'])
         self.stdout.write(self.style.SUCCESS('Тестовые значения проставлены.'))
