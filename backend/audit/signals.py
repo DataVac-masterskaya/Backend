@@ -100,6 +100,52 @@ def log_user_changes(sender, instance, created, **kwargs) -> None:
         # Жду остальных что бы дополнить эту часть кода
 
 
+# @receiver(pre_save, sender=User)
+# def track_user_changes_before_save(sender, instance, **kwargs):
+#     if not instance.pk:
+#         return
+#     old_user = User.objects.filter(pk=instance.pk).first()
+#     if not old_user:
+#         return
+#     instance.is_active_changed = old_user.is_active != instance.is_active
+#     instance._role_changed = old_user.role != instance.role
+#     instance._old_role = old_user.role
+
+
+# @receiver(post_save, sender=User)
+# def log_user_changes(sender, instance, created, **kwargs):
+#     if created:
+#         AuditLogger.log_action(
+#             'user_create',
+#             'user',
+#             instance.id,
+#             details=ACTION_CHOICES['user_create'],
+#         )
+#         return
+#     if getattr(instance, '_is_active_changed', False):
+#         details = {
+#             'is_active': instance.is_active,
+#             'status': ('active' if instance.is_active else 'blocked'),
+#         }
+#         AuditLogger.log_action(
+#             'block',
+#             'user',
+#             instance.id,
+#             json.dumps(details, ensure_ascii=False),
+#         )
+#     if getattr(instance, '_role_changed', False):
+#         details = {
+#             'old_role': instance._old_role,
+#             'new_role': instance.role,
+#         }
+#         AuditLogger.log_action(
+#             'role_change',
+#             'user',
+#             instance.id,
+#             json.dumps(details, ensure_ascii=False),
+#         )
+
+
 # @receiver(post_save, sender='vaccines.VaccineCard')
 # @staticmethod
 # def log_vaccine_card_changes(sender, instance, created, **kwargs) -> None:
