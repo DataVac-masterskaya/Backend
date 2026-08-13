@@ -49,7 +49,7 @@ class Command(BaseCommand):
         category3, _ = ContraindicationCategory.objects.get_or_create(name='Аллергии')
         category4, _ = ContraindicationCategory.objects.get_or_create(name='Иммунодефициты')
         category5, _ = ContraindicationCategory.objects.get_or_create(name='Острые состояния')
-        
+
         for i, contraindication in enumerate(Contraindication.objects.all()):
             contraindication.search_select_count = randint(1, 100)
             contraindication.popularity = randint(1, 100)
@@ -58,7 +58,7 @@ class Command(BaseCommand):
                 contraindication.categories.set([category1])
                 if contraindication.pk % 2 == 0:
                     contraindication.subcategory = 'Заболевания сердца'
-                elif:
+                else:
                     contraindication.subcategory = 'Заболевания почек'
             elif i == 1:
                 contraindication.categories.set([category2])

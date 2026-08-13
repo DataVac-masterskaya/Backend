@@ -209,7 +209,7 @@ def import_vaccine_simult_administration(wb):
 
 
 def import_vaccine_ingredients_text(wb):
-    """Импорт взаимодействия вакцины с другими вакцинами."""
+    """Импорт ингредиентов в текстовом виде."""
     ws = get_sheet(wb, 'ingredients_text')
 
     headers = [cell.value for cell in next(ws.iter_rows(min_row=1, max_row=1))]

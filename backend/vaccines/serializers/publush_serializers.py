@@ -173,20 +173,6 @@ class VaccineCardDetail(VaccineCardShort):
             for item in methods
         ]
 
-    def get_contraindications(self, obj):
-        if not obj.current_version:
-            return []
-
-        contraindications = obj.current_version.contraindications_relations.select_related('contraindication')
-        return [
-            {
-                'id': item.contraindication.id,
-                'name': item.contraindication.name,
-                'type': item.contraindication_type,
-            }
-            for item in contraindications
-        ]
-
     def get_ingredients(self, obj):
         if not obj.current_version:
             return []
