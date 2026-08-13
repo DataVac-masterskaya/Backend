@@ -169,6 +169,9 @@ class VaccineCardVersion(models.Model):
         null=True,
         verbose_name='Описание вакцины',
     )
+    ingredients_text = models.TextField(
+        blank=True, null=True, verbose_name='Состав вакцины', help_text='Состав вакцины полным текстом'
+    )
     manufacturer = models.CharField(
         max_length=NAME_MAX_LEN,
         blank=True,

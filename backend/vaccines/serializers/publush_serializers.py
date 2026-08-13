@@ -24,6 +24,7 @@ class VaccineCardShort(serializers.ModelSerializer):
     infections = serializers.SerializerMethodField()
     administration_methods = serializers.SerializerMethodField()
     popularity = serializers.IntegerField()
+    contraindications = serializers.SerializerMethodField()
 
     class Meta:
         model = VaccineCard
@@ -40,6 +41,7 @@ class VaccineCardShort(serializers.ModelSerializer):
             'infections',
             'administration_methods',
             'popularity',
+            'contraindications',
         )
 
     def get_infections(self, obj):
@@ -92,6 +94,20 @@ class VaccineCardShort(serializers.ModelSerializer):
             return obj.current_version.pregnancy_usage_status
         return False
 
+    def get_contraindications(self, obj):
+        if not obj.current_version:
+            return []
+
+        contraindications = obj.current_version.contraindications_relations.select_related('contraindication')
+        return [
+            {
+                'id': item.contraindication.id,
+                'name': item.contraindication.name,
+                'type': item.contraindication_type,
+            }
+            for item in contraindications
+        ]
+
 
 class VaccineCardDetail(VaccineCardShort):
     """Сериализатор для детального просмотра карточки вакцины."""
@@ -109,6 +125,7 @@ class VaccineCardDetail(VaccineCardShort):
     indications = serializers.SerializerMethodField()
     interaction_info = serializers.SerializerMethodField()
     compatibility_info = serializers.SerializerMethodField()
+    ingredients_text = serializers.SerializerMethodField()
 
     class Meta:
         model = VaccineCard
@@ -137,6 +154,7 @@ class VaccineCardDetail(VaccineCardShort):
             'indications',
             'interaction_info',
             'compatibility_info',
+            'ingredients_text',
         )
 
     def get_administration_methods(self, obj):
@@ -205,6 +223,9 @@ class VaccineCardDetail(VaccineCardShort):
 
     def get_instruction_url(self, obj):
         return self.get_version_attr(obj, 'instruction_url')
+
+    def get_ingredients_text(self, obj):
+        return self.get_version_attr(obj, 'ingredients_text')
 
     def get_manufacturer(self, obj):
         return self.get_version_attr(obj, 'manufacturer')

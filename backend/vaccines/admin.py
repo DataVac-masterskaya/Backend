@@ -66,8 +66,8 @@ class VaccineCardVersionAdmin(admin.ModelAdmin):
     search_fields = ('name', 'official_name', 'vaccine_card__id')
     raw_id_fields = ('vaccine_card', 'parent_version', 'created_by', 'approved_by')
     inlines = [
-        VaccineCardVersionInfectionInline,
         VaccineCardVersionIngredientInline,
+        VaccineCardVersionInfectionInline,
         VaccineCardVersionContraindicationInline,
         VaccineCardVersionAdministrationMethodInline,
     ]
@@ -101,8 +101,8 @@ class VaccineCardVersionAdmin(admin.ModelAdmin):
             'Возраст и беременность',
             {
                 'fields': (
-                    # 'min_age_days',
-                    # 'max_age_days',
+                    'min_age_days',
+                    'max_age_days',
                     'age_allowed',
                     'pregnancy_usage_status',
                 )
@@ -146,6 +146,7 @@ class VaccineCardVersionAdmin(admin.ModelAdmin):
                     'instruction_url',
                     'pdf_url',
                     'qr_code_url',
+                    'official_instruction',
                 )
             },
         ),
@@ -165,6 +166,12 @@ class VaccineCardVersionAdmin(admin.ModelAdmin):
                     'created_by',
                     'approved_by',
                 ),
+            },
+        ),
+        (
+            'Состав из исходной базы',
+            {
+                'fields': ('ingredients_text',),
             },
         ),
     )

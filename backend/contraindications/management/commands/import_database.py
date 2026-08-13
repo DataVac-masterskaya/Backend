@@ -5,6 +5,7 @@ from openpyxl import load_workbook
 from contraindications.management.commands.utils.common import clean_text, get_sheet, get_version_by_old_id
 from contraindications.management.commands.utils.ingredients import import_ingredients
 from contraindications.management.commands.utils.vaccines import (
+    import_vaccine_ingredients_text,
     import_vaccine_interaction,
     import_vaccine_pregnancy_use,
     import_vaccine_simult_administration,
@@ -355,6 +356,8 @@ class Command(BaseCommand):
                     self.stdout.write(f'Возраста использования вакцин обновлены, добавлено: {count}.')
                     count = set_vaccine_nonspec_links(wb)
                     self.stdout.write(f'Ссылки для неспециалистов обновлены, добавлено: {count}.')
+                    count = import_vaccine_ingredients_text(wb)
+                    self.stdout.write(f'Состав вакцины в текстовом виде обновлен, добавлено: {count}.')
                     count = set_current_version()
                     self.stdout.write(f'Актуальные версии вакцины обновлены, добавлено: {count}.')
             except Exception as e:

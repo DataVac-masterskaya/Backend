@@ -208,6 +208,36 @@ def import_vaccine_simult_administration(wb):
     return updated
 
 
+def import_vaccine_ingredients_text(wb):
+    """Импорт взаимодействия вакцины с другими вакцинами."""
+    ws = get_sheet(wb, 'ingredients_text')
+
+    headers = [cell.value for cell in next(ws.iter_rows(min_row=1, max_row=1))]
+    vaccine_id_idx = headers.index('vaccine_id')
+    ingredients_idx = headers.index('ingredients_text_w/o_html')
+
+    updated = 0
+
+    for row in ws.iter_rows(min_row=2, values_only=True):
+        vaccine_id = row[vaccine_id_idx]
+        ingredients = row[ingredients_idx]
+
+        if vaccine_id is None:
+            raise CommandError('В файле обнаружена строка без vaccine_id.')
+
+        if not ingredients:
+            continue
+
+        version = get_version_by_old_id(int(vaccine_id))
+
+        version.ingredients_text = clean_text(ingredients)
+        version.save(update_fields=['ingredients_text'])
+
+        updated += 1
+
+    return updated
+
+
 def set_vaccine_ages(wb):
     """Импорт возрастов использования вакцины."""
     ws = get_sheet(wb, 'vaccines_ages')

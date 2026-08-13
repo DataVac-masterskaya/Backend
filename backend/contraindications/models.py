@@ -45,6 +45,7 @@ class Contraindication(models.Model):
     )
     search_select_count = models.PositiveBigIntegerField(default=0, verbose_name='Количество поисковых запросов')
     search_weight = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name='Поисковой вес')
+    popularity = models.PositiveIntegerField(blank=True, null=True, verbose_name='Популярность')
 
     class Meta:
         """Задает таблицу, сортировку и названия модели противопоказания."""

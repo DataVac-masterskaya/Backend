@@ -17,7 +17,15 @@ class ContraindicationAdmin(admin.ModelAdmin):
     """Настраивает отображение противопоказаний в Django Admin."""
 
     filter_horizontal = ('categories',)
-    list_display = ('id', 'old_id', 'name', 'subcategory', 'search_select_count', 'search_weight')
+    list_display = (
+        'id',
+        'old_id',
+        'name',
+        'subcategory',
+        'search_select_count',
+        'search_weight',
+        'popularity',
+    )
     list_filter = ('categories',)
     ordering = ('name',)
     search_fields = ('name', 'subcategory')
