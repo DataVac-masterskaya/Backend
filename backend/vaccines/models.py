@@ -251,17 +251,20 @@ class VaccineCardVersion(models.Model):
         blank=True,
         null=True,
         verbose_name='Ссылка на сайт ОХЛП',
+        help_text='На данный момент не используется, но пусть будет',
     )
     nonspec_url = models.URLField(
         max_length=URL_MAX_LEN,
         blank=True,
         null=True,
         verbose_name='Ссылка на вкладыш',
+        help_text='Ссылка для специалистов, с .pdf',
     )
     instruction_url = models.URLField(
         max_length=URL_MAX_LEN,
         blank=True,
         null=True,
+        help_text='Ссылка на инструкцию для специалистов, берется из ГРЛС',
         verbose_name='Ссылка на инструкцию',
     )
     official_instruction = models.ForeignKey(
@@ -270,6 +273,7 @@ class VaccineCardVersion(models.Model):
         null=True,
         on_delete=models.SET_NULL,
         related_name='vaccine_versions',
+        help_text='Пока непонятно',
         verbose_name='Официальная инструкция',
     )
     pdf_url = models.URLField(
@@ -277,12 +281,14 @@ class VaccineCardVersion(models.Model):
         blank=True,
         null=True,
         verbose_name='Ссылка на PDF',
+        help_text='Ссылка на ПДФ, хранящийся на сайте, создается администраторами',
     )
     qr_code_url = models.URLField(
         max_length=URL_MAX_LEN,
         blank=True,
         null=True,
         verbose_name='Ссылка на qr',
+        help_text='Ссылка на qr, пока непонятно',
     )
 
     infections = models.ManyToManyField(

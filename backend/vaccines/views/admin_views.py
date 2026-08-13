@@ -38,6 +38,7 @@ class AdminVaccineCreateAPIView(APIView):
                 value={
                     'name': 'Инфанрикс Гекса',
                     'official_name': 'Инфанрикс Гекса, суспензия',
+                    'code_name': 'Infanrix_Hexa',
                     'is_available_in_rf': 'true',
                     'infection_ids': [1, 2, 3],
                     'ingredients': [{'ingredient_id': 1, 'role': 'active'}],
@@ -94,6 +95,7 @@ class AdminVaccineDetailAPIView(APIView):
                         'version_status': 'draft',
                         'name': 'Инфанрикс Гекса',
                         'official_name': 'Инфанрикс Гекса, суспензия',
+                        'code_name': 'Infanrix_Hexa',
                     },
                 },
                 response_only=True,

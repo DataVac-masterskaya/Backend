@@ -1,8 +1,22 @@
+import re
+
 from django.core.management.base import CommandError
 
 from contraindications.management.commands.utils.common import bool_usage, clean_text, get_sheet, get_version_by_old_id
 from vaccines.constants import AGES_MAP
 from vaccines.models import VaccineCard, VaccineCardStatus, VaccineCardVersion, VersionStatus
+
+
+def clean_url(url):
+    """Очищает url, заменяет аналоги дефиса на нормальный."""
+    if not url:
+        return None
+
+    url = url.strip()
+
+    url = re.sub(r'[\s\u00a0]*[–—−][\s\u00a0]*', '-', url)
+
+    return url
 
 
 def import_vaccines(wb):
@@ -240,6 +254,7 @@ def set_vaccine_nonspec_links(wb):
         nonspec_instruction_link = row[ages_version_link_idx]
         if not nonspec_instruction_link or '.pdf' not in nonspec_instruction_link:
             nonspec_instruction_link = None
+        nonspec_instruction_link = clean_url(nonspec_instruction_link)
         version = get_version_by_old_id(int(vaccine_id))
         version.nonspec_url = nonspec_instruction_link
         version.save(update_fields=['nonspec_url'])

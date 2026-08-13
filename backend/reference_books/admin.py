@@ -112,6 +112,7 @@ class MethodsOfAdministrationAdmin(admin.ModelAdmin):
         'id',
         'code',
         'name',
+        'code',
         'description',
         'note',
         'list_icon_url',

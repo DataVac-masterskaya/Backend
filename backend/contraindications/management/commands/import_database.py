@@ -19,6 +19,7 @@ from reference_books.models import (
     CategoryInfection,
     Infection,
     MethodsOfAdministration,
+    MethodsOfAdministrationCode,
 )
 from vaccines.constants import AGES_MAP
 from vaccines.models import (
@@ -137,22 +138,46 @@ def import_infections(wb):
     return count_add
 
 
+def get_method_code(method):
+    """Получает код метода введения."""
+    if 'внутримышечно' in method:
+        return MethodsOfAdministrationCode.INTRAMUSCULARLY
+    elif 'таблетки' in method:
+        return MethodsOfAdministrationCode.PILLS
+    elif 'подкожно' in method:
+        return MethodsOfAdministrationCode.SUBCUTANEOUSLY
+    elif 'внутрикожно' in method:
+        return MethodsOfAdministrationCode.INTRADERMALLY
+    elif 'накожно' in method:
+        return MethodsOfAdministrationCode.CUTANEOUSLY
+    elif 'интраназально' in method:
+        return MethodsOfAdministrationCode.PILLS
+    elif 'капли' in method:
+        return MethodsOfAdministrationCode.DROPS
+    elif 'инстилляц' in method:
+        return MethodsOfAdministrationCode.INSTILLATION_BLADDER
+    elif 'ингаляц' in method:
+        return MethodsOfAdministrationCode.INHALATIONALLY
+    else:
+        return MethodsOfAdministrationCode.OTHER
+
+
 def import_methods_of_administration(wb):
     """Импорт методов введения вакцин."""
     ws = get_sheet(wb, 'routes_of_administration_list')
     headers = [cell.value for cell in next(ws.iter_rows(min_row=1, max_row=1))]
     name_idx = headers.index('route_of_administration_name')
     id_idx = headers.index('route_of_administration_ID')
-    image_link_google_drive_idx = headers.index('image_link_Google_Drive')
-    icon_link_google_drive_idx = headers.index('icon_link_Google_Drive')
+    # image_link_google_drive_idx = headers.index('image_link_Google_Drive')
+    # icon_link_google_drive_idx = headers.index('icon_link_Google_Drive')
 
     count_add = 0
     seen_ids = set()
     for row in ws.iter_rows(min_row=2, values_only=True):
         route_name = row[name_idx]
         old_id = row[id_idx]
-        icon_link_google_drive = row[icon_link_google_drive_idx]
-        image_link_google_drive = row[image_link_google_drive_idx]
+        # icon_link_google_drive = row[icon_link_google_drive_idx]
+        # image_link_google_drive = row[image_link_google_drive_idx]
         if old_id is None:
             raise CommandError('В файле обнаружена строка без route_of_administration_ID.')
         if route_name is None:
@@ -169,13 +194,22 @@ def import_methods_of_administration(wb):
             old_id=old_id,
             defaults={
                 'name': route_name,
-                'list_icon_url': icon_link_google_drive,
-                'detail_image_url': image_link_google_drive,
+                # 'list_icon_url': icon_link_google_drive,
+                # 'detail_image_url': image_link_google_drive,
             },
         )
         if created:
             count_add += 1
     return count_add
+
+
+def set_method_of_administration_code():
+    """Устанавливает код метода введения."""
+    methods = MethodsOfAdministration.objects.all()
+    for method in methods:
+        code = get_method_code(method.name)
+        method.code = code
+        method.save(update_fields=['code'])
 
 
 def import_vaccine_version_infections(wb):
@@ -252,18 +286,22 @@ def import_vaccine_version_administration_methods(wb):
         age_to = row[ages_to]
         age_from = clean_text(age_from)
         age_to = clean_text(age_to)
+        age_group = f'от {age_from} до {age_to}'
         age_from = AGES_MAP[age_from]
         age_to = AGES_MAP[age_to]
         if route_id is None:
             continue
         administration_method = MethodsOfAdministration.objects.get(old_id=route_id)
         vaccine_card_version = get_version_by_old_id(vaccine_id)
-        _, created = VaccineCardVersionAdministrationMethod.objects.get_or_create(
+        _, created = VaccineCardVersionAdministrationMethod.objects.update_or_create(
             vaccine_card_version=vaccine_card_version,
             administration_method=administration_method,
-            note=note,
             age_from=age_from,
-            age_to=age_to,
+            defaults={
+                'age_to': age_to,
+                'note': note,
+                'age_group': age_group,
+            },
         )
         if created:
             count += 1
@@ -290,6 +328,7 @@ class Command(BaseCommand):
                     self.stdout.write(f'Импорт инфекций завершён. Добавлено: {count}.')
                     count = import_methods_of_administration(wb)
                     self.stdout.write(f'Импорт методов введения завершён. Добавлено: {count}.')
+                    set_method_of_administration_code()
                     count = import_vaccines(wb)
                     self.stdout.write(f'Импорт вакцин завершён. Добавлено: {count}.')
                     count = import_ingredients(wb)

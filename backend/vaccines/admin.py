@@ -83,6 +83,7 @@ class VaccineCardVersionAdmin(admin.ModelAdmin):
                     'parent_version',
                     'name',
                     'official_name',
+                    'code_name',
                 )
             },
         ),

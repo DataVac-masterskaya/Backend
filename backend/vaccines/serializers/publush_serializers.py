@@ -5,11 +5,17 @@ from vaccines.models import (
 )
 
 
+def get_image_url(image):
+    """Возвращает ссылку на изображение или None."""
+    return image.url if image else None
+
+
 class VaccineCardShort(serializers.ModelSerializer):
     """Сериализатор для краткой информации о карточке вакцины."""
 
     name = serializers.SerializerMethodField()
     official_name = serializers.SerializerMethodField()
+    code_name = serializers.SerializerMethodField()
     is_available_in_rf = serializers.SerializerMethodField()
     # min_age_days = serializers.IntegerField(source='current_version.min_age_days')
     # max_age_days = serializers.IntegerField(source='current_version.max_age_days')
@@ -25,6 +31,7 @@ class VaccineCardShort(serializers.ModelSerializer):
             'id',
             'name',
             'official_name',
+            'code_name',
             'is_available_in_rf',
             # 'min_age_days',
             # 'max_age_days',
@@ -47,8 +54,10 @@ class VaccineCardShort(serializers.ModelSerializer):
         return [
             {
                 'code': item.administration_method.code,
-                'age_group': None,
+                'age_group': item.age_group,
                 'note': item.note,
+                'list_icon_url': get_image_url(item.administration_method.list_icon_url),
+                'detail_image_url': get_image_url(item.administration_method.detail_image_url),
             }
             for item in methods
         ]
@@ -61,6 +70,11 @@ class VaccineCardShort(serializers.ModelSerializer):
     def get_official_name(self, obj):
         if obj.current_version and obj.current_version.official_name:
             return obj.current_version.official_name
+        return None
+
+    def get_code_name(self, obj):
+        if obj.current_version and obj.current_version.code_name:
+            return obj.current_version.code_name
         return None
 
     def get_is_available_in_rf(self, obj):
@@ -102,6 +116,7 @@ class VaccineCardDetail(VaccineCardShort):
             'id',
             'name',
             'official_name',
+            'code_name',
             'is_available_in_rf',
             'revision_date',
             'nonspec_url',
@@ -134,6 +149,8 @@ class VaccineCardDetail(VaccineCardShort):
                 'code': item.administration_method.code,
                 'age_group': item.age_group,
                 'note': item.note,
+                'list_icon_url': get_image_url(item.administration_method.list_icon_url),
+                'detail_image_url': get_image_url(item.administration_method.detail_image_url),
             }
             for item in methods
         ]

@@ -100,6 +100,7 @@ class AdminVaccinesCreatedSerializers(serializers.ModelSerializer):
         fields = (
             'name',
             'official_name',
+            'code_name',
             'description',
             'manufacturer',
             'is_available_in_rf',
@@ -233,6 +234,7 @@ class VaccinesShortSerializers(serializers.ModelSerializer):
             'version_status',
             'name',
             'official_name',
+            'code_name',
         )
 
 
