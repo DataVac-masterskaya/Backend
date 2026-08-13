@@ -139,9 +139,11 @@ class MethodsOfAdministration(models.Model):
         null=True,
         help_text='Описание способа введения',
     )
-    list_icon_url = models.ImageField(verbose_name='Иконка в списке', upload_to='admin-methods/list_icons/', null=True)
+    list_icon_url = models.ImageField(
+        verbose_name='Иконка в списке', upload_to='admin-methods/list_icons/', blank=True, null=True
+    )
     detail_image_url = models.ImageField(
-        verbose_name='Детальная картинка', upload_to='admin-methods/detail_images/', null=True
+        verbose_name='Детальная картинка', upload_to='admin-methods/detail_images/', blank=True, null=True
     )
 
     class Meta:
@@ -149,8 +151,8 @@ class MethodsOfAdministration(models.Model):
         verbose_name_plural = 'Cпособы введения'
         constraints = [
             models.UniqueConstraint(
-                fields=['name', 'detail_image_url'],
-                name='unique_method_name_image',
+                fields=['name', 'old_id'],
+                name='unique_name_old_id',
             )
         ]
 
