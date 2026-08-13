@@ -190,8 +190,8 @@ def import_methods_of_administration(wb):
             old_id=old_id,
             defaults={
                 'name': route_name,
-                'list_icon_url': icon_link_google_drive,
-                'detail_image_url': image_link_google_drive,
+                # 'list_icon_url': icon_link_google_drive,
+                # 'detail_image_url': image_link_google_drive,
             },
         )
         if created:
