@@ -164,16 +164,16 @@ def import_methods_of_administration(wb):
     headers = [cell.value for cell in next(ws.iter_rows(min_row=1, max_row=1))]
     name_idx = headers.index('route_of_administration_name')
     id_idx = headers.index('route_of_administration_ID')
-    image_link_google_drive_idx = headers.index('image_link_Google_Drive')
-    icon_link_google_drive_idx = headers.index('icon_link_Google_Drive')
+    # image_link_google_drive_idx = headers.index('image_link_Google_Drive')
+    # icon_link_google_drive_idx = headers.index('icon_link_Google_Drive')
 
     count_add = 0
     seen_ids = set()
     for row in ws.iter_rows(min_row=2, values_only=True):
         route_name = row[name_idx]
         old_id = row[id_idx]
-        icon_link_google_drive = row[icon_link_google_drive_idx]
-        image_link_google_drive = row[image_link_google_drive_idx]
+        # icon_link_google_drive = row[icon_link_google_drive_idx]
+        # image_link_google_drive = row[image_link_google_drive_idx]
         if old_id is None:
             raise CommandError('В файле обнаружена строка без route_of_administration_ID.')
         if route_name is None:

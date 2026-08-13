@@ -280,7 +280,6 @@ class VaccineCardVersion(models.Model):
         max_length=URL_MAX_LEN,
         blank=True,
         null=True,
-        help_text='',
         verbose_name='Ссылка на PDF',
         help_text='Ссылка на ПДФ, хранящийся на сайте, создается администраторами',
     )
@@ -288,7 +287,6 @@ class VaccineCardVersion(models.Model):
         max_length=URL_MAX_LEN,
         blank=True,
         null=True,
-        help_text='',
         verbose_name='Ссылка на qr',
         help_text='Ссылка на qr, пока непонятно',
     )
