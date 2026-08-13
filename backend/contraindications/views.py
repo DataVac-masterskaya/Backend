@@ -68,7 +68,7 @@ class ContraindicationListView(APIView):
                 categories__name=category.strip(),
             )
 
-        if sort not in {'popularity', 'name'}:
+        if sort not in {'popularity', '-popularity', 'name'}:
             return Response(
                 {'detail': 'sort must be one of: popularity, name.'},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -77,6 +77,12 @@ class ContraindicationListView(APIView):
         if sort == 'popularity':
             contraindications = contraindications.order_by(
                 '-search_select_count',
+                'name',
+            )
+
+        if sort == '-popularity':
+            contraindications = contraindications.order_by(
+                'search_select_count',
                 'name',
             )
 

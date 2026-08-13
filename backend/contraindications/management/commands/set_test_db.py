@@ -4,7 +4,7 @@ from django.core.management.base import BaseCommand
 
 from contraindications.models import Contraindication, ContraindicationCategory
 from reference_books.models import Infection, Ingredients
-from vaccines.models import VaccineCard, VaccineCardVersion, VaccineCardVersionAdministrationMethod
+from vaccines.models import VaccineCard, VaccineCardVersion, VaccineCardVersionContraindication
 
 
 class Command(BaseCommand):
@@ -39,13 +39,12 @@ class Command(BaseCommand):
             ingredient.popularity = randint(1, 100)
             ingredient.save(update_fields=['search_select_count', 'popularity'])
 
-        for i, vaccine_method in enumerate(
-            VaccineCardVersionAdministrationMethod.objects.all()):
-            if vaccine_method.pk % 2 == 0:
-                vaccine_method.contraindication_type = 'Временное'
+        for i, vaccine_contra in enumerate(VaccineCardVersionContraindication.objects.all()):
+            if vaccine_contra.pk % 2 == 0:
+                vaccine_contra.contraindication_type = 'Временное'
             else:
-                vaccine_method.contraindication_type = 'Абсолютное'
-            vaccine_method.save(update_fields=['contraindication_type'])
+                vaccine_contra.contraindication_type = 'Абсолютное'
+            vaccine_contra.save(update_fields=['contraindication_type'])
 
         for i, infection in enumerate(Infection.objects.all()):
             infection.search_select_count = randint(1, 100)
