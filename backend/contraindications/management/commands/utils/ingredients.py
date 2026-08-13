@@ -1,4 +1,4 @@
-import csv
+# import csv
 import re
 
 from contraindications.management.commands.utils.common import get_version_by_old_id
@@ -300,7 +300,7 @@ def import_ingredients(wb):
                     ingredient_count += 1
                 ingredients.append(ingredient.name)
     ingredients_set = set(ingredients)
-    with open('testset.csv', 'w', newline='', encoding='utf-8-sig') as f:
-        writer = csv.writer(f)
-        writer.writerows([[item] for item in ingredients_set])
+    # with open('testset.csv', 'w', newline='', encoding='utf-8-sig') as f:
+    #     writer = csv.writer(f)
+    #     writer.writerows([[item] for item in ingredients_set])
     return ingredient_count
