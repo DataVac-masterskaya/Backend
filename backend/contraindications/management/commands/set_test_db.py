@@ -56,5 +56,5 @@ class Command(BaseCommand):
                 contraindication.categories.set([category1])
             else:
                 contraindication.categories.set([category2])
-            contraindication.save(update_fields=['search_select_count', 'category'])
+            contraindication.save(update_fields=['search_select_count'])
         self.stdout.write(self.style.SUCCESS('Тестовые значения проставлены.'))
