@@ -67,12 +67,7 @@ def extract_grls_id_reg(url: str) -> str | None:
 
 
 def fetch_grls_instruction_images(id_reg: str) -> list[dict]:
-    """Запрашивает у ГРЛС актуальный список файлов инструкции по idReg.
-
-    Повторяет запрос, который на сайте делает кнопка «Показать инструкции»
-    (веб-метод GRLS_View_V2.aspx/AddInstrImg). regNumber сервером не проверяется,
-    поэтому не передаём его, чтобы не возиться с кодировкой кириллицы.
-    """
+    """Запрашивает у ГРЛС актуальный список файлов инструкции по idReg."""
     response = requests.post(
         GRLS_DISCOVERY_URL,
         json={'regNumber': '', 'idReg': id_reg},
@@ -89,10 +84,12 @@ def fetch_grls_instruction_images(id_reg: str) -> list[dict]:
                 image_url = image.get('Url') or ''
                 if '.pdf' not in image_url.lower():
                     continue
-                images.append({
-                    'url': GRLS_BASE_URL + image_url.replace('\\', '/'),
-                    'label': image.get('Label') or '',
-                })
+                images.append(
+                    {
+                        'url': GRLS_BASE_URL + image_url.replace('\\', '/'),
+                        'label': image.get('Label') or '',
+                    }
+                )
     return images
 
 
@@ -107,8 +104,7 @@ def pick_latest_grls_image(images: list[dict]) -> dict | None:
 
 
 def check_grls_instruction_update(instruction: OfficialInstruction) -> bool | None:
-    """Сверяет инструкцию ГРЛС через discovery-метод сайта, а не по хэшу PDF.
-    """
+    """Сверяет инструкцию ГРЛС через discovery-метод сайта, а не по хэшу PDF."""
     id_reg = extract_grls_id_reg(instruction.url)
     if not id_reg:
         return None
@@ -133,7 +129,10 @@ def check_grls_instruction_update(instruction: OfficialInstruction) -> bool | No
         text = extract_text(content, content_type, latest['url'])
     except (requests.RequestException, ValueError) as exc:
         logger.warning(
-            'Не удалось скачать новую редакцию инструкции #%s (%s): %s', instruction.pk, latest['url'], exc,
+            'Не удалось скачать новую редакцию инструкции #%s (%s): %s',
+            instruction.pk,
+            latest['url'],
+            exc,
         )
         return None
 
@@ -147,8 +146,7 @@ def check_grls_instruction_update(instruction: OfficialInstruction) -> bool | No
 
 
 def check_official_instruction_update(instruction: OfficialInstruction) -> bool:
-    """Сверяет инструкцию с источником, обновляет снэпшот.
-    """
+    """Сверяет инструкцию с источником, обновляет снэпшот."""
     grls_result = check_grls_instruction_update(instruction)
     if grls_result is not None:
         return grls_result
