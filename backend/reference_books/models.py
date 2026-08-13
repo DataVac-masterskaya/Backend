@@ -16,6 +16,8 @@ class MethodsOfAdministrationCode(models.TextChoices):
     DROPS = 'drops', 'Капли'
     PILLS = 'pills', 'Таблетки'
     INTRANASALLY = 'intranasally', 'Интраназально'
+    INHALATIONALLY = 'inhalationally', 'Ингаляционно'
+    INSTILLATION_BLADDER = 'instillation_bladder', 'Инстилляция в мочевой пузырь'
     OTHER = 'other', 'Другое'
 
 

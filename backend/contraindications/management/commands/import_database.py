@@ -154,6 +154,10 @@ def get_method_code(method):
         return MethodsOfAdministrationCode.PILLS
     elif 'капли' in method:
         return MethodsOfAdministrationCode.DROPS
+    elif 'инстилляц' in method:
+        return MethodsOfAdministrationCode.INSTILLATION_BLADDER
+    elif 'ингаляц' in method:
+        return MethodsOfAdministrationCode.INHALATIONALLY
     else:
         return MethodsOfAdministrationCode.OTHER
 
