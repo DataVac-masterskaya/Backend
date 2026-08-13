@@ -110,16 +110,21 @@ class IngredientsAdmin(admin.ModelAdmin):
 class MethodsOfAdministrationAdmin(admin.ModelAdmin):
     list_display = (
         'id',
+        'code',
         'name',
+        'code',
         'description',
+        'note',
         'list_icon_url',
         'detail_image_url',
     )
     search_fields = ('name',)
     list_per_page = 20
     list_editable = (
+        'code',
         'name',
         'description',
+        'note',
         'list_icon_url',
         'detail_image_url',
     )

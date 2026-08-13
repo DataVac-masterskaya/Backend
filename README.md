@@ -129,9 +129,9 @@ docker compose exec -it web python backend/manage.py import_database path/to/fil
 
 ## ДЛЯ ТЕСТЕРОВ
 
-Для заполнения поля pregnancy_usage_status используется команда:
+Для заполнения пустых полей для тестов используется команда:
 
 ```bash
-docker compose exec -it web python backend/manage.py set_pregnancy_status_for_tests
+docker compose exec -it web python backend/manage.py set_test_db
 ```
-Статус задается, исходя из остатка от деления id вакцины на 3.
+Значения полей задаются исходя из значения id объектов.

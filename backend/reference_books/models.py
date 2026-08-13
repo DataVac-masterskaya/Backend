@@ -8,6 +8,19 @@ from datavac.constants import (
 )
 
 
+class MethodsOfAdministrationCode(models.TextChoices):
+    INTRAMUSCULARLY = 'intramuscularly', 'Внутримышечно'
+    SUBCUTANEOUSLY = 'subcutaneously', 'Подкожно'
+    CUTANEOUSLY = 'cutaneously', 'Кожно'
+    INTRADERMALLY = 'intradermally', 'Внутрикожно'
+    DROPS = 'drops', 'Капли'
+    PILLS = 'pills', 'Таблетки'
+    INTRANASALLY = 'intranasally', 'Интраназально'
+    INHALATIONALLY = 'inhalationally', 'Ингаляционно'
+    INSTILLATION_BLADDER = 'instillation_bladder', 'Инстилляция в мочевой пузырь'
+    OTHER = 'other', 'Другое'
+
+
 class SearchStatsMixin(models.Model):
     """Название и поисковые характеристики."""
 
@@ -104,7 +117,11 @@ class MethodsOfAdministration(models.Model):
     """Cпособы введения."""
 
     name = models.CharField(verbose_name='Название')
-    code = models.SlugField(verbose_name='Код', unique=True, null=True)
+    code = models.SlugField(
+        verbose_name='Код',
+        null=True,
+        choices=MethodsOfAdministrationCode.choices,
+    )
     description = models.TextField(
         verbose_name='Описание',
         blank=True,
@@ -124,9 +141,11 @@ class MethodsOfAdministration(models.Model):
         null=True,
         help_text='Описание способа введения',
     )
-    list_icon_url = models.ImageField(verbose_name='Иконка в списке', upload_to='admin-methods/list_icons/', null=True)
+    list_icon_url = models.ImageField(
+        verbose_name='Иконка в списке', upload_to='admin-methods/list_icons/', blank=True, null=True
+    )
     detail_image_url = models.ImageField(
-        verbose_name='Детальная картинка', upload_to='admin-methods/detail_images/', null=True
+        verbose_name='Детальная картинка', upload_to='admin-methods/detail_images/', blank=True, null=True
     )
 
     class Meta:
@@ -134,8 +153,8 @@ class MethodsOfAdministration(models.Model):
         verbose_name_plural = 'Cпособы введения'
         constraints = [
             models.UniqueConstraint(
-                fields=['name', 'detail_image_url'],
-                name='unique_method_name_image',
+                fields=['name', 'old_id'],
+                name='unique_name_old_id',
             )
         ]
 

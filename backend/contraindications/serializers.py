@@ -103,6 +103,25 @@ class ContraindicationSearchSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'score')
 
 
+class ContraindicationSearchQuerySerializer(serializers.Serializer):
+    """Проверяет параметры запроса поисковых подсказок."""
+
+    q = serializers.CharField(
+        required=True,
+        allow_blank=False,
+        trim_whitespace=True,
+        max_length=255,
+    )
+
+    def validate_q(self, value: str) -> str:
+        """Разрешает запросы, содержащие хотя бы одну букву или цифру."""
+        if not any(char.isalnum() for char in value):
+            raise serializers.ValidationError(
+                'Search query must contain at least one letter or digit.',
+            )
+        return value
+
+
 class VaccineContraindicationSerializer(serializers.Serializer):
     """Описывает противопоказание в краткой карточке вакцины."""
 

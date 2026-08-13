@@ -5,16 +5,22 @@ from vaccines.models import (
 )
 
 
+def get_image_url(image):
+    """Возвращает ссылку на изображение или None."""
+    return image.url if image else None
+
+
 class VaccineCardShort(serializers.ModelSerializer):
     """Сериализатор для краткой информации о карточке вакцины."""
 
-    name = serializers.CharField(source='current_version.name')
-    official_name = serializers.CharField(source='current_version.official_name')
-    is_available_in_rf = serializers.BooleanField(source='current_version.is_available_in_rf')
+    name = serializers.SerializerMethodField()
+    official_name = serializers.SerializerMethodField()
+    code_name = serializers.SerializerMethodField()
+    is_available_in_rf = serializers.SerializerMethodField()
     # min_age_days = serializers.IntegerField(source='current_version.min_age_days')
     # max_age_days = serializers.IntegerField(source='current_version.max_age_days')
-    age_allowed = serializers.CharField(source='current_version.age_allowed')
-    pregnancy_usage_status = serializers.BooleanField(source='current_version.pregnancy_usage_status')
+    age_allowed = serializers.SerializerMethodField()
+    pregnancy_usage_status = serializers.SerializerMethodField()
     infections = serializers.SerializerMethodField()
     administration_methods = serializers.SerializerMethodField()
     popularity = serializers.IntegerField()
@@ -25,6 +31,7 @@ class VaccineCardShort(serializers.ModelSerializer):
             'id',
             'name',
             'official_name',
+            'code_name',
             'is_available_in_rf',
             # 'min_age_days',
             # 'max_age_days',
@@ -47,38 +54,61 @@ class VaccineCardShort(serializers.ModelSerializer):
         return [
             {
                 'code': item.administration_method.code,
-                'age_group': None,
+                'age_group': item.age_group,
                 'note': item.note,
+                'list_icon_url': get_image_url(item.administration_method.list_icon_url),
+                'detail_image_url': get_image_url(item.administration_method.detail_image_url),
             }
             for item in methods
         ]
 
+    def get_name(self, obj):
+        if obj.current_version and obj.current_version.name:
+            return obj.current_version.name
+        return 'Отсутствует название'
 
-class VaccineCardDetail(serializers.ModelSerializer):
+    def get_official_name(self, obj):
+        if obj.current_version and obj.current_version.official_name:
+            return obj.current_version.official_name
+        return None
+
+    def get_code_name(self, obj):
+        if obj.current_version and obj.current_version.code_name:
+            return obj.current_version.code_name
+        return None
+
+    def get_is_available_in_rf(self, obj):
+        if obj.current_version:
+            return obj.current_version.is_available_in_rf
+        return False
+
+    def get_age_allowed(self, obj):
+        if obj.current_version and obj.current_version.age_allowed:
+            return obj.current_version.age_allowed
+        return None
+
+    def get_pregnancy_usage_status(self, obj):
+        if obj.current_version:
+            return obj.current_version.pregnancy_usage_status
+        return False
+
+
+class VaccineCardDetail(VaccineCardShort):
     """Сериализатор для детального просмотра карточки вакцины."""
 
-    name = serializers.CharField(source='current_version.name')
-    official_name = serializers.CharField(source='current_version.official_name')
-    is_available_in_rf = serializers.BooleanField(source='current_version.is_available_in_rf')
-    revision_date = serializers.CharField(source='current_version.revision_date')
-    nonspec_url = serializers.URLField(source='current_version.nonspec_url')
-    instruction_url = serializers.URLField(source='current_version.instruction_url')
-    # min_age_days = serializers.IntegerField(source='current_version.min_age_days')
-    # max_age_days = serializers.IntegerField(source='current_version.max_age_days')
-    age_allowed = serializers.CharField(source='current_version.age_allowed')
-    pregnancy_usage_status = serializers.BooleanField(source='current_version.pregnancy_usage_status')
-    infections = serializers.SerializerMethodField()
-    administration_methods = serializers.SerializerMethodField()
+    revision_date = serializers.SerializerMethodField()
+    nonspec_url = serializers.SerializerMethodField()
+    instruction_url = serializers.SerializerMethodField()
     contraindications = serializers.SerializerMethodField()
     ingredients = serializers.SerializerMethodField()
     comment = serializers.SerializerMethodField()
-    manufacturer = serializers.CharField(source='current_version.manufacturer')
-    storage_conditions = serializers.CharField(source='current_version.storage_conditions')
-    schedule_info = serializers.CharField(source='current_version.schedule_info')
-    side_effects = serializers.CharField(source='current_version.side_effects')
-    indications = serializers.CharField(source='current_version.indications')
-    interaction_info = serializers.CharField(source='current_version.interaction_info')
-    compatibility_info = serializers.CharField(source='current_version.compatibility_info')
+    manufacturer = serializers.SerializerMethodField()
+    storage_conditions = serializers.SerializerMethodField()
+    schedule_info = serializers.SerializerMethodField()
+    side_effects = serializers.SerializerMethodField()
+    indications = serializers.SerializerMethodField()
+    interaction_info = serializers.SerializerMethodField()
+    compatibility_info = serializers.SerializerMethodField()
 
     class Meta:
         model = VaccineCard
@@ -86,6 +116,7 @@ class VaccineCardDetail(serializers.ModelSerializer):
             'id',
             'name',
             'official_name',
+            'code_name',
             'is_available_in_rf',
             'revision_date',
             'nonspec_url',
@@ -108,16 +139,6 @@ class VaccineCardDetail(serializers.ModelSerializer):
             'compatibility_info',
         )
 
-    def get_infections(self, obj):
-        if obj.current_version:
-            return list(
-                obj.current_version.infections.values(
-                    'id',
-                    'name',
-                )
-            )
-        return []
-
     def get_administration_methods(self, obj):
         if not obj.current_version:
             return []
@@ -128,6 +149,8 @@ class VaccineCardDetail(serializers.ModelSerializer):
                 'code': item.administration_method.code,
                 'age_group': item.age_group,
                 'note': item.note,
+                'list_icon_url': get_image_url(item.administration_method.list_icon_url),
+                'detail_image_url': get_image_url(item.administration_method.detail_image_url),
             }
             for item in methods
         ]
@@ -161,7 +184,48 @@ class VaccineCardDetail(serializers.ModelSerializer):
         ]
 
     def get_comment(self, obj):
+        if not obj.current_version:
+            return {'source': None, 'text': None}
         return {
             'source': obj.current_version.comment_source,
             'text': obj.current_version.comment_ANO,
         }
+
+    def get_version_attr(self, obj, attr):
+        """Возвращает поле current_version, либо None, если версии нет."""
+        if obj.current_version:
+            return getattr(obj.current_version, attr)
+        return None
+
+    def get_revision_date(self, obj):
+        return self.get_version_attr(obj, 'revision_date')
+
+    def get_nonspec_url(self, obj):
+        return self.get_version_attr(obj, 'nonspec_url')
+
+    def get_instruction_url(self, obj):
+        return self.get_version_attr(obj, 'instruction_url')
+
+    def get_manufacturer(self, obj):
+        return self.get_version_attr(obj, 'manufacturer')
+
+    def get_storage_conditions(self, obj):
+        return self.get_version_attr(obj, 'storage_conditions')
+
+    def get_schedule_info(self, obj):
+        return self.get_version_attr(obj, 'schedule_info')
+
+    def get_side_effects(self, obj):
+        return self.get_version_attr(obj, 'side_effects')
+
+    def get_indications(self, obj):
+        return self.get_version_attr(obj, 'indications')
+
+    def get_interaction_info(self, obj):
+        return self.get_version_attr(obj, 'interaction_info')
+
+    def get_compatibility_info(self, obj):
+        return self.get_version_attr(obj, 'compatibility_info')
+
+
+#

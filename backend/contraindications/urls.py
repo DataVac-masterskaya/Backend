@@ -33,7 +33,7 @@ urlpatterns = [
         name='contraindication-search',
     ),
     path(
-        'contraindications/<int:pk>/',
+        'contraindications/<str:pk>/',
         ContraindicationDetailView.as_view(),
         name='contraindication-detail',
     ),
@@ -43,7 +43,7 @@ urlpatterns = [
         name='contraindication-vaccines',
     ),
     path(
-        'contraindications/<int:pk>/select/',
+        'contraindications/<str:pk>/select/',
         SelectContraindicationView.as_view(),
         name='contraindication-select',
     ),

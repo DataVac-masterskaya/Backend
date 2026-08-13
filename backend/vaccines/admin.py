@@ -46,7 +46,7 @@ class VaccineCardVersionAdministrationMethodInline(admin.TabularInline):
     model = VaccineCardVersionAdministrationMethod
     extra = 1
     raw_id_fields = ('administration_method',)
-    fields = ('administration_method', 'age_from', 'age_to', 'note')
+    fields = ('administration_method', 'age_group', 'age_from', 'age_to', 'note')
     autocomplete_fields = ('administration_method',)
 
 
@@ -83,6 +83,7 @@ class VaccineCardVersionAdmin(admin.ModelAdmin):
                     'parent_version',
                     'name',
                     'official_name',
+                    'code_name',
                 )
             },
         ),
