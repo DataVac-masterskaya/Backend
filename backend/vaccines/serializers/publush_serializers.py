@@ -5,6 +5,11 @@ from vaccines.models import (
 )
 
 
+def get_image_url(image):
+    """Возвращает ссылку на изображение или None."""
+    return image.url if image else None
+
+
 class VaccineCardShort(serializers.ModelSerializer):
     """Сериализатор для краткой информации о карточке вакцины."""
 
@@ -51,8 +56,8 @@ class VaccineCardShort(serializers.ModelSerializer):
                 'code': item.administration_method.code,
                 'age_group': item.age_group,
                 'note': item.note,
-                'list_icon_url': item.administration_method.list_icon_url,
-                'detail_image_url': item.administration_method.detail_image_url,
+                'list_icon_url': get_image_url(item.administration_method.list_icon_url),
+                'detail_image_url': get_image_url(item.administration_method.detail_image_url),
             }
             for item in methods
         ]
@@ -144,8 +149,8 @@ class VaccineCardDetail(VaccineCardShort):
                 'code': item.administration_method.code,
                 'age_group': item.age_group,
                 'note': item.note,
-                'list_icon_url': item.administration_method.list_icon_url,
-                'detail_image_url': item.administration_method.detail_image_url,
+                'list_icon_url': get_image_url(item.administration_method.list_icon_url),
+                'detail_image_url': get_image_url(item.administration_method.detail_image_url),
             }
             for item in methods
         ]
