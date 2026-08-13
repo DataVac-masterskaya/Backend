@@ -1,0 +1,12 @@
+html[data-theme="light"],
+:root {
+    --primary: #e30c5c;
+    --secondary: #e30c5c;
+    --accent: #323335;
+    --header-bg: #e30c5c;
+    --header-color: #323335;
+    --breadcrumbs-bg: #e30c5c;
+    --breadcrumbs-fg: #ffffff;
+    --link-fg: #323335;
+    --link-hover-color: #e30c5c;
+}
