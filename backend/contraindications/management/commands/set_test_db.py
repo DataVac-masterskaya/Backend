@@ -3,6 +3,7 @@ from random import randint
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
+from contraindications.models import Contraindication, ContraindicationCategory
 from reference_books.models import Infection, Ingredients
 from vaccines.models import VaccineCard, VaccineCardVersion
 
@@ -45,4 +46,15 @@ class Command(BaseCommand):
             infection.search_select_count = randint(1, 100)
             infection.popularity = randint(1, 100)
             infection.save(update_fields=['search_select_count', 'popularity'])
+
+        category1, _ = ContraindicationCategory.objects.get_or_create(name='Абсолютное')
+
+        category2, _ = ContraindicationCategory.objects.get_or_create(name='Временное')
+        for i, contraindication in enumerate(Contraindication.objects.all()):
+            contraindication.search_select_count = randint(1, 100)
+            if contraindication.pk % 2 == 0:
+                contraindication.categories.set([category1])
+            else:
+                contraindication.categories.set([category2])
+            contraindication.save(update_fields=['search_select_count', 'category'])
         self.stdout.write(self.style.SUCCESS('Тестовые значения проставлены.'))
