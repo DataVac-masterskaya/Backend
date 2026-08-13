@@ -26,6 +26,8 @@ from vaccines.serializers.publush_serializers import VaccineCardDetail, VaccineC
                 '-current_version__name',
                 'current_version__official_name',
                 '-current_version__official_name',
+                'popularity',
+                '-popularity',
             ],
             description=(
                 'Поле сортировки. Добавьте `-` для сортировки по убыванию.\n'
@@ -49,6 +51,11 @@ from vaccines.serializers.publush_serializers import VaccineCardDetail, VaccineC
             type=int,
             description='ID связанной сущности (используется вместе с filter_type)',
         ),
+        OpenApiParameter(
+            name='search',
+            type=str,
+            description='Поиск вакцины по названию (name или official_name)',
+        ),
     ],
     responses={
         status.HTTP_200_OK: VaccineCardShort(many=True),
@@ -60,7 +67,7 @@ class PublishVaccinesViews(generics.ListAPIView):
     serializer_class = VaccineCardShort
     filterset_class = VaccineFilter
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
-    ordering_fields = ['current_version__name', 'current_version__official_name']
+    ordering_fields = ['current_version__name', 'current_version__official_name', 'popularity']
     ordering = ['current_version__name']
     pagination_class = StandardPagination
 
@@ -90,7 +97,7 @@ class BaseVaccineLinkView(APIView):
     redirect = False
     error_message = 'Ссылка не найдена.'
 
-    def get(self, request, id):
+    def get(self, request, id: int):
         vaccine = get_object_or_404(
             VaccineCard.objects.select_related('current_version'),
             id=id,
