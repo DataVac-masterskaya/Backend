@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django_filters import CharFilter, ChoiceFilter, FilterSet
 from rest_framework.exceptions import ValidationError
 
@@ -15,6 +16,9 @@ class VaccineFilter(FilterSet):
     filter_type = ChoiceFilter(
         choices=CHOICE_FOR_FILTER,
         method='filter_by_entity',
+    )
+    search = CharFilter(
+        method='filter_by_search',
     )
 
     class Meta:
@@ -45,3 +49,11 @@ class VaccineFilter(FilterSet):
         if value == 'contraindication':
             return queryset.filter(current_version__contraindications__id=filter_id)
         return queryset
+
+    def filter_by_search(self, queryset, name, value):
+        """Поиск вакцины по названию (name или official_name)."""
+        if not value:
+            return queryset
+        return queryset.filter(
+            Q(current_version__name__icontains=value) | Q(current_version__official_name__icontains=value)
+        )

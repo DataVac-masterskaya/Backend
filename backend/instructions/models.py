@@ -29,6 +29,26 @@ class OfficialInstruction(models.Model):
         default=0,
         verbose_name='Поисковой вес',
     )
+    parsed_text = models.TextField(
+        blank=True,
+        default='',
+        verbose_name='Текст инструкции (из парсинга)',
+    )
+    content_hash = models.CharField(
+        max_length=64,
+        blank=True,
+        default='',
+        verbose_name='Хэш текста инструкции',
+    )
+    last_checked_at = models.DateTimeField(
+        blank=True,
+        null=True,
+        verbose_name='Дата последней проверки источника',
+    )
+    has_update = models.BooleanField(
+        default=False,
+        verbose_name='Обнаружено обновление',
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

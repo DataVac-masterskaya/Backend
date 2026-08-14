@@ -2,7 +2,7 @@ import os
 
 from celery import Celery
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.datavac.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'datavac.settings')
 app = Celery('datavac')
 
 app.config_from_object('django.conf:settings', namespace='CELERY')
