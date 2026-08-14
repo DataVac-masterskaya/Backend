@@ -1,19 +1,16 @@
 from random import randint
 
-from django.conf import settings
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 
 from contraindications.models import Contraindication, ContraindicationCategory
 from reference_books.models import Infection, Ingredients
-from vaccines.models import VaccineCard, VaccineCardVersion
+from vaccines.models import ContraindicationType, VaccineCard, VaccineCardVersion, VaccineCardVersionContraindication
 
 
 class Command(BaseCommand):
     help = 'Команда только для тестеров, заполняет поле pregnancy_usage_status согласно ID вакцины'
 
     def handle(self, *args, **options):
-        if not settings.DEBUG:
-            raise CommandError('Эта команда предназначена только для тестовой среды.')
         values = [True, False, None]
         for i, vaccine in enumerate(VaccineCardVersion.objects.all()):
             vaccine.pregnancy_usage_status = values[i % len(values)]
@@ -42,19 +39,42 @@ class Command(BaseCommand):
             ingredient.popularity = randint(1, 100)
             ingredient.save(update_fields=['search_select_count', 'popularity'])
 
+        for i, vaccine_contra in enumerate(VaccineCardVersionContraindication.objects.all()):
+            if vaccine_contra.pk % 2 == 0:
+                vaccine_contra.contraindication_type = ContraindicationType.TEMPORARY
+            else:
+                vaccine_contra.contraindication_type = ContraindicationType.ABSOLUTE
+            vaccine_contra.save(update_fields=['contraindication_type'])
+
         for i, infection in enumerate(Infection.objects.all()):
             infection.search_select_count = randint(1, 100)
             infection.popularity = randint(1, 100)
             infection.save(update_fields=['search_select_count', 'popularity'])
 
-        category1, _ = ContraindicationCategory.objects.get_or_create(name='Абсолютное')
+        category1, _ = ContraindicationCategory.objects.get_or_create(name='Острые заболевания')
+        category2, _ = ContraindicationCategory.objects.get_or_create(name='Гиперчувствительность')
+        category3, _ = ContraindicationCategory.objects.get_or_create(name='Аллергии')
+        category4, _ = ContraindicationCategory.objects.get_or_create(name='Иммунодефициты')
+        category5, _ = ContraindicationCategory.objects.get_or_create(name='Острые состояния')
 
-        category2, _ = ContraindicationCategory.objects.get_or_create(name='Временное')
         for i, contraindication in enumerate(Contraindication.objects.all()):
             contraindication.search_select_count = randint(1, 100)
-            if contraindication.pk % 2 == 0:
+            contraindication.popularity = randint(1, 100)
+            i = contraindication.pk % 5
+            if i == 0:
                 contraindication.categories.set([category1])
-            else:
+                if contraindication.pk % 2 == 0:
+                    contraindication.subcategory = 'Заболевания сердца'
+                else:
+                    contraindication.subcategory = 'Заболевания почек'
+            elif i == 1:
                 contraindication.categories.set([category2])
-            contraindication.save(update_fields=['search_select_count'])
+            elif i == 2:
+                contraindication.categories.set([category3])
+                contraindication.subcategory = 'Аллергии'
+            elif i == 3:
+                contraindication.categories.set([category4])
+            else:
+                contraindication.categories.set([category5])
+            contraindication.save(update_fields=['search_select_count', 'popularity', 'subcategory'])
         self.stdout.write(self.style.SUCCESS('Тестовые значения проставлены.'))

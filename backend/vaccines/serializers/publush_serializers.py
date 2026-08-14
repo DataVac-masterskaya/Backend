@@ -42,6 +42,7 @@ class VaccineCardShort(serializers.ModelSerializer):
             'administration_methods',
             'contraindications',
             'popularity',
+            'contraindications',
         )
 
     def get_infections(self, obj):
@@ -133,6 +134,7 @@ class VaccineCardDetail(VaccineCardShort):
     indications = serializers.SerializerMethodField()
     interaction_info = serializers.SerializerMethodField()
     compatibility_info = serializers.SerializerMethodField()
+    ingredients_text = serializers.SerializerMethodField()
 
     class Meta:
         model = VaccineCard
@@ -161,6 +163,7 @@ class VaccineCardDetail(VaccineCardShort):
             'indications',
             'interaction_info',
             'compatibility_info',
+            'ingredients_text',
         )
 
     def get_administration_methods(self, obj):
@@ -177,20 +180,6 @@ class VaccineCardDetail(VaccineCardShort):
                 'detail_image_url': get_image_url(item.administration_method.detail_image_url),
             }
             for item in methods
-        ]
-
-    def get_contraindications(self, obj):
-        if not obj.current_version:
-            return []
-
-        contraindications = obj.current_version.contraindications_relations.select_related('contraindication')
-        return [
-            {
-                'id': item.contraindication.id,
-                'name': item.contraindication.name,
-                'type': item.contraindication_type,
-            }
-            for item in contraindications
         ]
 
     def get_ingredients(self, obj):
@@ -229,6 +218,9 @@ class VaccineCardDetail(VaccineCardShort):
 
     def get_instruction_url(self, obj):
         return self.get_version_attr(obj, 'instruction_url')
+
+    def get_ingredients_text(self, obj):
+        return self.get_version_attr(obj, 'ingredients_text')
 
     def get_manufacturer(self, obj):
         return self.get_version_attr(obj, 'manufacturer')
