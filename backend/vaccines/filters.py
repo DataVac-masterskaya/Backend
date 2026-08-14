@@ -26,9 +26,11 @@ class VaccineFilter(FilterSet):
         fields = []
 
     def filter_by_first_letter(self, queryset, name, value):
-        """Фильтрация по первой букве названия."""
+        """Фильтрация по первой букве названия (name или code_name)."""
         if value and len(value) == 1:
-            return queryset.filter(current_version__name__istartswith=value)
+            return queryset.filter(
+                Q(current_version__name__istartswith=value) | Q(current_version__code_name__istartswith=value)
+            )
         return queryset
 
     def filter_by_entity(self, queryset, name, value):
