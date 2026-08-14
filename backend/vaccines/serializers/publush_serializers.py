@@ -117,20 +117,6 @@ class VaccineCardShort(serializers.ModelSerializer):
             return obj.current_version.pregnancy_usage_status
         return False
 
-    def get_contraindications(self, obj):
-        if not obj.current_version:
-            return []
-
-        contraindications = obj.current_version.contraindications_relations.select_related('contraindication')
-        return [
-            {
-                'id': item.contraindication.id,
-                'name': item.contraindication.name,
-                'type': item.contraindication_type,
-            }
-            for item in contraindications
-        ]
-
 
 class VaccineCardDetail(VaccineCardShort):
     """Сериализатор для детального просмотра карточки вакцины."""

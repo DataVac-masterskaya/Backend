@@ -4,7 +4,7 @@ from django.core.management.base import BaseCommand
 
 from contraindications.models import Contraindication, ContraindicationCategory
 from reference_books.models import Infection, Ingredients
-from vaccines.models import VaccineCard, VaccineCardVersion, VaccineCardVersionContraindication
+from vaccines.models import VaccineCard, VaccineCardVersion, VaccineCardVersionContraindication, ContraindicationType
 
 
 class Command(BaseCommand):
@@ -41,9 +41,9 @@ class Command(BaseCommand):
 
         for i, vaccine_contra in enumerate(VaccineCardVersionContraindication.objects.all()):
             if vaccine_contra.pk % 2 == 0:
-                vaccine_contra.contraindication_type = 'Временное'
+                vaccine_contra.contraindication_type = ContraindicationType.TEMPORARY
             else:
-                vaccine_contra.contraindication_type = 'Абсолютное'
+                vaccine_contra.contraindication_type = ContraindicationType.ABSOLUTE
             vaccine_contra.save(update_fields=['contraindication_type'])
 
         for i, infection in enumerate(Infection.objects.all()):
