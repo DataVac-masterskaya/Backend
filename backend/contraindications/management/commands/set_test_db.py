@@ -4,7 +4,7 @@ from django.core.management.base import BaseCommand
 
 from contraindications.models import Contraindication, ContraindicationCategory
 from reference_books.models import Infection, Ingredients
-from vaccines.models import VaccineCard, VaccineCardVersion, VaccineCardVersionContraindication, ContraindicationType
+from vaccines.models import ContraindicationType, VaccineCard, VaccineCardVersion, VaccineCardVersionContraindication
 
 
 class Command(BaseCommand):
