@@ -21,6 +21,7 @@ class VaccineCardShort(serializers.ModelSerializer):
     # max_age_days = serializers.IntegerField(source='current_version.max_age_days')
     age_allowed = serializers.SerializerMethodField()
     pregnancy_usage_status = serializers.SerializerMethodField()
+    pregnancy_usage_text = serializers.SerializerMethodField()
     infections = serializers.SerializerMethodField()
     administration_methods = serializers.SerializerMethodField()
     popularity = serializers.IntegerField()
@@ -38,6 +39,7 @@ class VaccineCardShort(serializers.ModelSerializer):
             # 'max_age_days',
             'age_allowed',
             'pregnancy_usage_status',
+            'pregnancy_usage_text',
             'infections',
             'administration_methods',
             'contraindications',
@@ -117,6 +119,11 @@ class VaccineCardShort(serializers.ModelSerializer):
             return obj.current_version.pregnancy_usage_status
         return False
 
+    def get_pregnancy_usage_text(self, obj):
+        if obj.current_version:
+            return obj.current_version.pregnancy_usage_text
+        return None
+
 
 class VaccineCardDetail(VaccineCardShort):
     """Сериализатор для детального просмотра карточки вакцины."""
@@ -151,6 +158,7 @@ class VaccineCardDetail(VaccineCardShort):
             # 'max_age_days',
             'age_allowed',
             'pregnancy_usage_status',
+            'pregnancy_usage_text',
             'infections',
             'administration_methods',
             'contraindications',

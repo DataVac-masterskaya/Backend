@@ -105,6 +105,7 @@ class VaccineCardVersionAdmin(admin.ModelAdmin):
                     'max_age_days',
                     'age_allowed',
                     'pregnancy_usage_status',
+                    'pregnancy_usage_text',
                 )
             },
         ),
